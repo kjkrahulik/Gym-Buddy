@@ -1,10 +1,11 @@
+package com.gymbuddy.app.AccountDomain;
 import java.util.List;
 
 /**
  * Handles authentication-related operations such as login,
  * logout, password reset, and account creation.
  */
-public class AuthService implements Authenticatable {
+public class AuthService implements Authentication {
 
     // Stores all registered accounts (temporary storage example)
     private List<Account> accounts;
@@ -55,4 +56,10 @@ public class AuthService implements Authenticatable {
      */
     public void deleteAccount(Account account) {
     }
+
+    public void check() {
+        Account test = accounts.get(0);
+        test.getAccountID();
+    }
+
 }

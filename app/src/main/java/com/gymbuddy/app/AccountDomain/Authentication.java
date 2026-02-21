@@ -1,3 +1,4 @@
+package com.gymbuddy.app.AccountDomain;
 /**
  * Interface that defines authentication behavior
  * Any class implementing this must provide login and logout functionality
