@@ -1,3 +1,8 @@
+START HERE: 
+*Download Git and GitHub Desktop, for Git's installation set VSCode as Git's default editor. Everything else can be the default option. Git is used in terminal, whereas GitHub Desktop allows for easy use of Git.
+*Create a branch and name it after yourself. We will be working in branches, and push our code to main when we are finished. It is a little confusing but we can discuss this later.
+
+
 Springboot Intro
 Spring is a framework. Like a toolbox.
 It is modular so we can work with only what we need.
@@ -6,7 +11,6 @@ Springboot is bult ontop of the spring framework to simplify a lot of steps in p
 
 Development environment.
 *Download JDK 25. Run java -version to verify in your terminal.
-*Download Git and GitHub Desktop, for Git's installation set VSCode as Git's default editor. Everything else can be the default option. Git is used in terminal, whereas GitHub Desktop allows for easy use of Git.
 Use VSCode
 
 Build Tool
