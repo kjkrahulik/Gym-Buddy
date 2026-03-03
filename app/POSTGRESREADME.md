@@ -10,7 +10,7 @@ verify using \du (there should be a role named testdev with 3 permissions)
 
 Create database:
 1. CREATE DATABASE test;
-2. GRANT ALL PERMISSIONS ON DATABASE test TO testdev; #do the same for postgres
+2. GRANT ALL PRIVILEGES ON DATABASE test TO testdev; #do the same for postgres
 
 The application.properties file is already updated so when we run, we can check the postgres database via terminal.
 1. Login to database
