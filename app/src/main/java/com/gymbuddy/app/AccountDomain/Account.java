@@ -28,7 +28,6 @@ public class Account {
     */
     public Account(String email, String username, String password) {
         this.accountID = UUID.randomUUID();
-        this.email = email;
         setAccountDetails(email, username, password);
     }
 
@@ -99,6 +98,10 @@ public class Account {
         validateAccountEmail(email);
         validateAccountUsername(username);
         validateAccountPassword(password);
+
+        this.email = email;
+        this.username = username;
+        this.password = password;
     }
 
     private void validateAccountEmail(String email){
