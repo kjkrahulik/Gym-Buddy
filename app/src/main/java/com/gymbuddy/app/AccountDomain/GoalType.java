@@ -9,7 +9,7 @@ public enum GoalType {
      * Bulking Goal with tip
      */
     BULKING(" Message"),
-    Cutting("Less Calories");
+    CUTTING("Less Calories");
 
     private final String tipMessage;
 
