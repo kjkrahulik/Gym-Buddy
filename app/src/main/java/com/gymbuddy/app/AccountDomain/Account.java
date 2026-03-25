@@ -1,14 +1,13 @@
 package com.gymbuddy.app.AccountDomain;
+import java.util.UUID;
 
 /**
  * Represetn a user accoutn in the Gym lBuddy system
  * Stores account related information only (not authentication logic)
  */
 public class Account {
-    /** Static counter to generate unique account IDS */
-    private static int idCounter = 1;
     /** Holds account ID */
-    private int accountID;
+    private final UUID accountID;
     /** Holds user email */
     private String email;
     /** Holds users username */
@@ -28,7 +27,7 @@ public class Account {
      * Automatically give account and accountID
     */
     public Account(String email, String username, String password) {
-        this.accountID = idCounter++;
+        this.accountID = UUID.randomUUID();
         this.email = email;
         this.username = username;
         this.password = password;
@@ -38,16 +37,8 @@ public class Account {
     /**
      * Returns users accountID
      */
-    public int getAccountID() {
+    public UUID getAccountID() {
         return accountID;
-    }
-
-    public static int getIdCounter() {
-        return idCounter;
-    }
-
-    public static void setIdCounter(int idCounter) {
-        Account.idCounter = idCounter;
     }
 
     public String getEmail() {
