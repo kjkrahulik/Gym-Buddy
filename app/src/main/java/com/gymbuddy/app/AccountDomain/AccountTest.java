@@ -24,10 +24,7 @@ public class AccountTest {
     @Column(nullable = false)
     private String password;
 
-    @Column
     private String email;
-
-    @Column
     private boolean isActive;
 
 }

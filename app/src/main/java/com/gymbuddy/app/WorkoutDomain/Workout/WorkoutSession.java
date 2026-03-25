@@ -7,7 +7,7 @@ import com.gymbuddy.app.WorkoutDomain.Exercise.TimedExercise;
 import com.gymbuddy.app.WorkoutDomain.Exercise.WeightedExercise;
 import com.gymbuddy.app.WorkoutDomain.Exercise.WorkoutExercise;
 
-public class WorkoutSession implements WorkoutList {
+public class WorkoutSession {
     private String sessionName;
     private String sessionDescription;
     private ArrayList<WorkoutExercise> exercises;
@@ -20,7 +20,6 @@ public class WorkoutSession implements WorkoutList {
         this.exerciseCount = 0;
     }
 
-    @Override
     public void addExercise(Exercise exercise, boolean isWeighted) {
         WorkoutExercise workoutExercise;
         if (isWeighted) {
@@ -32,7 +31,6 @@ public class WorkoutSession implements WorkoutList {
         exerciseCount++;
     }
 
-    @Override
     public boolean deleteExercise(WorkoutExercise exercise) {
         if (exerciseCount > 0) {
             if (exercises.remove(exercise)) {
