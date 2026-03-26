@@ -1,6 +1,8 @@
 package com.gymbuddy.app.SocialDomain;
 
 import com.gymbuddy.app.AccountDomain.Account;
+import com.gymbuddy.app.Repositories.FriendRequestRepository;
+import com.gymbuddy.app.Repositories.FriendshipRepository;
 
 public class FriendshipService {
 
