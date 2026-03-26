@@ -3,6 +3,7 @@ package com.gymbuddy.app.SocialDomain;
 import java.util.List;
 
 import com.gymbuddy.app.AccountDomain.Account;
+import com.gymbuddy.app.Repositories.NotificationRepository;
 
 public class NotificationService {
 
@@ -18,7 +19,7 @@ public class NotificationService {
     }
 
     public void markAsRead(Long notificationId) {
-        Notification notif = notificationRepo.findById(notificationId);
+        Notification notif = notificationRepo.findById(notificationId).orElseThrow(()->new RuntimeException("Notification not found"));
         notif.markAsRead();
         notificationRepo.save(notif);
     }

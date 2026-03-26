@@ -32,5 +32,12 @@ public class FriendRequest {
         this.status = Status.DECLINED;
     }
 
+    public Account getSender() {
+        return sender;
+    }
+    public Account getReceiver() {
+        return receiver;
+    }
+
     // getters
 }

@@ -1,7 +1,9 @@
 package com.gymbuddy.app.SocialDomain;
 
-import com.gymbuddy.app.AccountDomain.Account;
+import java.util.Optional;
 
+import com.gymbuddy.app.AccountDomain.Account;
+import com.gymbuddy.app.Repositories.InvitationRepository;
 
 public class InvitationService {
 
@@ -20,16 +22,11 @@ public class InvitationService {
     }
 
     public void acceptInvitation(Long inviteId) {
-        Invitation invite = invitationRepo.findById(inviteId);
+        Invitation invite =  invitationRepo.findById(inviteId).orElseThrow(()->new RuntimeException("Invitation not found"));
 
         invite.accept();
         invitationRepo.save(invite);
-
-        notificationService.notify(
-            invite.getSender(),
-            invite.getReceiver().getUsername() + " accepted your invite",
-            Notification.Type.INVITE_ACCEPTED
-        );
+        notificationService.notify(invite.getSender(),invite.getReceiver().getUsername() + " accepted your invite",Notification.Type.INVITE_ACCEPTED);
     }
 
 }
