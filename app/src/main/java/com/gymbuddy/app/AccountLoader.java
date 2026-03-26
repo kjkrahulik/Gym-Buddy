@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class AccountLoader implements CommandLineRunner {
 
     @Autowired
-    private AccountTestRepository accountRepository;
+    private AccountTestRepository accountTestRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -19,7 +19,7 @@ public class AccountLoader implements CommandLineRunner {
         user.setPassword("securepassword");
         user.setEmail("dan@example.com");
 
-        accountRepository.save(user);
+        accountTestRepository.save(user);
 
         System.out.println("Saved user: " + user);
     }
