@@ -1,5 +1,7 @@
 package com.gymbuddy.app.SocialDomain;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+
 import com.gymbuddy.app.AccountDomain.Account;
 import com.gymbuddy.app.Repositories.FriendRequestRepository;
 import com.gymbuddy.app.Repositories.FriendshipRepository;
@@ -22,7 +24,7 @@ public class FriendshipService {
     }
 
     public void acceptRequest(Long requestId) {
-        FriendRequest request = requestRepo.findById(requestId);
+        FriendRequest request = requestRepo.findById(requestId).orElseThrow(() -> new RuntimeException("Friend request not found"));;
 
         request.accept();
         requestRepo.save(request);
@@ -39,4 +41,5 @@ public class FriendshipService {
             Notification.Type.FRIEND_ACCEPTED
         );
     }
+    
 }

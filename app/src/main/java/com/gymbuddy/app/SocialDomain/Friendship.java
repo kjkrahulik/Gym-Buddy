@@ -17,4 +17,11 @@ public class Friendship {
         this.user2 = user2;
         this.createdAt = LocalDateTime.now();
     }
+
+
+
+
+
 }
+
+
