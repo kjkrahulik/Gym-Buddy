@@ -28,10 +28,7 @@ public class Account {
     */
     public Account(String email, String username, String password) {
         this.accountID = UUID.randomUUID();
-        this.email = email;
-        this.username = username;
-        this.password = password;
-        this.isLoggedIn = false;
+        setAccountDetails(email, username, password);
     }
 
     /**
@@ -96,4 +93,32 @@ public class Account {
     public void setDiet(Diet diet) {
         this.diet = diet;
     }
+
+    private void setAccountDetails(String email, String username, String password){
+        validateAccountEmail(email);
+        validateAccountUsername(username);
+        validateAccountPassword(password);
+
+        this.email = email;
+        this.username = username;
+        this.password = password;
+    }
+
+    private void validateAccountEmail(String email){
+        if (email == null || email.trim().isEmpty()) {
+            throw new IllegalArgumentException("Account holder email cannot be null or empty");
+        }
+    }
+
+    private void validateAccountUsername(String username){
+        if (username == null || username.trim().isEmpty()) {
+            throw new IllegalArgumentException("Account holder username cannot be null or empty");
+        }
+    }
+    private void validateAccountPassword(String password){
+        if (password == null || password.trim().isEmpty()) {
+            throw new IllegalArgumentException("Account holder password cannot be null or empty");
+        }
+    }
 }
+

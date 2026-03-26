@@ -6,10 +6,13 @@ package com.gymbuddy.app.AccountDomain;
 public enum GoalType {
     
     /**
-     * Bulking Goal with tip
+     * Bulking Goal with tip message
      */
     BULKING(" Message"),
-    Cutting("Less Calories");
+    /**
+     * Cutting goal with tip message
+     */
+    CUTTING("Less Calories");
 
     private final String tipMessage;
 
