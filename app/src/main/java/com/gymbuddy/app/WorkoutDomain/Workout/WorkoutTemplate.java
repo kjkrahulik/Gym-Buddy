@@ -2,24 +2,21 @@ package com.gymbuddy.app.WorkoutDomain.Workout;
 import java.util.ArrayList;
 
 import com.gymbuddy.app.WorkoutDomain.Exercise.Exercise;
-import com.gymbuddy.app.WorkoutDomain.Exercise.TimedExercise;
-import com.gymbuddy.app.WorkoutDomain.Exercise.WeightedExercise;
 import com.gymbuddy.app.WorkoutDomain.Exercise.WorkoutExercise;
 
-public class WorkoutTemplate implements WorkoutList {
+public class WorkoutTemplate {
     private String workoutName;
     private String workoutDescription;
     private ArrayList<WorkoutExercise> exercises;
     private int exerciseCount;
 
-    public WorkoutTemplate(String workoutName, String workoutDescription) {
+    /*public WorkoutTemplate(String workoutName, String workoutDescription) {
         this.workoutName = workoutName;
         this.workoutDescription = workoutDescription;
         this.exercises = new ArrayList<WorkoutExercise>(5); // Initial capacity for 5 exercises
         this.exerciseCount = 0;
     }
 
-    @Override
     public void addExercise(Exercise exercise, boolean isWeighted) {
         WorkoutExercise workoutExercise;
         if (isWeighted) {
@@ -31,7 +28,6 @@ public class WorkoutTemplate implements WorkoutList {
         exerciseCount++;
     }
 
-    @Override
     public boolean deleteExercise(WorkoutExercise exercise) {
         if (exercises.remove(exercise)) {
             exerciseCount--;
@@ -51,5 +47,5 @@ public class WorkoutTemplate implements WorkoutList {
 
     public ArrayList<WorkoutExercise> getExercises() {
         return exercises;
-    }
+    } */
 }

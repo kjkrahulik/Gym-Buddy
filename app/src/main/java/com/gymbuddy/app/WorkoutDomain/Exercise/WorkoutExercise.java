@@ -1,23 +1,28 @@
 package com.gymbuddy.app.WorkoutDomain.Exercise;
 
-public abstract class WorkoutExercise {
+import com.gymbuddy.app.WorkoutDomain.Workout.WorkoutSession;
+import com.gymbuddy.app.WorkoutDomain.Workout.WorkoutTemplate;
+
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
+import lombok.*;
+@Entity
+@Table(name = "workout_exercises")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class WorkoutExercise {
+
+    private Long workoutExerciseID;
     private Exercise exercise;
     private int listOrder;
-
-    public WorkoutExercise(Exercise exercise, int order) {
-        this.exercise = exercise;
-        this.listOrder = order;
-    }
-
-    public Exercise getExercise() {
-        return exercise;
-    }
-
-    public int getListOrder() {
-        return listOrder;
-    }
-
-    public void setListOrder(int listOrder) {
-        this.listOrder = listOrder;
-    }
+    @ManyToOne
+    @JoinColumn(name = "workout_session_id")
+    private WorkoutSession workoutSession;
+    
+    @ManyToOne
+    @JoinColumn(name = "workout_template_id")
+    private WorkoutTemplate workoutTemplate;
+    
 }

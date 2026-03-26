@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Exercise - GymBuddy</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Create New Exercise</h1>
+        <form id="exercise-form">
+            <label for="exerciseName">Exercise Name:</label>
+            <input type="text" id="exerciseName" name="exerciseName" required>
+
+            <label for="muscleGroup">Muscle Group:</label>
+            <input type="text" id="muscleGroup" name="muscleGroup" required>
+
+            <label for="exerciseDescription">Description:</label>
+            <textarea id="exerciseDescription" name="exerciseDescription" rows="4" required></textarea>
+
+            <button type="submit" class="cta-button">Create Exercise</button>
+        </form>
+    </div>
+    <script src="/script.js"></script>
+</body>
+</html>
