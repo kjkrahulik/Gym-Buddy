@@ -1,3 +1,8 @@
+package com.gymbuddy.app.SocialDomain;
+
+import com.gymbuddy.app.AccountDomain.Account;
+
+
 public class InvitationService {
 
     private InvitationRepository invitationRepo;
@@ -26,4 +31,5 @@ public class InvitationService {
             Notification.Type.INVITE_ACCEPTED
         );
     }
+
 }
