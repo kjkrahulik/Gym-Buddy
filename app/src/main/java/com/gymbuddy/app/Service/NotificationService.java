@@ -1,12 +1,17 @@
-package com.gymbuddy.app.SocialDomain;
+package com.gymbuddy.app.Service;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import com.gymbuddy.app.AccountDomain.Account;
 import com.gymbuddy.app.Repositories.NotificationRepository;
+import com.gymbuddy.app.SocialDomain.Notification;
 
+@Service
 public class NotificationService {
 
+    @Autowired
     private NotificationRepository notificationRepo;
 
     public void notify(Account recipient, String message, Notification.Type type) {

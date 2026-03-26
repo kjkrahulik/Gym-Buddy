@@ -1,15 +1,24 @@
-package com.gymbuddy.app.SocialDomain;
+package com.gymbuddy.app.Service;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.gymbuddy.app.AccountDomain.Account;
 import com.gymbuddy.app.Repositories.FriendRequestRepository;
 import com.gymbuddy.app.Repositories.FriendshipRepository;
+import com.gymbuddy.app.SocialDomain.FriendRequest;
+import com.gymbuddy.app.SocialDomain.Friendship;
+import com.gymbuddy.app.SocialDomain.Notification;
 
+@Service
 public class FriendshipService {
-
+    
+    @Autowired
     private FriendshipRepository friendshipRepo;
+
+    @Autowired
     private FriendRequestRepository requestRepo;
+
     private NotificationService notificationService;
 
     public void sendFriendRequest(Account sender, Account receiver) {

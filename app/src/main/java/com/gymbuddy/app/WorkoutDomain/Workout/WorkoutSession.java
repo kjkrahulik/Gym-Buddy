@@ -2,10 +2,18 @@ package com.gymbuddy.app.WorkoutDomain.Workout;
 
 import java.util.ArrayList;
 
-import com.gymbuddy.app.WorkoutDomain.Exercise.Exercise;
 import com.gymbuddy.app.WorkoutDomain.Exercise.WorkoutExercise;
-
+import lombok.*;
+import jakarta.persistence.*;
+@Entity
+@Table(name = "workout_sessions")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class WorkoutSession {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long workoutSessionID;
     private String sessionName;
     private String sessionDescription;
     private ArrayList<WorkoutExercise> exercises;

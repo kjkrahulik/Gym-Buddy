@@ -8,7 +8,7 @@ import lombok.*;
  * Can be safely used for local development without affecting real user data.
  */
 @Entity
-@Table(name = "accounts")
+@Table(name = "account_tests")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

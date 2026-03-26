@@ -3,8 +3,17 @@ import java.util.ArrayList;
 
 import com.gymbuddy.app.WorkoutDomain.Exercise.Exercise;
 import com.gymbuddy.app.WorkoutDomain.Exercise.WorkoutExercise;
-
+import jakarta.persistence.*;
+import lombok.*;
+@Entity
+@Table(name = "workout_templates")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class WorkoutTemplate {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long workoutTemplateID;
     private String workoutName;
     private String workoutDescription;
     private ArrayList<WorkoutExercise> exercises;

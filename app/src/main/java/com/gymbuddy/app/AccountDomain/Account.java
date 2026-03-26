@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,27 +22,28 @@ public class Account {
     /** Holds account ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private final UUID accountID;
+    private Long accountID;
     /** Holds user email */
     private String email;
     /** Holds users username */
     private String username;
     /** Holds users password */
     private String password;
-    /** Holds value if user is logged in or not */
-    private boolean isLoggedIn;
+
     /** Object holding users Profile */
+    @Transient
     private Profile profile;
     /** Object with users goal */
+    @Transient
     private Goal goal;
     /** Object with users diet */
+    @Transient
     private Diet diet;
 
     /** Constructor to create an account 
      * Automatically give account and accountID
     */
     public Account(String email, String username, String password) {
-        this.accountID = UUID.randomUUID();
         setAccountDetails(email, username, password);
     }
 

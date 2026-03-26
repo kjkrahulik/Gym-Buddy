@@ -5,6 +5,7 @@ import lombok.*;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "workout_sets")
 @Inheritance(strategy = InheritanceType.JOINED)
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,8 +15,9 @@ public abstract class Set {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long setID;
 
-    private int order;
-    
+    @Column(name = "order_index")
+    private int order_index;
+
     @ManyToOne
     @JoinColumn(name = "workout_exercise_id")
     private WorkoutExercise workoutExercise;

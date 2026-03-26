@@ -1,7 +1,8 @@
-package com.gymbuddy.app.AccountDomain;
+package com.gymbuddy.app.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.gymbuddy.app.AccountDomain.Account;
 import com.gymbuddy.app.Repositories.AccountRepository;
 @Service
 public class AccountService {

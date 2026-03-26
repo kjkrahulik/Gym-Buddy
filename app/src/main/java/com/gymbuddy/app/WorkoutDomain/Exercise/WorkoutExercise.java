@@ -13,8 +13,11 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class WorkoutExercise {
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long workoutExerciseID;
+    @ManyToOne
+    @JoinColumn(name = "exercise_id")
     private Exercise exercise;
     private int listOrder;
     @ManyToOne
