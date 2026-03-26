@@ -23,4 +23,8 @@ public class ExerciseService {
         return exerciseRepository.findAll();
     }
 
+    public Exercise getExerciseByName(String name) {
+        return exerciseRepository.findByExerciseName(name).orElse(null);
+    }
+
 }

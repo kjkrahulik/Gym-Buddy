@@ -1,0 +1,50 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Launch AppApplication",
+            "request": "launch",
+            "mainClass": "com.gymbuddy.app.AppApplication",
+            "projectName": "app"
+        },
+        {
+            "type": "pwa-chrome",
+            "request": "launch",
+            "name": "Launch Chrome",
+            "url": "http://localhost:8080",
+            "webRoot": "${workspaceFolder}"
+        },
+        {
+            "name": "Launch Server & Debug",
+            "type": "java",
+            "request": "launch",
+            "mainClass": "com.gymbuddy.app.AppApplication",
+            "projectName": "app"
+        },
+        {
+            "name": "Java Attach"
+        },
+        {
+            "name": "Debug (Launch) for Spring Boot (AppApplication)",
+            "mainClass": "com.gymbuddy.app.AppApplication",
+            "args": "",
+            "vmArgs": "",
+            "vmWorkspaceRoot": "${workspaceRoot}/app",
+            "env": {
+                "spring.output.ansi.enabled": "always"
+            },
+            "console": "internalConsole"
+        },
+        {
+            "name": "Launch Chrome",
+            "request": "launch",
+            "type": "chrome",
+            "url": "http://localhost:8080",
+            "webRoot": "${workspaceFolder}"
+        }
+    ]
+}

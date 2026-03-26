@@ -3,8 +3,6 @@ package com.gymbuddy.app.WorkoutDomain.Workout;
 import java.util.ArrayList;
 
 import com.gymbuddy.app.WorkoutDomain.Exercise.Exercise;
-import com.gymbuddy.app.WorkoutDomain.Exercise.TimedExercise;
-import com.gymbuddy.app.WorkoutDomain.Exercise.WeightedExercise;
 import com.gymbuddy.app.WorkoutDomain.Exercise.WorkoutExercise;
 
 public class WorkoutSession {
@@ -13,7 +11,7 @@ public class WorkoutSession {
     private ArrayList<WorkoutExercise> exercises;
     private int exerciseCount;
 
-    public WorkoutSession(String sessionName, String sessionDescription) {
+    /*public WorkoutSession(String sessionName, String sessionDescription) {
         this.sessionName = sessionName;
         this.sessionDescription = sessionDescription;
         this.exercises = new ArrayList<WorkoutExercise>(5); // Initial capacity for 5 exercises
@@ -52,5 +50,5 @@ public class WorkoutSession {
 
     public ArrayList<WorkoutExercise> getExercises() {
         return exercises;
-    }
+    }*/
 }

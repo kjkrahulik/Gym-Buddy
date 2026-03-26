@@ -11,7 +11,7 @@ import lombok.*;
 public class Exercise {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long exerciseID;
+    private Long exerciseID;
     private String exerciseName;
     private String muscleGroup;
     private String exerciseDescription;

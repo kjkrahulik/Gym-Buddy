@@ -2,8 +2,6 @@ package com.gymbuddy.app.WorkoutDomain.Workout;
 import java.util.ArrayList;
 
 import com.gymbuddy.app.WorkoutDomain.Exercise.Exercise;
-import com.gymbuddy.app.WorkoutDomain.Exercise.TimedExercise;
-import com.gymbuddy.app.WorkoutDomain.Exercise.WeightedExercise;
 import com.gymbuddy.app.WorkoutDomain.Exercise.WorkoutExercise;
 
 public class WorkoutTemplate {
@@ -12,7 +10,7 @@ public class WorkoutTemplate {
     private ArrayList<WorkoutExercise> exercises;
     private int exerciseCount;
 
-    public WorkoutTemplate(String workoutName, String workoutDescription) {
+    /*public WorkoutTemplate(String workoutName, String workoutDescription) {
         this.workoutName = workoutName;
         this.workoutDescription = workoutDescription;
         this.exercises = new ArrayList<WorkoutExercise>(5); // Initial capacity for 5 exercises
@@ -49,5 +47,5 @@ public class WorkoutTemplate {
 
     public ArrayList<WorkoutExercise> getExercises() {
         return exercises;
-    }
+    } */
 }
