@@ -1,12 +1,26 @@
 package com.gymbuddy.app.AccountDomain;
 import java.util.UUID;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 /**
  * Represetn a user accoutn in the Gym lBuddy system
  * Stores account related information only (not authentication logic)
  */
+@Entity
+@Table(name = "accounts")
+@Data
 public class Account {
     /** Holds account ID */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private final UUID accountID;
     /** Holds user email */
     private String email;
@@ -29,69 +43,6 @@ public class Account {
     public Account(String email, String username, String password) {
         this.accountID = UUID.randomUUID();
         setAccountDetails(email, username, password);
-    }
-
-    /**
-     * Returns users accountID
-     */
-    public UUID getAccountID() {
-        return accountID;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public boolean isLoggedIn() {
-        return isLoggedIn;
-    }
-
-    public void setLoggedIn(boolean isLoggedIn) {
-        this.isLoggedIn = isLoggedIn;
-    }
-
-    public Profile getProfile() {
-        return profile;
-    }
-
-    public void setProfile(Profile profile) {
-        this.profile = profile;
-    }
-
-    public Goal getGoal() {
-        return goal;
-    }
-
-    public void setGoal(Goal goal) {
-        this.goal = goal;
-    }
-
-    public Diet getDiet() {
-        return diet;
-    }
-
-    public void setDiet(Diet diet) {
-        this.diet = diet;
     }
 
     private void setAccountDetails(String email, String username, String password){

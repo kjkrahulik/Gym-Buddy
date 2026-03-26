@@ -1,7 +1,7 @@
 package com.gymbuddy.app;
 
 import com.gymbuddy.app.AccountDomain.AccountTest;
-import com.gymbuddy.app.Repositories.AccountRepository;
+import com.gymbuddy.app.Repositories.AccountTestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class AccountLoader implements CommandLineRunner {
 
     @Autowired
-    private AccountRepository accountRepository;
+    private AccountTestRepository accountRepository;
 
     @Override
     public void run(String... args) throws Exception {
