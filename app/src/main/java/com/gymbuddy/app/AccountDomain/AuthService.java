@@ -5,25 +5,11 @@ import java.util.List;
  * Handles authentication-related operations such as login,
  * logout, password reset, and account creation.
  */
-public class AuthService implements Authentication {
+public class AuthService {
 
     // Stores all registered accounts (temporary storage example)
     private List<Account> accounts;
 
-    /**
-     * Attempts to authenticate a user using username and password.
-     */
-    @Override
-    public boolean signIn(String username, String password) {
-        return false;
-    }
-
-    /**
-     * Logs a user out of the system.
-     */
-    @Override
-    public void signOut(Account account) {
-    }
 
     /**
      * Sends a password reset request to the given email.
@@ -45,17 +31,6 @@ public class AuthService implements Authentication {
     public void resetPassword(Account account, String newPassword) {
     }
 
-    /**
-     * Creates a new account in the system.
-     */
-    public void createAccount(Account account) {
-    }
-
-    /**
-     * Deletes an existing account from the system.
-     */
-    public void deleteAccount(Account account) {
-    }
 
     public void check() {
         Account test = accounts.get(0);
