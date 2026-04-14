@@ -1,15 +1,27 @@
 package com.gymbuddy.app.AccountDomain;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.UUID;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import jakarta.persistence.CascadeType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+// Import notification clsss to store a list of notification on the web app
+import com.gymbuddy.app.SocialDomain.Notification;
+import com.gymbuddy.app.SocialDomain.FriendRequest;
 
 /**
  * Represetn a user accoutn in the Gym lBuddy system
@@ -30,6 +42,29 @@ public class Account {
     /** Holds users password */
     private String password;
 
+
+    //List of friends of the user
+    @ManyToMany
+    @JsonIgnore
+    @JoinTable(
+        name = "friends",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "friend_id")
+    )
+    private List<Account> friends = new ArrayList<>();
+
+    // List of notifications received by the user
+    @OneToMany(mappedBy = "recipient", cascade = CascadeType.ALL)
+    private List<Notification> notifications = new ArrayList<>();
+
+    //List of incoming friend requests
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL)
+    private List<FriendRequest> incomingRequests = new ArrayList<>();
+
+    //List of outgoing friend requests
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
+    private List<FriendRequest> sentRequests = new ArrayList<>();
+
     /** Object holding users Profile */
     @Transient
     private Profile profile;
@@ -39,6 +74,8 @@ public class Account {
     /** Object with users diet */
     @Transient
     private Diet diet;
+
+
 
     /** Constructor to create an account 
      * Automatically give account and accountID
@@ -71,6 +108,18 @@ public class Account {
     private void validateAccountPassword(String password){
         if (password == null || password.trim().isEmpty()) {
             throw new IllegalArgumentException("Account holder password cannot be null or empty");
+        }
+    }
+
+    public void addNotification(Notification notification) {
+        notifications.add(notification);
+        notification.setRecipient(this);
+    }
+
+    public void addFriend(Account friend) {
+        if (!friends.contains(friend)) {
+            friends.add(friend);
+            friend.getFriends().add(this); // ensure bidirectional
         }
     }
 }
