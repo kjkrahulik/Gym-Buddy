@@ -17,21 +17,21 @@ public class Notification {
     @JoinColumn(name = "recipient_id")
     private Account recipient;
 
-    private String message;
+    private String message; //body of the notification
+
+    private boolean read;
+    private LocalDateTime createdAt;
 
     @Enumerated(EnumType.STRING)
     private Type type;
-
-    private boolean read;
-
-    private LocalDateTime createdAt;
-
+   
     public enum Type {
         FRIEND_REQUEST,
         FRIEND_ACCEPTED,
         INVITATION,
         INVITE_ACCEPTED
     }
+ 
 
     public Notification() {}
 
@@ -45,5 +45,27 @@ public class Notification {
 
     public void markAsRead() {
         this.read = true;
+    }
+    public void setRecipient(Account recipient) {
+        this.recipient = recipient;
+    }
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public boolean getRead() {
+        return read;
+    }
+    public Account getRecipient() {
+        return recipient;
+    }
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+    public String getMessage() {
+        return message;
     }
 }

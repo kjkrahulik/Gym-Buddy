@@ -56,6 +56,11 @@ public class FriendRequest {
     public Account getReceiver() {
         return receiver;
     }
+    public Status getStatus() {
+        return status;
+    }
 
+
+   //void toFriendship(FriendRequest request);
     // getters
 }
