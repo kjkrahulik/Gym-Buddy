@@ -1,0 +1,34 @@
+[
+  {"exerciseName": "Incline Bench Press", "muscleGroup": "Chest", "exerciseDescription": "Press weight on an incline bench to target upper chest."},
+  {"exerciseName": "Decline Bench Press", "muscleGroup": "Chest", "exerciseDescription": "Press weight on a decline bench to target lower chest."},
+  {"exerciseName": "Chest Fly", "muscleGroup": "Chest", "exerciseDescription": "Bring weights together in an arc to isolate the chest."},
+  {"exerciseName": "Push-Up", "muscleGroup": "Chest", "exerciseDescription": "Lower and raise body using arms while keeping body straight."},
+
+  {"exerciseName": "Leg Press", "muscleGroup": "Legs", "exerciseDescription": "Push weight away using legs on a machine."},
+  {"exerciseName": "Leg Curl", "muscleGroup": "Legs", "exerciseDescription": "Curl weight with legs to target hamstrings."},
+  {"exerciseName": "Leg Extension", "muscleGroup": "Legs", "exerciseDescription": "Extend legs to target quadriceps."},
+  {"exerciseName": "Calf Raise", "muscleGroup": "Legs", "exerciseDescription": "Raise heels to strengthen calves."},
+
+  {"exerciseName": "Lat Pulldown", "muscleGroup": "Back", "exerciseDescription": "Pull bar down to chest to target lats."},
+  {"exerciseName": "Seated Row", "muscleGroup": "Back", "exerciseDescription": "Pull handle toward torso while seated."},
+  {"exerciseName": "T-Bar Row", "muscleGroup": "Back", "exerciseDescription": "Pull weighted bar toward chest in a bent stance."},
+  {"exerciseName": "Face Pull", "muscleGroup": "Back", "exerciseDescription": "Pull rope toward face to target upper back."},
+
+  {"exerciseName": "Lateral Raise", "muscleGroup": "Shoulders", "exerciseDescription": "Lift arms to the sides to shoulder height."},
+  {"exerciseName": "Front Raise", "muscleGroup": "Shoulders", "exerciseDescription": "Lift weights in front of body to shoulder height."},
+  {"exerciseName": "Rear Delt Fly", "muscleGroup": "Shoulders", "exerciseDescription": "Raise arms outward to target rear shoulders."},
+  {"exerciseName": "Arnold Press", "muscleGroup": "Shoulders", "exerciseDescription": "Rotate and press weights overhead."},
+
+  {"exerciseName": "Hammer Curl", "muscleGroup": "Arms", "exerciseDescription": "Curl weights with palms facing inward."},
+  {"exerciseName": "Preacher Curl", "muscleGroup": "Arms", "exerciseDescription": "Curl weight using a preacher bench."},
+  {"exerciseName": "Cable Curl", "muscleGroup": "Arms", "exerciseDescription": "Curl using a cable machine for tension."},
+
+  {"exerciseName": "Tricep Pushdown", "muscleGroup": "Arms", "exerciseDescription": "Push cable down to extend arms."},
+  {"exerciseName": "Skullcrusher", "muscleGroup": "Arms", "exerciseDescription": "Lower weight toward forehead, then extend arms."},
+  {"exerciseName": "Dips", "muscleGroup": "Arms", "exerciseDescription": "Lower and raise body using parallel bars."},
+
+  {"exerciseName": "Russian Twist", "muscleGroup": "Core", "exerciseDescription": "Rotate torso side to side while seated."},
+  {"exerciseName": "Leg Raise", "muscleGroup": "Core", "exerciseDescription": "Lift legs while lying down to target abs."},
+  {"exerciseName": "Mountain Climbers", "muscleGroup": "Core", "exerciseDescription": "Drive knees toward chest in a plank position."},
+  {"exerciseName": "Bicycle Crunch", "muscleGroup": "Core", "exerciseDescription": "Alternate elbow to knee in a pedaling motion."}
+]

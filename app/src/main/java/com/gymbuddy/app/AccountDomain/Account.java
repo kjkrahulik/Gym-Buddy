@@ -34,7 +34,7 @@ public class Account {
     /** Holds account ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long accountID;
+    private UUID accountID;
     /** Holds user email */
     private String email;
     /** Holds users username */

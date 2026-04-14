@@ -20,7 +20,11 @@ public class FriendService {
     @Autowired
     private FriendRequestRepository requestRepo;
 
+    @Autowired
     private NotificationService notificationService;
+
+    @Autowired 
+    private AccountRepository accountRepo;
 
     public void sendFriendRequest(Account sender, Account receiver) {
         FriendRequest request = new FriendRequest(sender, receiver);
@@ -46,9 +50,6 @@ public class FriendService {
         Account receiver = request.getReceiver();
 
         sender.addFriend(receiver);
-
-        // If you have AccountRepository:
-        AccountRepository accountRepo = null; // You should autowire this
         accountRepo.save(sender);
         accountRepo.save(receiver);
 
