@@ -1,5 +1,6 @@
 package com.gymbuddy.app.Repositories;
 
+import com.gymbuddy.app.SocialDomain.FriendRequest;
 import com.gymbuddy.app.SocialDomain.Friendship;
 import com.gymbuddy.app.AccountDomain.Account;
 
@@ -12,6 +13,5 @@ import java.util.List;
 public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
 
     List<Friendship> findByUser1OrUser2(Account user1, Account user2);
-
-    boolean existsByUser1AndUser2(Account user1, Account user2);
+ 
 }
