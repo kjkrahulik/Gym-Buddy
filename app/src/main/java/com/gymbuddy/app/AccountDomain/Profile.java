@@ -4,5 +4,5 @@ public class Profile {
     
     private String bio;
 
-    private 
+    
 }

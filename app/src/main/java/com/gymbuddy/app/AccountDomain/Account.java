@@ -88,6 +88,10 @@ public class Account {
     private List<Account> friendList;
 
 
+    // Test Constuctor to be deleted
+    public Account() {
+        
+    }
 
     /** Constructor to create an account 
      * Automatically give account and accountID
@@ -153,6 +157,10 @@ public class Account {
 
     public String getUsername() {
         return username;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public void addNotification(Notification notification) {

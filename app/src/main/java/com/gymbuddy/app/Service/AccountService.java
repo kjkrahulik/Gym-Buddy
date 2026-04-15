@@ -47,7 +47,7 @@ public class AccountService {
 
          if(newUsername != null && !newUsername.isBlank()) {
             // checks the uniqueness of the username if changing
-            if(!account.getUsername().equals(newUsername) && accountRepo.findByUsername(newUsername).isPresent()) {
+            if(!account.getUsername().equals(newUsername) && accountRepo.existsByUsername(newUsername)) {
                throw new RuntimeException("Username already taken");
             }
 
@@ -82,16 +82,5 @@ public class AccountService {
         return accountRepo.save(account);
 
      }
-     // Add this in a second 
-     public void changePassword(String username, String newPassword, String verificationCode) {
-      if(!authService.verifyCode(username, verificationCode)) {
-         throw new RuntimeException("Invalid verification code");
-      }
-
-      Account account = accountRepo.findByUsername(username).orElseThrow(() 
-        -> new RuntimeException("Account not found"));
-
-        account.setPassword(newPassword);
-        accountRepo.save(account);
-     }
+     
 }
