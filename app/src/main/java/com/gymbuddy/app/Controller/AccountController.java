@@ -15,6 +15,7 @@ import com.gymbuddy.app.Service.AccountService;
 
 
 @RestController
+@RequestMapping("/accounts")
 public class AccountController {
     
     @Autowired
