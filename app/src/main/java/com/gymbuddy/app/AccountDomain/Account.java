@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import com.gymbuddy.app.SocialDomain.Invitation;
+import com.gymbuddy.app.WorkoutDomain.Workout.WorkoutSession;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -29,15 +33,16 @@ import com.gymbuddy.app.SocialDomain.FriendRequest;
  */
 @Entity
 @Table(name = "accounts")
-@Data
 public class Account {
     /** Holds account ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private UUID accountID;
     /** Holds user email */
+    @Column(unique = true, nullable = false)
     private String email;
     /** Holds users username */
+    @Column(unique = true, nullable = false)
     private String username;
     /** Holds users password */
     private String password;
@@ -75,13 +80,25 @@ public class Account {
     @Transient
     private Diet diet;
 
+    @Transient
+    private List<WorkoutSession> workoutSession;
+    @Transient
+    private List<Invitation> invitationList;
+    @Transient
+    private List<Account> friendList;
 
+
+    // Test Constuctor to be deleted
+    public Account() {
+        
+    }
 
     /** Constructor to create an account 
      * Automatically give account and accountID
     */
     public Account(String email, String username, String password) {
         setAccountDetails(email, username, password);
+        this.accountID = UUID.randomUUID();
     }
 
     private void setAccountDetails(String email, String username, String password){
@@ -109,6 +126,41 @@ public class Account {
         if (password == null || password.trim().isEmpty()) {
             throw new IllegalArgumentException("Account holder password cannot be null or empty");
         }
+    }
+
+    public void setEmail(String email) {
+        validateAccountEmail(email);
+        this.email = email;
+    }
+
+    public void setUsername(String username) {
+        validateAccountUsername(username);
+        this.username = username;
+    }
+
+    public void setPassword(String password) {
+        validateAccountPassword(password);
+        this.password = password;
+    }
+
+    public Profile getProfile() {
+        return profile;
+    }
+
+    public Goal getGoal() {
+        return goal;
+    }
+
+    public Diet getDiet() {
+        return diet;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public void addNotification(Notification notification) {
