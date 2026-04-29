@@ -64,4 +64,65 @@ public class AccountController {
         return ResponseEntity.ok(updated);
     }
     
+    // ==================== Profile Picture Endpoints ====================
+
+    /**
+     * Upload profile picture for current user (multipart file upload)
+     */
+    @PostMapping("/me/{username}/picture")
+    public ResponseEntity<String> uploadProfilePicture(
+            @PathVariable String username,
+            @RequestParam("file") java.io.File imageFile
+    ) {
+        try {
+            // Convert multipart file to InputStream
+            java.io.FileInputStream fis = new java.io.FileInputStream(imageFile);
+            accountService.uploadProfilePicture(username, fis);
+            fis.close();
+            return ResponseEntity.ok("Profile picture uploaded successfully for: " + username);
+        } catch (Exception e) {
+            throw new RuntimeException("Error uploading profile picture: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Upload profile picture from Base64 string (for JSON API)
+     */
+    @PostMapping("/me/{username}/picture/base64")
+    public ResponseEntity<String> uploadProfilePictureBase64(
+            @PathVariable String username,
+            @RequestParam("base64") String base64Image
+    ) {
+        accountService.uploadProfilePictureBase64(username, base64Image);
+        return ResponseEntity.ok("Profile picture updated successfully for: " + username);
+    }
+
+    /**
+     * Get profile picture as Base64 string (for JSON API response)
+     */
+    @GetMapping("/me/{username}/picture/base64")
+    public ResponseEntity<String> getProfilePictureBase64(
+            @PathVariable String username
+    ) {
+        try {
+            String base64Image = accountService.getProfilePictureBase64(username);
+            return ResponseEntity.ok(base64Image);
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body("");
+        }
+    }
+
+    /**
+     * Delete profile picture for current user
+     */
+    @DeleteMapping("/me/{username}/picture")
+    public ResponseEntity<String> deleteProfilePicture(
+            @PathVariable String username
+    ) {
+        accountService.deleteProfilePicture(username);
+        return ResponseEntity.ok("Profile picture deleted successfully for: " + username);
+    }
+
+    
+
 }

@@ -17,6 +17,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Transient;
 import jakarta.persistence.CascadeType;
 import lombok.AllArgsConstructor;
@@ -71,7 +72,7 @@ public class Account {
     private List<FriendRequest> sentRequests = new ArrayList<>();
 
     /** Object holding users Profile */
-    @Transient
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
     private Profile profile;
     /** Object with users goal */
     @Transient
@@ -155,6 +156,16 @@ public class Account {
         return diet;
     }
 
+    /**
+     * Gets the profile picture as InputStream (for image display)
+     */
+    public java.io.InputStream getProfilePictureInputStream() {
+        if (profile == null) {
+            return null;
+        }
+        return profile.getProfilePictureInputStream();
+    }
+
     public String getUsername() {
         return username;
     }
@@ -168,11 +179,10 @@ public class Account {
         notification.setRecipient(this);
     }
 
-    public void addFriend(Account friend) {
-        if (!friends.contains(friend)) {
-            friends.add(friend);
-            friend.getFriends().add(this); // ensure bidirectional
-        }
-    }
+    // public void addFriend(Account friend) {
+    //     if (!friends.contains(friend)) {
+    //         friends.add(friend);
+    //         friend.getFriends().add(this); // ensure bidirectional
+    //     }
+    // }
 }
-
