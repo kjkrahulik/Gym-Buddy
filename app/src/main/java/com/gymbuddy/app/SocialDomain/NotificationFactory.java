@@ -5,6 +5,12 @@ import com.gymbuddy.app.SocialDomain.Notification;
 
 public class NotificationFactory {
 
+    public static Notification createNotification(Account recipient, String message, Notification.Type type) {
+        Notification notification = new Notification(recipient, message, type);
+        recipient.addNotification(notification);
+        return notification;
+    }
+
     public static Notification createFriendRequestNotification(Account recipient, Account sender) {
         String message = sender.getUsername() + " sent you a friend request";
 
