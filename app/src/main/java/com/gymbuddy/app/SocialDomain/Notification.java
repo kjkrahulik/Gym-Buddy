@@ -68,4 +68,12 @@ public class Notification {
     public String getMessage() {
         return message;
     }
+
+    public void send() {
+        recipient.addNotification(this);
+    }
+    public void send(String message) {
+        this.message = message;
+        recipient.addNotification(this);
+    }
 }

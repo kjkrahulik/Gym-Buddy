@@ -42,11 +42,11 @@ public class FriendRequest {
         this.createdAt = LocalDateTime.now();
     }
 
-    public void accept() {
+    public void acceptFriendRequest() {
         this.status = Status.ACCEPTED;
     }
 
-    public void decline() {
+    public void declineFriendRequest() {
         this.status = Status.DECLINED;
     }
 
@@ -59,6 +59,19 @@ public class FriendRequest {
     public Status getStatus() {
         return status;
     }
+    public void createPendingRequest(Account sender, Account receiver) {
+        this.sender = sender;
+        this.receiver = receiver;
+        this.status = Status.PENDING;
+        this.createdAt = LocalDateTime.now();
+        this.receiver.addFriendRequest(this);
+        this.sender.addSentRequests(this);
+    }
+    public void removePendingRequest() {
+        this.receiver.removeFriendRequest(this);
+        this.sender.removeSentRequest(this);
+    }
+        
 
 
    //void toFriendship(FriendRequest request);

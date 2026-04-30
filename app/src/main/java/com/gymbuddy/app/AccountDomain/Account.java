@@ -121,6 +121,20 @@ public class Account {
             friends.add(friend);
             friend.getFriends().add(this); // ensure bidirectional
         }
+
     }
+    public void addFriendRequest(FriendRequest request) {
+        incomingRequests.add(request);        
+    }
+    public void removeFriendRequest(FriendRequest request) {
+        incomingRequests.remove(request);
+    }
+    public void addSentRequests(FriendRequest request) {
+        sentRequests.add(request);
+    }
+    public void removeSentRequest(FriendRequest request) {
+        sentRequests.remove(request);
+    }
+    
 }
 
