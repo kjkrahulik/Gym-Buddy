@@ -26,6 +26,7 @@ public class WorkoutExercise {
     
     @ManyToOne
     @JoinColumn(name = "workout_template_id")
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private WorkoutTemplate workoutTemplate;
     
 }

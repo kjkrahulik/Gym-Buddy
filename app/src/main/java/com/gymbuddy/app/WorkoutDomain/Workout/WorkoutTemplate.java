@@ -1,10 +1,22 @@
 package com.gymbuddy.app.WorkoutDomain.Workout;
+
 import java.util.ArrayList;
+import java.util.List;
 
 import com.gymbuddy.app.WorkoutDomain.Exercise.Exercise;
 import com.gymbuddy.app.WorkoutDomain.Exercise.WorkoutExercise;
-import jakarta.persistence.*;
-import lombok.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 @Entity
 @Table(name = "workout_templates")
 @Data
@@ -14,47 +26,22 @@ public class WorkoutTemplate {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long workoutTemplateID;
+    @Column(name = "workout_name")
     private String workoutName;
-    private String workoutDescription;
-    private ArrayList<WorkoutExercise> exercises;
-    private int exerciseCount;
 
-    /*public WorkoutTemplate(String workoutName, String workoutDescription) {
+    @Column(name = "workout_description")
+    private String workoutDescription;
+
+    @Column(name = "exercise_count")
+    private Integer exerciseCount = 0;
+
+    @OneToMany(mappedBy = "workoutTemplate")
+    private List<WorkoutExercise> exercises = new ArrayList<>();
+
+    public WorkoutTemplate(String workoutName, String workoutDescription) {
         this.workoutName = workoutName;
         this.workoutDescription = workoutDescription;
-        this.exercises = new ArrayList<WorkoutExercise>(5); // Initial capacity for 5 exercises
         this.exerciseCount = 0;
     }
 
-    public void addExercise(Exercise exercise, boolean isWeighted) {
-        WorkoutExercise workoutExercise;
-        if (isWeighted) {
-            workoutExercise = new WeightedExercise(exercise, exerciseCount);
-        } else {
-            workoutExercise = new TimedExercise(exercise, exerciseCount); // Default duration of 0 seconds
-        }
-        exercises.add(workoutExercise);
-        exerciseCount++;
-    }
-
-    public boolean deleteExercise(WorkoutExercise exercise) {
-        if (exercises.remove(exercise)) {
-            exerciseCount--;
-            return true;
-        } else {
-            return false; // Exercise not found in the list
-        }
-    }
-
-    public String getWorkoutName() {
-        return workoutName;
-    }
-
-    public String getWorkoutDescription() {
-        return workoutDescription;
-    }
-
-    public ArrayList<WorkoutExercise> getExercises() {
-        return exercises;
-    } */
 }

@@ -1,34 +1,56 @@
 [
   {"exerciseName": "Incline Bench Press", "muscleGroup": "Chest", "exerciseDescription": "Press weight on an incline bench to target upper chest."},
   {"exerciseName": "Decline Bench Press", "muscleGroup": "Chest", "exerciseDescription": "Press weight on a decline bench to target lower chest."},
-  {"exerciseName": "Chest Fly", "muscleGroup": "Chest", "exerciseDescription": "Bring weights together in an arc to isolate the chest."},
+  {"exerciseName": "Chest Fly", "muscleGroup": "Chest", "exerciseDescription": "Sit on a peck deck and move your arms into each other."},
   {"exerciseName": "Push-Up", "muscleGroup": "Chest", "exerciseDescription": "Lower and raise body using arms while keeping body straight."},
+  {"exerciseName": "Bench Press", "muscleGroup": "Chest", "exerciseDescription": "Press weight on an bench press to target chest."},
+  {"exerciseName": "Standing cable fly", "muscleGroup": "Chest", "exerciseDescription": "Stand centered between two high pulleys, grab the handles, and bring them inward with a slight forward lean."},
 
   {"exerciseName": "Leg Press", "muscleGroup": "Legs", "exerciseDescription": "Push weight away using legs on a machine."},
   {"exerciseName": "Leg Curl", "muscleGroup": "Legs", "exerciseDescription": "Curl weight with legs to target hamstrings."},
   {"exerciseName": "Leg Extension", "muscleGroup": "Legs", "exerciseDescription": "Extend legs to target quadriceps."},
   {"exerciseName": "Calf Raise", "muscleGroup": "Legs", "exerciseDescription": "Raise heels to strengthen calves."},
+  {"exerciseName": "Front Squat", "muscleGroup": "Legs", "exerciseDescription": "Postion bar on your front shoulders with palms faceing the sky, then squat."},
+  {"exerciseName": "Squat", "muscleGroup": "Legs", "exerciseDescription": "Place bar on your shoulders behind your head, then make a squating motion."},
+  {"exerciseName": "RDL", "muscleGroup": "Legs", "exerciseDescription": "Place hands in a mixed postion on top of a bar, then push your butt back while lowering the bar until it touches the ground ."},
+  {"exerciseName": "Addcutor", "muscleGroup": "Legs", "exerciseDescription": "Sit on a abdution machine and push legs toward each other."},
+  {"exerciseName": "Abbcutor", "muscleGroup": "Legs", "exerciseDescription": "Sit on a abdution machine and push legs away from each other."},
+  {"exerciseName": "Barebell Squat", "muscleGroup": "Legs", "exerciseDescription": "Hold a barebell with both arms and then squat."},
+  {"exerciseName": "Hip Thurst", "muscleGroup": "Legs", "exerciseDescription": "Postion youself on the edge of a bench with a bar on your hips, then trust upward"},
+  {"exerciseName": "Split Squat", "muscleGroup": "Legs", "exerciseDescription": "Hold barebells in both of your hands and then with one leg squat down then repeat with other leg"},
 
   {"exerciseName": "Lat Pulldown", "muscleGroup": "Back", "exerciseDescription": "Pull bar down to chest to target lats."},
   {"exerciseName": "Seated Row", "muscleGroup": "Back", "exerciseDescription": "Pull handle toward torso while seated."},
   {"exerciseName": "T-Bar Row", "muscleGroup": "Back", "exerciseDescription": "Pull weighted bar toward chest in a bent stance."},
   {"exerciseName": "Face Pull", "muscleGroup": "Back", "exerciseDescription": "Pull rope toward face to target upper back."},
+  {"exerciseName": "Dumbbell Row", "muscleGroup": "Back", "exerciseDescription": "Postion yourself on a bench with your face toward the ground, then with one hand bring the barebell into your body then switch."},
+  {"exerciseName": "Reverse Fly", "muscleGroup": "Back", "exerciseDescription": "Sit on a pec deck with your chest facing the machine then move the handles behind your back"},
 
   {"exerciseName": "Lateral Raise", "muscleGroup": "Shoulders", "exerciseDescription": "Lift arms to the sides to shoulder height."},
   {"exerciseName": "Front Raise", "muscleGroup": "Shoulders", "exerciseDescription": "Lift weights in front of body to shoulder height."},
   {"exerciseName": "Rear Delt Fly", "muscleGroup": "Shoulders", "exerciseDescription": "Raise arms outward to target rear shoulders."},
   {"exerciseName": "Arnold Press", "muscleGroup": "Shoulders", "exerciseDescription": "Rotate and press weights overhead."},
+  {"exerciseName": "Shoulder Press", "muscleGroup": "Shoulders", "exerciseDescription": "Lower and raise dumbells over your head"},
+  {"exerciseName": "Barbell Raises", "muscleGroup": "Shoulders", "exerciseDescription": "Put barbells in both hands then move them up to your face."},
 
   {"exerciseName": "Hammer Curl", "muscleGroup": "Arms", "exerciseDescription": "Curl weights with palms facing inward."},
   {"exerciseName": "Preacher Curl", "muscleGroup": "Arms", "exerciseDescription": "Curl weight using a preacher bench."},
   {"exerciseName": "Cable Curl", "muscleGroup": "Arms", "exerciseDescription": "Curl using a cable machine for tension."},
-
+  {"exerciseName": "Barebell Curl", "muscleGroup": "Arms", "exerciseDescription": "Curl using a barbell."},
   {"exerciseName": "Tricep Pushdown", "muscleGroup": "Arms", "exerciseDescription": "Push cable down to extend arms."},
   {"exerciseName": "Skullcrusher", "muscleGroup": "Arms", "exerciseDescription": "Lower weight toward forehead, then extend arms."},
   {"exerciseName": "Dips", "muscleGroup": "Arms", "exerciseDescription": "Lower and raise body using parallel bars."},
+  {"exerciseName": "Zottman Curl", "muscleGroup": "Arms", "exerciseDescription": "Curl using a barbell, when at top rotate your arms with palms facing downward and finish."},
+  {"exerciseName": "Wrist Curl", "muscleGroup": "Arms", "exerciseDescription": "Use a barebell with wirst on edge of bench and curl using your wrist ."},
 
   {"exerciseName": "Russian Twist", "muscleGroup": "Core", "exerciseDescription": "Rotate torso side to side while seated."},
   {"exerciseName": "Leg Raise", "muscleGroup": "Core", "exerciseDescription": "Lift legs while lying down to target abs."},
   {"exerciseName": "Mountain Climbers", "muscleGroup": "Core", "exerciseDescription": "Drive knees toward chest in a plank position."},
-  {"exerciseName": "Bicycle Crunch", "muscleGroup": "Core", "exerciseDescription": "Alternate elbow to knee in a pedaling motion."}
+  {"exerciseName": "Bicycle Crunch", "muscleGroup": "Core", "exerciseDescription": "Alternate elbow to knee in a pedaling motion."},
+
+  {"exerciseName": "Treadmill", "muscleGroup": "Cardio", "exerciseDescription": "Get on a treadmill and run or walk."},
+  {"exerciseName": "Incline Treadmill", "muscleGroup": "Cardio", "exerciseDescription": "Get on a treadmill and run or walk with an incline."},
+  {"exerciseName": "Stair Master", "muscleGroup": "Cardio", "exerciseDescription": "Get on a stairmaster and walk up steps."}
+
 ]
+
