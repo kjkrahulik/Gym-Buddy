@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import com.gymbuddy.app.AccountDomain.Account;
 import com.gymbuddy.app.Repositories.AccountRepository;
+import java.util.List;
 @Service
 public class AccountService {
    
@@ -24,6 +25,10 @@ public class AccountService {
         accountRepo.save(account);
      }
 
+     public List<Account> getAllAccounts() {
+        return accountRepo.findAll();
+     }
+
      public void logIn(String username, String password) {
 
      }
@@ -33,6 +38,6 @@ public class AccountService {
      }
 
      public void updateAccount(String email, String username, String password) {
-        
+
      }
 }

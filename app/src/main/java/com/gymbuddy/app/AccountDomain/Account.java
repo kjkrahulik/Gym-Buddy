@@ -30,10 +30,11 @@ import com.gymbuddy.app.SocialDomain.FriendRequest;
 @Entity
 @Table(name = "accounts")
 @Data
+@NoArgsConstructor
 public class Account {
     /** Holds account ID */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID accountID;
     /** Holds user email */
     private String email;
