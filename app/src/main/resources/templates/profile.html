@@ -13,13 +13,13 @@
 
         <div style="text-align: left; margin-bottom: 32px;">
             <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
-                <div id="avatar" style="width: 60px; height: 60px; background: #c44b1b; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: bold; overflow: hidden; flex-shrink: 0;">
-                    <span id="avatar-initial" th:text="${initial}"></span>
+                <div style="width: 60px; height: 60px; background: #c44b1b; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: bold;">
+                    JD
                 </div>
                 <div>
-                    <h3 style="color: #e9e5dc; margin: 0 0 4px 0;" th:text="${username}"></h3>
-                    <p style="color: #8a867e; margin: 0; font-size: 14px;" th:text="${email}"></p>
-                    <p style="color: #8a867e; margin: 0; font-size: 14px;" th:if="${bio != ''}" th:text="${bio}"></p>
+                    <h3 style="color: #e9e5dc; margin: 0 0 4px 0;">John Doe</h3>
+                    <p style="color: #8a867e; margin: 0; font-size: 14px;">john@example.com</p>
+                    <p style="color: #8a867e; margin: 0; font-size: 14px;">Member since: January 2024</p>
                 </div>
             </div>
 
@@ -51,9 +51,9 @@
                 <button class="cta-button secondary" style="width: 100%; text-align: left; justify-content: flex-start;">
                     <span style="margin-right: 12px;">👥</span> Find Friends
                 </button>
-                <a href="/account-settings" class="cta-button" style="width: 100%; text-align: left; justify-content: flex-start; text-decoration: none; display: flex; align-items: center;">
+                <button class="cta-button secondary" style="width: 100%; text-align: left; justify-content: flex-start;">
                     <span style="margin-right: 12px;">⚙️</span> Account Settings
-                </a>
+                </button>
             </div>
         </div>
 
@@ -75,24 +75,17 @@
         </div>
     </div>
 
-    <script th:inline="javascript">
-        const username = /*[[${username}]]*/ '';
-
+    <script>
+        // Add event listener for Create Workout button
         document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('create-workout-btn').addEventListener('click', function() {
-                alert('Create Workout functionality not implemented yet!');
-            });
+            const createWorkoutBtn = document.getElementById('create-workout-btn');
 
-            // Load profile picture if one exists
-            fetch(`/profile/${encodeURIComponent(username)}/picture`)
-                .then(res => res.ok ? res.text() : '')
-                .then(base64 => {
-                    if (base64 && base64.length > 0) {
-                        const avatar = document.getElementById('avatar');
-                        avatar.innerHTML = `<img src="data:image/jpeg;base64,${base64}" style="width:100%;height:100%;object-fit:cover;" alt="Profile picture">`;
-                    }
-                })
-                .catch(() => {});
+            if (createWorkoutBtn) {
+                createWorkoutBtn.addEventListener('click', function() {
+                    alert('Create Workout functionality not implemented yet!');
+                    // Add your workout creation logic here
+                });
+            }
         });
     </script>
 </body>

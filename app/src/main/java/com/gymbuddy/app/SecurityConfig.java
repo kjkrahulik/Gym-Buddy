@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .requestMatchers("/css/**", "/js/**", "/jsons/**").permitAll()
                 
                 // Protected feature endpoints - require authentication
-                .requestMatchers("/profile", "/profile/**", "/account-settings").authenticated()
+                .requestMatchers("/profile", "/profile/**").authenticated()
                 .requestMatchers("/exercises", "/exercise/**", "/api/exercises/**").authenticated()
                 .requestMatchers("/accounts/**", "/api/**").authenticated()
                 

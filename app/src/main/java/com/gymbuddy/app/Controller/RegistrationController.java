@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.gymbuddy.app.AccountDomain.Account;
 import com.gymbuddy.app.Service.AccountService;
 
-
 @Controller
 public class RegistrationController {
 
@@ -20,7 +19,8 @@ public class RegistrationController {
     }
 
     @GetMapping("/register")
-    public String showRegistrationForm() {
+    public String showRegistrationForm(Model model) {
+        model.addAttribute("account", new Account());
         return "register";
     }
 
@@ -35,8 +35,10 @@ public class RegistrationController {
             Account newAccount = new Account(email, username, password);
             accountService.addAccount(newAccount);
             model.addAttribute("success", "Account created successfully! You can now login.");
+            model.addAttribute("account", new Account()); // Reset form
         } catch (RuntimeException e) {
             model.addAttribute("error", e.getMessage());
+            model.addAttribute("account", new Account(email, username, password));
         }
 
         return "register";
