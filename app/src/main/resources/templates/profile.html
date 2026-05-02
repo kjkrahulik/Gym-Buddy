@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymBuddy - Profile</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+    <div class="container">
+        <h1>Your Profile</h1>
+        <p class="subtitle">Welcome back!</p>
+
+        <div style="text-align: left; margin-bottom: 32px;">
+            <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
+                <div style="width: 60px; height: 60px; background: #c44b1b; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: bold;">
+                    JD
+                </div>
+                <div>
+                    <h3 style="color: #e9e5dc; margin: 0 0 4px 0;">John Doe</h3>
+                    <p style="color: #8a867e; margin: 0; font-size: 14px;">john@example.com</p>
+                    <p style="color: #8a867e; margin: 0; font-size: 14px;">Member since: January 2024</p>
+                </div>
+            </div>
+
+            <div class="stats-container">
+                <div class="stat-box">
+                    <p class="stat-label">Workouts</p>
+                    <p class="stat-value">12</p>
+                </div>
+                <div class="stat-box">
+                    <p class="stat-label">Friends</p>
+                    <p class="stat-value">8</p>
+                </div>
+                <div class="stat-box">
+                    <p class="stat-label">Days Streak</p>
+                    <p class="stat-value">7</p>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 32px;">
+            <h3 style="color: #e9e5dc; margin: 0 0 16px 0; font-size: 18px;">Quick Actions</h3>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <button class="cta-button" id="create-workout-btn" style="width: 100%; text-align: left; justify-content: flex-start;">
+                    <span style="margin-right: 12px;">🏋️</span> Create New Workout
+                </button>
+                <button class="cta-button secondary" style="width: 100%; text-align: left; justify-content: flex-start;">
+                    <span style="margin-right: 12px;">📊</span> View Progress
+                </button>
+                <button class="cta-button secondary" style="width: 100%; text-align: left; justify-content: flex-start;">
+                    <span style="margin-right: 12px;">👥</span> Find Friends
+                </button>
+                <button class="cta-button secondary" style="width: 100%; text-align: left; justify-content: flex-start;">
+                    <span style="margin-right: 12px;">⚙️</span> Account Settings
+                </button>
+            </div>
+        </div>
+
+        <div style="margin-top: 32px; border-top: 1px solid #3d3d3d; padding-top: 24px;">
+            <h3 style="color: #e9e5dc; margin: 0 0 16px 0; font-size: 18px;">Recent Activity</h3>
+            <div style="color: #8a867e; font-size: 14px; line-height: 1.6;">
+                <p>✅ Completed "Leg Day" workout - Yesterday</p>
+                <p>👥 Added friend: Jane Smith - 2 days ago</p>
+                <p>🎯 Set new goal: "Run 5K" - 3 days ago</p>
+                <p>💪 Logged "Chest Press" PR: 225 lbs - 5 days ago</p>
+            </div>
+        </div>
+
+        <div style="margin-top: 32px;">
+            <a th:href="@{/}" class="cta-button secondary" style="text-decoration: none;">Back to Home</a>
+            <form th:action="@{/logout}" method="post" style="display: inline-block; margin-left: 12px;">
+                <button type="submit" class="cta-button">Logout</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Add event listener for Create Workout button
+        document.addEventListener('DOMContentLoaded', function() {
+            const createWorkoutBtn = document.getElementById('create-workout-btn');
+
+            if (createWorkoutBtn) {
+                createWorkoutBtn.addEventListener('click', function() {
+                    alert('Create Workout functionality not implemented yet!');
+                    // Add your workout creation logic here
+                });
+            }
+        });
+    </script>
+</body>
+</html>

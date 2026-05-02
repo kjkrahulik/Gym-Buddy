@@ -20,6 +20,12 @@ import jakarta.persistence.Table;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Transient;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.FetchType;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 // Import notification clsss to store a list of notification on the web app
 import com.gymbuddy.app.SocialDomain.Notification;
 import com.gymbuddy.app.SocialDomain.FriendRequest;
@@ -30,11 +36,12 @@ import com.gymbuddy.app.SocialDomain.FriendRequest;
  */
 @Entity
 @Table(name = "accounts")
+@Data
+@NoArgsConstructor
 public class Account {
     /** Holds account ID */
-   @Id
+    @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "account_id", columnDefinition = "uuid", updatable = false, nullable = false)
     private UUID accountID;
     /** Holds user email */
     @Column(unique = true, nullable = false)
@@ -44,6 +51,12 @@ public class Account {
     private String username;
     /** Holds users password */
     private String password;
+
+    /** User roles for authorization */
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "account_roles", joinColumns = @JoinColumn(name = "account_id"))
+    @Column(name = "role")
+    private List<String> roles = new ArrayList<>();
 
 
     //List of friends of the user
@@ -85,17 +98,13 @@ public class Account {
     @Transient
     private List<Account> friendList;
 
-
-    // Test Constuctor to be deleted
-    public Account() {
-        
-    }
-
-    /** Constructor to create an account 
+    /** Constructor to create an account
      * Automatically give account and accountID
     */
     public Account(String email, String username, String password) {
         setAccountDetails(email, username, password);
+        // Add default role for new users
+        this.roles.add("USER");
     }
 
     private void setAccountDetails(String email, String username, String password){
@@ -106,6 +115,13 @@ public class Account {
         this.email = email;
         this.username = username;
         this.password = password;
+    }
+
+    /** Add a role to the account */
+    public void addRole(String role) {
+        if (!roles.contains(role)) {
+            roles.add(role);
+        }
     }
 
     private void validateAccountEmail(String email){
@@ -189,10 +205,24 @@ public class Account {
         notification.setRecipient(this);
     }
 
-    // public void addFriend(Account friend) {
-    //     if (!friends.contains(friend)) {
-    //         friends.add(friend);
-    //         friend.getFriends().add(this); // ensure bidirectional
-    //     }
-    // }
+    public void addFriend(Account friend) {
+        if (!friends.contains(friend)) {
+            friends.add(friend);
+            friend.getFriends().add(this); // ensure bidirectional
+        }
+
+    }
+    public void addFriendRequest(FriendRequest request) {
+        incomingRequests.add(request);        
+    }
+    public void removeFriendRequest(FriendRequest request) {
+        incomingRequests.remove(request);
+    }
+    public void addSentRequests(FriendRequest request) {
+        sentRequests.add(request);
+    }
+    public void removeSentRequest(FriendRequest request) {
+        sentRequests.remove(request);
+    }
+    
 }

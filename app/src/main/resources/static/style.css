@@ -284,6 +284,43 @@ textarea:disabled {
   content: none;
 }
 
+/* Profile page stats */
+.stats-container {
+  display: flex;
+  gap: 12px;
+  margin: 24px 0;
+}
+
+.stat-box {
+  flex: 1;
+  background: var(--smoke);
+  padding: 16px;
+  border-left: 3px solid var(--rust);
+}
+
+.stat-box:nth-child(2) {
+  border-left-color: var(--amber);
+}
+
+.stat-box:nth-child(3) {
+  border-left-color: var(--steel);
+}
+
+.stat-label {
+  color: var(--chalk-dim);
+  margin: 0;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.stat-value {
+  color: var(--chalk);
+  margin: 8px 0 0 0;
+  font-size: 24px;
+  font-weight: bold;
+}
+
 /* ─── Responsive ────────────────────────────────────────── */
 @media (max-width: 480px) {
   .container { padding: 36px 24px 36px; }

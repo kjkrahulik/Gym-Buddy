@@ -2,17 +2,22 @@ package com.gymbuddy.app.Service;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.gymbuddy.app.AccountDomain.Account;
 import com.gymbuddy.app.AccountDomain.Profile;
 import com.gymbuddy.app.Repositories.AccountRepository;
+import java.util.List;
 @Service
 public class AccountService {
    
     @Autowired
     private AccountRepository accountRepo;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     
     
     public Account searchAccount(String name) {
