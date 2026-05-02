@@ -171,6 +171,63 @@ public class WorkoutSessionController {
         }
     }
 
+    @PostMapping("/{sessionId}/save-as-template")
+    public ResponseEntity<Map<String, Object>> saveSessionAsTemplate(
+            @PathVariable Long sessionId,
+            @RequestBody Map<String, String> request,
+            Principal principal) {
+        try {
+            String username = principal.getName();
+            Account account = accountService.searchAccount(username);
+
+            if (account == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+
+            WorkoutSession session = workoutSessionRepository.findById(sessionId)
+                    .orElseThrow(() -> new IllegalArgumentException("Workout session not found"));
+
+            if (!session.getAccount().equals(account)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
+            String templateName = request.get("templateName");
+            if (templateName == null || templateName.trim().isEmpty()) {
+                templateName = generateUniqueTemplateName();
+            }
+
+            String notes = request.getOrDefault("notes", "");
+
+            WorkoutTemplate template = new WorkoutTemplate(templateName, notes);
+            session.getExercises().forEach((order, exercise) -> template.addExercise(exercise));
+            WorkoutTemplate saved = workoutTemplateRepository.save(template);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("templateId", saved.getListID());
+            response.put("templateName", saved.getListName());
+            response.put("message", "Workout saved as template successfully");
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Failed to save workout as template: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        }
+    }
+
+    private String generateUniqueTemplateName() {
+        int counter = 1;
+        String templateName;
+        while (true) {
+            templateName = "Workout Template #" + counter;
+            if (workoutTemplateRepository.findByListName(templateName).isEmpty()) {
+                return templateName;
+            }
+            counter++;
+        }
+    }
+
     @GetMapping("/{sessionId}")
     public ResponseEntity<WorkoutSessionDTO> getWorkout(
             @PathVariable Long sessionId,

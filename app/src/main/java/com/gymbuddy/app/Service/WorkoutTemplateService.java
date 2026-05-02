@@ -759,4 +759,18 @@ public class WorkoutTemplateService {
         Exercise exercise = new Exercise(null, name, muscleGroup, "");
         template.addExercise(exercise);
     }
+
+    public WorkoutTemplate createTemplateFromSession(String templateName, String notes, com.gymbuddy.app.WorkoutDomain.Workout.WorkoutSession session) {
+        Optional<WorkoutTemplate> existingTemplate = workoutTemplateRepository.findByListName(templateName);
+        if (existingTemplate.isPresent()) {
+            throw new IllegalArgumentException("Workout template with name '" + templateName + "' already exists");
+        }
+
+        WorkoutTemplate template = new WorkoutTemplate(templateName, notes);
+
+        // Copy exercises from session (no sets)
+        session.getExercises().forEach((order, exercise) -> template.addExercise(exercise));
+
+        return workoutTemplateRepository.save(template);
+    }
 }
