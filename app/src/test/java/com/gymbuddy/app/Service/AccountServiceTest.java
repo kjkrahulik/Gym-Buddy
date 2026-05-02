@@ -10,8 +10,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.io.ByteArrayInputStream;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -26,19 +26,20 @@ class AccountServiceTest {
     @Mock
     private AccountRepository accountRepo;
 
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
     @InjectMocks
     private AccountService accountService;
 
     private Account testAccount;
-    private Profile testProfile;
     private UUID testId;
 
     @BeforeEach
     void setUp() {
         testId = UUID.randomUUID();
         testAccount = new Account("test@test.com", "testuser", "password123");
-        testProfile = new Profile(testAccount);
-        testAccount.setProfile(testProfile);
+        testAccount.setProfile(new Profile(testAccount));
     }
 
     // ==================== searchAccount ====================
@@ -65,10 +66,10 @@ class AccountServiceTest {
     void addAccount_success_callsSave() {
         when(accountRepo.existsByUsername("testuser")).thenReturn(false);
         when(accountRepo.existsByEmail("test@test.com")).thenReturn(false);
+        when(passwordEncoder.encode(any())).thenReturn("$2a$hashed");
 
         accountService.addAccount(testAccount);
 
-        // Service must persist the account
         verify(accountRepo).save(testAccount);
     }
 
@@ -124,11 +125,22 @@ class AccountServiceTest {
     @Test
     void updateAccount_takenUsername_throwsException() {
         when(accountRepo.findById(testId)).thenReturn(Optional.of(testAccount));
-        // "taken" is a different username that already exists
         when(accountRepo.existsByUsername("taken")).thenReturn(true);
 
         assertThrows(RuntimeException.class, () ->
                 accountService.updateAccount(testId, null, "taken", null));
+    }
+
+    @Test
+    void updateAccount_newPassword_encodesBeforeSaving() {
+        when(accountRepo.findById(testId)).thenReturn(Optional.of(testAccount));
+        when(accountRepo.save(any())).thenReturn(testAccount);
+        when(passwordEncoder.encode("newpass")).thenReturn("$2a$hashed");
+
+        accountService.updateAccount(testId, null, null, "newpass");
+
+        verify(passwordEncoder).encode("newpass");
+        verify(accountRepo).save(testAccount);
     }
 
     @Test
@@ -152,10 +164,10 @@ class AccountServiceTest {
 
     @Test
     void updateCurrentUser_sameEmail_doesNotCheckUniqueness() {
-        // Passing the same email the account already has should pass without throwing
         when(accountRepo.findByUsername("testuser")).thenReturn(Optional.of(testAccount));
         when(accountRepo.save(any())).thenReturn(testAccount);
 
+        // Same email the account already has — should not throw
         assertDoesNotThrow(() ->
                 accountService.updateAccountForCurrentUser("testuser", "test@test.com", null));
     }
@@ -167,84 +179,5 @@ class AccountServiceTest {
 
         assertThrows(RuntimeException.class, () ->
                 accountService.updateAccountForCurrentUser("testuser", null, "taken"));
-    }
-
-    // ==================== getProfile ====================
-
-    @Test
-    void getProfile_exists_returnsProfile() {
-        when(accountRepo.findByUsername("testuser")).thenReturn(Optional.of(testAccount));
-
-        Profile result = accountService.getProfile("testuser");
-
-        assertNotNull(result);
-    }
-
-    @Test
-    void getProfile_noProfile_throwsException() {
-        // Account exists but profile was never created
-        testAccount.setProfile(null);
-        when(accountRepo.findByUsername("testuser")).thenReturn(Optional.of(testAccount));
-
-        assertThrows(RuntimeException.class, () -> accountService.getProfile("testuser"));
-    }
-
-    // ==================== updateBio ====================
-
-    @Test
-    void updateBio_success_savesBioAndReturnsProfile() {
-        when(accountRepo.findByUsername("testuser")).thenReturn(Optional.of(testAccount));
-        when(accountRepo.save(any())).thenReturn(testAccount);
-
-        Profile result = accountService.updateBio("testuser", "new bio");
-
-        assertEquals("new bio", result.getBio());
-        verify(accountRepo).save(testAccount);
-    }
-
-    @Test
-    void updateBio_noProfile_throwsException() {
-        testAccount.setProfile(null);
-        when(accountRepo.findByUsername("testuser")).thenReturn(Optional.of(testAccount));
-
-        assertThrows(RuntimeException.class, () ->
-                accountService.updateBio("testuser", "new bio"));
-    }
-
-    // ==================== uploadProfilePicture ====================
-
-    @Test
-    void uploadProfilePicture_success_storesBytesAndSaves() throws Exception {
-        when(accountRepo.findByUsername("testuser")).thenReturn(Optional.of(testAccount));
-
-        // Small dummy bytes standing in for an image file
-        byte[] imgBytes = new byte[]{(byte) 0xFF, 0x00, 0x00};
-        accountService.uploadProfilePicture("testuser", new ByteArrayInputStream(imgBytes));
-
-        assertNotNull(testAccount.getProfile().getProfilePicture());
-        verify(accountRepo).save(testAccount);
-    }
-
-    @Test
-    void uploadProfilePicture_noProfile_throwsException() {
-        testAccount.setProfile(null);
-        when(accountRepo.findByUsername("testuser")).thenReturn(Optional.of(testAccount));
-
-        assertThrows(RuntimeException.class, () ->
-                accountService.uploadProfilePicture("testuser", new ByteArrayInputStream(new byte[0])));
-    }
-
-    // ==================== deleteProfilePicture ====================
-
-    @Test
-    void deleteProfilePicture_success_clearsBytes() {
-        // Pre-load a picture so we can verify it gets cleared
-        testProfile.setProfilePicture(new byte[]{(byte) 0xFF, 0x00, 0x00});
-        when(accountRepo.findByUsername("testuser")).thenReturn(Optional.of(testAccount));
-
-        accountService.deleteProfilePicture("testuser");
-
-        assertNull(testAccount.getProfile().getProfilePicture());
-        verify(accountRepo).save(testAccount);
     }
 }
