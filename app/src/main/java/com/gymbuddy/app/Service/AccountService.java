@@ -42,6 +42,9 @@ public class AccountService {
             throw new RuntimeException("Email already exists");
         }
 
+        // Hash the password before persisting
+        account.setPassword(passwordEncoder.encode(account.getPassword()));
+
         Profile profile = new Profile();
         profile.setAccount(account);
         account.setProfile(profile);
@@ -70,7 +73,7 @@ public class AccountService {
         }
 
        if (newPassword != null && !newPassword.isBlank()) {
-         account.setPassword(newPassword); // later: hash this
+         account.setPassword(passwordEncoder.encode(newPassword));
        }
 
       return accountRepo.save(account);
