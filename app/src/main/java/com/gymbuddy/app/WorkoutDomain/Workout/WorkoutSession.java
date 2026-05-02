@@ -1,15 +1,18 @@
 package com.gymbuddy.app.WorkoutDomain.Workout;
- 
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.gymbuddy.app.AccountDomain.Account;
 import com.gymbuddy.app.WorkoutDomain.Exercise.Set;
 import com.gymbuddy.app.WorkoutDomain.Exercise.WeightedSet;
 import jakarta.persistence.*;
 import lombok.*;
- 
+
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
- 
+
 @Entity
 @Table(name = "workout_sessions")
 @Data
@@ -26,7 +29,18 @@ public class WorkoutSession extends WorkoutList implements WorkoutSessionSet {
 
     @Column(name = "end_time")
     private LocalTime endTime;
- 
+
+    @Column(name = "session_date")
+    private LocalDateTime sessionDate;
+
+    @Column(name = "notes", columnDefinition = "TEXT")
+    private String notes;
+
+    @ManyToOne
+    @JoinColumn(name = "account_id")
+    @JsonIgnore
+    private Account account;
+
     /**
      * Flat list of all sets in this session.
      * Each Set carries its own exerciseOrder so you always know

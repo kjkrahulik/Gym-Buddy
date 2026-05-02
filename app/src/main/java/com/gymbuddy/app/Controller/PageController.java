@@ -96,6 +96,11 @@ public class PageController {
         return "workout-session";
     }
 
+    @GetMapping("/view-workouts")
+    public String viewWorkoutsPage() {
+        return "view-workouts";
+    }
+
     @GetMapping("/leaderboard")
     public String leaderboardPage() {
         return "leaderboard";

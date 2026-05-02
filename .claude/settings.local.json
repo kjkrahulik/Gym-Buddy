@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "Bash(mvn compile:*)",
-      "Bash(mvn test *)"
+      "Bash(mvn test *)",
+      "Bash(mvn clean *)",
+      "Bash(rm app.log)",
+      "Bash(java -jar target/app-0.0.1-SNAPSHOT.jar)"
     ]
   }
 }

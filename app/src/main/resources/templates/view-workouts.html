@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymBuddy - Workout History</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        body {
+            align-items: flex-start;
+            padding: 0;
+        }
+
+        .workout-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--concrete);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .session-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--steel);
+            background: var(--iron);
+        }
+
+        .session-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--chalk);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        .workouts-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .workout-card {
+            background: var(--smoke);
+            border: 1px solid var(--steel);
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .workout-card:hover {
+            background: var(--iron);
+            border-color: var(--rust);
+        }
+
+        .workout-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .workout-card-title {
+            color: var(--chalk);
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .workout-card-date {
+            color: var(--chalk-dim);
+            font-size: 12px;
+        }
+
+        .workout-card-stats {
+            display: flex;
+            gap: 24px;
+            font-size: 13px;
+            color: var(--chalk-dim);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--chalk-dim);
+        }
+
+        .footer {
+            display: flex;
+            justify-content: flex-start;
+            padding: 24px;
+            border-top: 1px solid var(--steel);
+            background: var(--iron);
+        }
+
+        .cta-button {
+            padding: 12px 24px;
+            background: var(--rust);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .cta-button:hover {
+            background: var(--rust-hot);
+        }
+
+        .cta-button.secondary {
+            background: transparent;
+            color: var(--chalk-dim);
+            border: 1px solid var(--steel);
+        }
+
+        .cta-button.secondary:hover {
+            background: var(--iron);
+            border-color: var(--chalk-dim);
+            color: var(--chalk);
+        }
+
+        /* Workout Details Modal */
+        .workout-details-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .workout-details-modal.hidden {
+            display: none;
+        }
+
+        .workout-details-content {
+            background: var(--concrete);
+            max-height: 90vh;
+            overflow-y: auto;
+            width: 90%;
+            max-width: 900px;
+            border: 1px solid var(--steel);
+        }
+
+        .details-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--steel);
+            background: var(--iron);
+        }
+
+        .details-header h2 {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--chalk);
+            margin: 0 0 8px 0;
+            font-family: 'Barlow Condensed', sans-serif;
+        }
+
+        .details-meta {
+            display: flex;
+            gap: 32px;
+            font-size: 13px;
+            color: var(--chalk-dim);
+        }
+
+        .details-body {
+            padding: 24px;
+        }
+
+        .details-section {
+            margin-bottom: 32px;
+        }
+
+        .details-section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--chalk);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--steel);
+            padding-bottom: 8px;
+        }
+
+        .exercise-block {
+            background: var(--smoke);
+            border: 1px solid var(--steel);
+            margin-bottom: 16px;
+        }
+
+        .exercise-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background: var(--smoke);
+            border-bottom: 1px solid var(--steel);
+        }
+
+        .exercise-info {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex: 1;
+        }
+
+        .exercise-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--chalk);
+        }
+
+        .exercise-muscle {
+            font-size: 12px;
+            color: var(--chalk-dim);
+        }
+
+        .sets-container {
+            padding: 16px;
+        }
+
+        .sets-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .sets-table th {
+            text-align: left;
+            padding: 8px 0;
+            color: var(--chalk-dim);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--steel);
+        }
+
+        .sets-table td {
+            padding: 12px 8px;
+            border-bottom: 1px solid var(--steel);
+            color: var(--chalk);
+        }
+
+        .notes-section {
+            background: var(--smoke);
+            border: 1px solid var(--steel);
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .notes-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--chalk-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .notes-content {
+            color: var(--chalk);
+            font-size: 14px;
+            line-height: 1.5;
+            font-family: 'Barlow', sans-serif;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .details-footer {
+            display: flex;
+            justify-content: flex-end;
+            padding: 24px;
+            border-top: 1px solid var(--steel);
+            background: var(--iron);
+            gap: 12px;
+        }
+
+        .modal-btn {
+            padding: 12px 24px;
+            border: none;
+            cursor: pointer;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .modal-btn-primary {
+            background: var(--rust);
+            color: white;
+        }
+
+        .modal-btn-primary:hover {
+            background: var(--rust-hot);
+        }
+
+        .modal-btn-secondary {
+            background: transparent;
+            color: var(--chalk-dim);
+            border: 1px solid var(--steel);
+        }
+
+        .modal-btn-secondary:hover {
+            background: var(--iron);
+            border-color: var(--chalk-dim);
+            color: var(--chalk);
+        }
+
+        .no-notes {
+            color: var(--chalk-dim);
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="workout-container">
+        <!-- Header -->
+        <div class="session-header">
+            <div class="session-name">Workout History</div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="workouts-list" id="workoutsList">
+                <div class="empty-state">
+                    <p>No workouts yet. Start your first workout to see it here!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <a href="/profile" class="cta-button secondary">Back to Profile</a>
+        </div>
+    </div>
+
+    <!-- Workout Details Modal -->
+    <div class="workout-details-modal hidden" id="workoutDetailsModal">
+        <div class="workout-details-content">
+            <div class="details-header">
+                <h2 id="detailsTitle">Workout Session</h2>
+                <div class="details-meta">
+                    <div>
+                        <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">Date</div>
+                        <div id="detailsDate" style="color: var(--chalk); font-weight: 500;"></div>
+                    </div>
+                    <div>
+                        <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">Duration</div>
+                        <div id="detailsDuration" style="color: var(--chalk); font-weight: 500;"></div>
+                    </div>
+                    <div>
+                        <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">Volume</div>
+                        <div id="detailsVolume" style="color: var(--chalk); font-weight: 500;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="details-body">
+                <!-- Notes Section -->
+                <div class="details-section" id="notesSection">
+                    <div class="notes-section">
+                        <div class="notes-label">Notes</div>
+                        <div class="notes-content" id="workoutNotesDisplay"></div>
+                    </div>
+                </div>
+
+                <!-- Exercises Section -->
+                <div class="details-section">
+                    <div class="details-section-title">Exercises</div>
+                    <div id="exercisesDetailsContainer"></div>
+                </div>
+            </div>
+
+            <div class="details-footer">
+                <button class="modal-btn modal-btn-secondary" id="closeDetailsBtn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allWorkouts = [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadWorkouts();
+        });
+
+        async function loadWorkouts() {
+            try {
+                const response = await fetch('/api/workouts');
+                if (!response.ok) {
+                    throw new Error('Failed to load workouts');
+                }
+                allWorkouts = await response.json();
+                renderWorkouts();
+            } catch (error) {
+                console.error('Error loading workouts:', error);
+            }
+        }
+
+        function renderWorkouts() {
+            const list = document.getElementById('workoutsList');
+
+            if (allWorkouts.length === 0) {
+                list.innerHTML = '<div class="empty-state"><p>No workouts yet. Start your first workout to see it here!</p></div>';
+                return;
+            }
+
+            list.innerHTML = allWorkouts.map(workout => `
+                <div class="workout-card" onclick="showWorkoutDetails(${workout.sessionID})">
+                    <div class="workout-card-header">
+                        <div>
+                            <div class="workout-card-title">${workout.sessionName}</div>
+                            <div class="workout-card-date">${new Date(workout.sessionDate).toLocaleDateString()}</div>
+                        </div>
+                    </div>
+                    <div class="workout-card-stats">
+                        <div><strong>${workout.exerciseCount || 0}</strong> exercises</div>
+                        <div><strong>${workout.totalSets || 0}</strong> sets</div>
+                        <div><strong>${workout.totalVolume || 0}</strong> lbs</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showWorkoutDetails(sessionID) {
+            const workout = allWorkouts.find(w => w.sessionID === sessionID);
+            if (!workout) return;
+
+            document.getElementById('detailsTitle').textContent = workout.sessionName;
+            document.getElementById('detailsDate').textContent = new Date(workout.sessionDate).toLocaleDateString();
+            document.getElementById('detailsDuration').textContent = formatDuration(workout.duration);
+            document.getElementById('detailsVolume').textContent = (workout.totalVolume || 0) + ' lbs';
+
+            // Display notes
+            const notesDisplay = document.getElementById('workoutNotesDisplay');
+            if (workout.notes && workout.notes.trim()) {
+                notesDisplay.textContent = workout.notes;
+                notesDisplay.classList.remove('no-notes');
+            } else {
+                notesDisplay.textContent = 'No notes added';
+                notesDisplay.classList.add('no-notes');
+            }
+
+            // Display exercises
+            const exercisesContainer = document.getElementById('exercisesDetailsContainer');
+            if (workout.exercises && workout.exercises.length > 0) {
+                exercisesContainer.innerHTML = workout.exercises.map(exercise => `
+                    <div class="exercise-block">
+                        <div class="exercise-header">
+                            <div class="exercise-info">
+                                <div>
+                                    <div class="exercise-name">${exercise.exerciseName}</div>
+                                    <div class="exercise-muscle">${exercise.muscleGroup}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sets-container">
+                            ${renderSetTable(exercise)}
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                exercisesContainer.innerHTML = '<div class="empty-state"><p>No exercises recorded</p></div>';
+            }
+
+            document.getElementById('workoutDetailsModal').classList.remove('hidden');
+        }
+
+        function renderSetTable(exercise) {
+            if (!exercise.sets || exercise.sets.length === 0) {
+                return '<p style="color: var(--chalk-dim); font-size: 13px;">No sets recorded</p>';
+            }
+
+            const isTimed = exercise.sets[0].type === 'TIMED';
+
+            if (isTimed) {
+                return `
+                    <table class="sets-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Duration (sec)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${exercise.sets.map((set, idx) => `
+                                <tr>
+                                    <td>${idx + 1}</td>
+                                    <td>${set.duration || '-'}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } else {
+                return `
+                    <table class="sets-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Weight (lbs)</th>
+                                <th>Reps</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${exercise.sets.map((set, idx) => `
+                                <tr>
+                                    <td>${idx + 1}</td>
+                                    <td>${set.weight || '-'}</td>
+                                    <td>${set.reps || '-'}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            }
+        }
+
+        function formatDuration(seconds) {
+            if (!seconds) return '0m';
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            if (minutes === 0) return remainingSeconds + 's';
+            if (remainingSeconds === 0) return minutes + 'm';
+            return minutes + 'm ' + remainingSeconds + 's';
+        }
+
+        // Close modal
+        document.getElementById('closeDetailsBtn').addEventListener('click', () => {
+            document.getElementById('workoutDetailsModal').classList.add('hidden');
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('workoutDetailsModal').addEventListener('click', (e) => {
+            if (e.target.id === 'workoutDetailsModal') {
+                document.getElementById('workoutDetailsModal').classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
