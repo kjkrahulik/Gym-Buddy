@@ -1,6 +1,7 @@
 package com.gymbuddy.app.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,12 +41,20 @@ public class AccountController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createAccount(@RequestBody Account account) {
+    public ResponseEntity<?> createAccount(@RequestBody Account account) {
         try {
             accountService.addAccount(account);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Account created successfully");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to create account: " + e.getMessage());
+            return ResponseEntity.ok("Account created");
+
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body("Username already exists");
+
+        } catch (RuntimeException e) {
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body(e.getMessage());
         }
     }
 

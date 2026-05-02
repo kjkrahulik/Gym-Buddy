@@ -226,23 +226,20 @@ document.addEventListener('DOMContentLoaded', function() {
                         },
                         body: JSON.stringify(accountData)
                     })
-                    .then(response => {
+                    .then(async response => {
+                        const text = await response.text();
+
                         if (!response.ok) {
-                            throw new Error(`HTTP error! status: ${response.status}`);
+                            throw new Error(text); // <-- THIS is key
                         }
-                        return response.text();
+
+                        return text;
                     })
                     .then(data => {
-                        console.log('Account created:', data);
-
-                        // Show success message and hide form
                         accountForm.style.display = 'none';
                         successMessage.style.display = 'block';
-
-                        // Clear form
                         accountForm.reset();
 
-                        // Close modal after 2 seconds
                         setTimeout(() => {
                             modal.remove();
                             alert('Account created successfully!');
@@ -250,7 +247,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        alert('Failed to create account: ' + error.message);
+                        alert(error.message); // now shows "Username already exists"
                     });
                 });
             }

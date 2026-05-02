@@ -15,6 +15,10 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.FetchType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -42,6 +46,12 @@ public class Account {
     private String username;
     /** Holds users password */
     private String password;
+
+    /** User roles for authorization */
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "account_roles", joinColumns = @JoinColumn(name = "account_id"))
+    @Column(name = "role")
+    private List<String> roles = new ArrayList<>();
 
 
     //List of friends of the user
@@ -78,11 +88,13 @@ public class Account {
 
 
 
-    /** Constructor to create an account 
+    /** Constructor to create an account
      * Automatically give account and accountID
     */
     public Account(String email, String username, String password) {
         setAccountDetails(email, username, password);
+        // Add default role for new users
+        this.roles.add("USER");
     }
 
     private void setAccountDetails(String email, String username, String password){
@@ -93,6 +105,13 @@ public class Account {
         this.email = email;
         this.username = username;
         this.password = password;
+    }
+
+    /** Add a role to the account */
+    public void addRole(String role) {
+        if (!roles.contains(role)) {
+            roles.add(role);
+        }
     }
 
     private void validateAccountEmail(String email){
