@@ -14,13 +14,13 @@ public class AccountLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        AccountTest user = new AccountTest();
+        /*AccountTest user = new AccountTest();
         user.setUsername("dan");
         user.setPassword("securepassword");
         user.setEmail("dan@example.com");
 
         accountTestRepository.save(user);
 
-        System.out.println("Saved user: " + user);
+        System.out.println("Saved user: " + user);*/
     }
 }
