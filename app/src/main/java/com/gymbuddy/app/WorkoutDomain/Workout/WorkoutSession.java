@@ -17,10 +17,13 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class WorkoutSession extends WorkoutList implements WorkoutSessionSet {
- 
+
+    @Column(name = "session_name")
+    private String sessionName;
+
     @Column(name = "start_time")
     private LocalTime startTime;
- 
+
     @Column(name = "end_time")
     private LocalTime endTime;
  

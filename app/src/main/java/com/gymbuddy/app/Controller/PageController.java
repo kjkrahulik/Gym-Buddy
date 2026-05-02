@@ -91,6 +91,11 @@ public class PageController {
         return "create-workout-template";
     }
 
+    @GetMapping("/workout-session")
+    public String workoutSessionPage() {
+        return "workout-session";
+    }
+
     @GetMapping("/leaderboard")
     public String leaderboardPage() {
         return "leaderboard";
