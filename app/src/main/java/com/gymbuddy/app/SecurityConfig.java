@@ -8,6 +8,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.access.AccessDeniedHandler;
+//import org.springframework.security.web.authentication.AuthenticationEntryPoint;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
@@ -18,14 +24,16 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(auth -> auth
                 // Most specific rules first
-                // Profile page requires authentication
-                .requestMatchers("/profile").authenticated()
-                // API endpoints require authentication
-                .requestMatchers("/api/**", "/exercises", "/exercise/**").authenticated()
-                // Allow access to registration page and endpoint
-                .requestMatchers("/register", "/login", "/api/account/register").permitAll()
-                // Allow access to static resources and home page
-                .requestMatchers("/", "/index.html", "/style.css", "/script.js", "/jsons/**", "/static/**").permitAll()
+                // Public endpoints - accessible without authentication
+                .requestMatchers("/", "/pages/**", "/login", "/register", "/api/account/register").permitAll()
+                // Static resources - CSS, JS, JSON files
+                .requestMatchers("/css/**", "/js/**", "/jsons/**").permitAll()
+                
+                // Protected feature endpoints - require authentication
+                .requestMatchers("/profile", "/profile/**").authenticated()
+                .requestMatchers("/exercises", "/exercise/**", "/api/exercises/**").authenticated()
+                .requestMatchers("/accounts/**", "/api/**").authenticated()
+                
                 // All other requests require authentication
                 .anyRequest().authenticated()
             )
@@ -39,6 +47,16 @@ public class SecurityConfig {
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                 .logoutSuccessUrl("/")
                 .permitAll()
+            )
+            .exceptionHandling(exceptionHandling -> exceptionHandling
+                // Redirect to login when access is denied
+                .authenticationEntryPoint((request, response, authException) -> {
+                    response.sendRedirect("/login");
+                })
+                // Redirect to login for access denied (when user is authenticated but lacks permissions)
+                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                    response.sendRedirect("/login");
+                })
             )
             .csrf(csrf -> csrf.disable())
             .httpBasic(basic -> basic.disable()); // Disable HTTP Basic authentication
