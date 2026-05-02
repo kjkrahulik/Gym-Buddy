@@ -66,6 +66,31 @@ public class PageController {
         return "profile";
     }
 
+    @GetMapping("/profile-friend-list")
+    public String profileFriendListPage(Principal principal, Model model) {
+        String username = principal.getName();
+        Account account = accountService.searchAccount(username);
+
+        model.addAttribute("friends", account.getFriends());
+
+        return "profile-friend-list";
+    }
+
+    @GetMapping("/profile-invitations")
+    public String profileInvitationsPage(Principal principal, Model model) {
+        String username = principal.getName();
+        Account account = accountService.searchAccount(username);
+
+        model.addAttribute("invitations", account.getIncomingRequests()); 
+        // temporary placeholder if you don't have InvitationService yet
+
+        return "profile-invitations";
+    }
+
+
+
+    
+
     @GetMapping("/account-settings")
     public String accountSettingsPage(Principal principal, Model model) {
         String username = principal.getName();
