@@ -1,60 +1,30 @@
 package com.gymbuddy.app.WorkoutDomain.Workout;
-import java.util.ArrayList;
 
-import com.gymbuddy.app.WorkoutDomain.Exercise.Exercise;
-import com.gymbuddy.app.WorkoutDomain.Exercise.WorkoutExercise;
 import jakarta.persistence.*;
 import lombok.*;
+
+/**
+ * A reusable workout plan — a named list of exercises without any set data.
+ *
+ * WorkoutTemplate inherits all exercise management from AbstractWorkoutList.
+ * Templates can be used as the basis for creating WorkoutSessions.
+ */
 @Entity
 @Table(name = "workout_templates")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class WorkoutTemplate {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long workoutTemplateID;
-    private String workoutName;
-    private String workoutDescription;
-    private ArrayList<WorkoutExercise> exercises;
-    private int exerciseCount;
+@EqualsAndHashCode(callSuper = true)
+public class WorkoutTemplate extends WorkoutList {
 
-    /*public WorkoutTemplate(String workoutName, String workoutDescription) {
-        this.workoutName = workoutName;
-        this.workoutDescription = workoutDescription;
-        this.exercises = new ArrayList<WorkoutExercise>(5); // Initial capacity for 5 exercises
-        this.exerciseCount = 0;
-    }
+    // listName and notes from AbstractWorkoutList cover workoutName / workoutDescription.
+    // Add template-specific fields here as the domain grows, e.g.:
 
-    public void addExercise(Exercise exercise, boolean isWeighted) {
-        WorkoutExercise workoutExercise;
-        if (isWeighted) {
-            workoutExercise = new WeightedExercise(exercise, exerciseCount);
-        } else {
-            workoutExercise = new TimedExercise(exercise, exerciseCount); // Default duration of 0 seconds
-        }
-        exercises.add(workoutExercise);
-        exerciseCount++;
-    }
+    /** Optional difficulty rating for the template (1–5). */
+    @Column(name = "difficulty_rating")
+    private Integer difficultyRating;
 
-    public boolean deleteExercise(WorkoutExercise exercise) {
-        if (exercises.remove(exercise)) {
-            exerciseCount--;
-            return true;
-        } else {
-            return false; // Exercise not found in the list
-        }
-    }
-
-    public String getWorkoutName() {
-        return workoutName;
-    }
-
-    public String getWorkoutDescription() {
-        return workoutDescription;
-    }
-
-    public ArrayList<WorkoutExercise> getExercises() {
-        return exercises;
-    } */
+    /** Estimated duration in minutes for planning purposes. */
+    @Column(name = "estimated_duration_minutes")
+    private Integer estimatedDurationMinutes;
 }
