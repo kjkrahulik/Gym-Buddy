@@ -7,8 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.gymbuddy.app.AccountDomain.Account;
+import com.gymbuddy.app.AccountDomain.Profile;
 import com.gymbuddy.app.Service.AccountService;
 
 
@@ -29,7 +31,7 @@ public class AccountController {
 
     // CREATE account
     @PostMapping
-    public ResponseEntity<String> createAccount(@RequestBody Account account) {
+    public ResponseEntity<String> addAccount(@RequestBody Account account) {
         accountService.addAccount(account);
         return ResponseEntity.status(HttpStatus.CREATED).body("Account created Successfully");
     }
@@ -64,31 +66,39 @@ public class AccountController {
         return ResponseEntity.ok(updated);
     }
     
+    // ==================== Profile Endpoints ====================
+
+    // GET profile by username
+    @GetMapping("/me/{username}/profile")
+    public ResponseEntity<Profile> getProfile(@PathVariable String username) {
+        return ResponseEntity.ok(accountService.getProfile(username));
+    }
+
+    // UPDATE bio
+    @PutMapping("/me/{username}/profile/bio")
+    public ResponseEntity<Profile> updateBio(
+            @PathVariable String username,
+            @RequestParam String bio
+    ) {
+        return ResponseEntity.ok(accountService.updateBio(username, bio));
+    }
+
     // ==================== Profile Picture Endpoints ====================
 
-    /**
-     * Upload profile picture for current user (multipart file upload)
-     */
-    @PostMapping("/me/{username}/picture")
+    @PostMapping("/me/{username}/profile/picture")
     public ResponseEntity<String> uploadProfilePicture(
             @PathVariable String username,
-            @RequestParam("file") java.io.File imageFile
+            @RequestParam("file") MultipartFile imageFile
     ) {
         try {
-            // Convert multipart file to InputStream
-            java.io.FileInputStream fis = new java.io.FileInputStream(imageFile);
-            accountService.uploadProfilePicture(username, fis);
-            fis.close();
+            accountService.uploadProfilePicture(username, imageFile.getInputStream());
             return ResponseEntity.ok("Profile picture uploaded successfully for: " + username);
         } catch (Exception e) {
             throw new RuntimeException("Error uploading profile picture: " + e.getMessage(), e);
         }
     }
 
-    /**
-     * Upload profile picture from Base64 string (for JSON API)
-     */
-    @PostMapping("/me/{username}/picture/base64")
+    @PostMapping("/me/{username}/profile/picture/base64")
     public ResponseEntity<String> uploadProfilePictureBase64(
             @PathVariable String username,
             @RequestParam("base64") String base64Image
@@ -97,10 +107,7 @@ public class AccountController {
         return ResponseEntity.ok("Profile picture updated successfully for: " + username);
     }
 
-    /**
-     * Get profile picture as Base64 string (for JSON API response)
-     */
-    @GetMapping("/me/{username}/picture/base64")
+    @GetMapping("/me/{username}/profile/picture/base64")
     public ResponseEntity<String> getProfilePictureBase64(
             @PathVariable String username
     ) {
@@ -112,10 +119,7 @@ public class AccountController {
         }
     }
 
-    /**
-     * Delete profile picture for current user
-     */
-    @DeleteMapping("/me/{username}/picture")
+    @DeleteMapping("/me/{username}/profile/picture")
     public ResponseEntity<String> deleteProfilePicture(
             @PathVariable String username
     ) {

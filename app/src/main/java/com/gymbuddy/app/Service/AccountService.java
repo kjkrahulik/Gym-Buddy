@@ -1,10 +1,9 @@
 package com.gymbuddy.app.Service;
 import java.util.UUID;
 
-import javax.management.RuntimeErrorException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.gymbuddy.app.AccountDomain.Account;
 import com.gymbuddy.app.AccountDomain.Profile;
@@ -28,13 +27,23 @@ public class AccountService {
         accountRepo.deleteById(accountID);
      }
 
+     @Transactional
      public void addAccount(Account account) {
+        if (accountRepo.existsByUsername(account.getUsername())) {
+            throw new RuntimeException("Username already exists");
+        }
+
+        if (accountRepo.existsByEmail(account.getEmail())) {
+            throw new RuntimeException("Email already exists");
+        }
+
+        Profile profile = new Profile();
+        profile.setAccount(account);
+        account.setProfile(profile);
+
         accountRepo.save(account);
-     }
+    }
 
-     public void logIn(String username, String password) {
-
-     }
 
 
      // This is a how a developer or admin would update an account
@@ -69,21 +78,42 @@ public class AccountService {
         -> new RuntimeException("Account not found"));
 
         if(newEmail != null && !newEmail.isBlank()) {
-         account.setEmail(newEmail);
+            if(!account.getEmail().equals(newEmail) && accountRepo.existsByEmail(newEmail)) {
+                throw new RuntimeException("Email already taken");
+            }
+            account.setEmail(newEmail);
         }
 
-         if(newUsername != null && !newUsername.isBlank()) {
-            // checks the uniqueness of the username if changing
-            if(!currentUsername.equals(newUsername) && accountRepo.findByUsername(newUsername).isPresent()) {
-               throw new RuntimeException("Username already taken");
+        if(newUsername != null && !newUsername.isBlank()) {
+            if(!currentUsername.equals(newUsername) && accountRepo.existsByUsername(newUsername)) {
+                throw new RuntimeException("Username already taken");
             }
-
             account.setUsername(newUsername);
         }
         return accountRepo.save(account);
 
      }
      
+     public Profile getProfile(String username) {
+        Account account = accountRepo.findByUsername(username).orElseThrow(()
+            -> new RuntimeException("Account not found"));
+        if (account.getProfile() == null) {
+            throw new RuntimeException("Profile not found");
+        }
+        return account.getProfile();
+    }
+
+    public Profile updateBio(String username, String bio) {
+        Account account = accountRepo.findByUsername(username).orElseThrow(()
+            -> new RuntimeException("Account not found"));
+        if (account.getProfile() == null) {
+            throw new RuntimeException("Profile not found");
+        }
+        account.getProfile().setBio(bio);
+        accountRepo.save(account);
+        return account.getProfile();
+    }
+
      // ==================== Profile Picture Methods (BLOB Storage) ====================
 
     /**
@@ -103,13 +133,7 @@ public class AccountService {
         
         // Read InputStream into byte array
         try {
-            java.io.ByteArrayOutputStream buffer = new java.io.ByteArrayOutputStream();
-            java.io.InputStream is = inputStream;
-            int n;
-            while ((n = is.read()) != -1) {
-                buffer.write(n);
-            }
-            profile.setProfilePicture(buffer.toByteArray());
+            profile.setProfilePicture(inputStream.readAllBytes());
         } catch (Exception e) {
             throw new RuntimeException("Error reading image: " + e.getMessage(), e);
         }

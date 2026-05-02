@@ -10,24 +10,25 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Lob;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "profiles")
 public class Profile {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "profile_id", columnDefinition = "uuid", updatable = false, nullable = false)
     private UUID profileId;
 
     private String bio;
 
-    @Lob
-    @Column(name = "profile_picture", columnDefinition = "BLOB")
+    @Column(name = "profile_picture", columnDefinition = "BYTEA")
     private byte[] profilePicture;
 
     @OneToOne
-    @JoinColumn(name = "account_id", nullable = false)
+    @JoinColumn(name = "account_id", nullable = false, unique = true)
+    @JsonIgnore
     private Account account;
 
     public Profile() {}
@@ -36,9 +37,6 @@ public class Profile {
         this.account = account;
     }
 
-    public UUID getProfileId() {
-        return profileId;
-    }
 
     public String getBio() {
         return bio;

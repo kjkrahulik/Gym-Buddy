@@ -20,10 +20,6 @@ import jakarta.persistence.Table;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Transient;
 import jakarta.persistence.CascadeType;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 // Import notification clsss to store a list of notification on the web app
 import com.gymbuddy.app.SocialDomain.Notification;
 import com.gymbuddy.app.SocialDomain.FriendRequest;
@@ -36,8 +32,9 @@ import com.gymbuddy.app.SocialDomain.FriendRequest;
 @Table(name = "accounts")
 public class Account {
     /** Holds account ID */
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+   @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "account_id", columnDefinition = "uuid", updatable = false, nullable = false)
     private UUID accountID;
     /** Holds user email */
     @Column(unique = true, nullable = false)
@@ -99,7 +96,6 @@ public class Account {
     */
     public Account(String email, String username, String password) {
         setAccountDetails(email, username, password);
-        this.accountID = UUID.randomUUID();
     }
 
     private void setAccountDetails(String email, String username, String password){
@@ -148,6 +144,13 @@ public class Account {
         return profile;
     }
 
+    /**
+     * Sets the profile for this account (for creating accounts with profiles)
+     */
+    public void setProfile(Profile profile) {
+        this.profile = profile;
+    }
+
     public Goal getGoal() {
         return goal;
     }
@@ -172,6 +175,13 @@ public class Account {
 
     public String getEmail() {
         return email;
+    }
+
+    /**
+     * Gets the account ID (UUID)
+     */
+    public UUID getAccountID() {
+        return accountID;
     }
 
     public void addNotification(Notification notification) {
