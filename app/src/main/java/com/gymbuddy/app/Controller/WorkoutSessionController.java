@@ -3,12 +3,14 @@ package com.gymbuddy.app.Controller;
 import com.gymbuddy.app.AccountDomain.Account;
 import com.gymbuddy.app.Repositories.ExerciseRepository;
 import com.gymbuddy.app.Repositories.WorkoutSessionRepository;
+import com.gymbuddy.app.Repositories.WorkoutTemplateRepository;
 import com.gymbuddy.app.Service.AccountService;
 import com.gymbuddy.app.WorkoutDomain.Exercise.Exercise;
 import com.gymbuddy.app.WorkoutDomain.Exercise.TimedSet;
 import com.gymbuddy.app.WorkoutDomain.Exercise.WeightedSet;
 import com.gymbuddy.app.WorkoutDomain.Workout.WorkoutSession;
 import com.gymbuddy.app.WorkoutDomain.Workout.WorkoutSessionDTO;
+import com.gymbuddy.app.WorkoutDomain.Workout.WorkoutTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +29,9 @@ public class WorkoutSessionController {
 
     @Autowired
     private WorkoutSessionRepository workoutSessionRepository;
+
+    @Autowired
+    private WorkoutTemplateRepository workoutTemplateRepository;
 
     @Autowired
     private AccountService accountService;
@@ -69,7 +74,9 @@ public class WorkoutSessionController {
             }
 
             WorkoutSession session = new WorkoutSession();
-            session.setSessionName(request.getSessionName() != null ? request.getSessionName() : "Untitled Workout");
+            String sessionName = request.getSessionName() != null ? request.getSessionName() : "Untitled Workout";
+            session.setSessionName(sessionName);
+            session.setListName(sessionName);
             session.setNotes(request.getNotes());
             session.setSessionDate(LocalDateTime.now());
             session.setAccount(account);
@@ -120,6 +127,46 @@ public class WorkoutSessionController {
             e.printStackTrace();
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Failed to save workout: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        }
+    }
+
+    @PostMapping("/from-template/{templateId}")
+    public ResponseEntity<Map<String, Object>> createSessionFromTemplate(
+            @PathVariable Long templateId,
+            Principal principal) {
+        try {
+            String username = principal.getName();
+            Account account = accountService.searchAccount(username);
+
+            if (account == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+
+            WorkoutTemplate template = workoutTemplateRepository.findById(templateId)
+                    .orElseThrow(() -> new IllegalArgumentException("Template not found"));
+
+            WorkoutSession session = new WorkoutSession();
+            session.setSessionName(template.getListName());
+            session.setListName(template.getListName());
+            session.setNotes(template.getNotes());
+            session.setSessionDate(LocalDateTime.now());
+            session.setAccount(account);
+
+            // Copy exercises from template (no sets)
+            template.getExercises().forEach((order, exercise) -> session.addExercise(exercise));
+
+            WorkoutSession saved = workoutSessionRepository.save(session);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("sessionID", saved.getListID());
+            response.put("message", "Workout session created from template");
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Failed to create session from template: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }
     }

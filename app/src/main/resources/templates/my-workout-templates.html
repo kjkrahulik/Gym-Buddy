@@ -451,13 +451,31 @@
         }
 
         // Use template functionality
-        function useTemplate(templateId) {
-            showMessage('Starting workout with template...', 'success');
-            // In a real app, this would start a workout session with the template
-            // For now, just show a message
-            setTimeout(() => {
-                showMessage('Workout started with template!', 'success');
-            }, 1000);
+        async function useTemplate(templateId) {
+            try {
+                showMessage('Creating workout session from template...', 'success');
+                const response = await fetch(`/api/workouts/from-template/${templateId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to create session');
+                }
+
+                const data = await response.json();
+                console.log('Session created successfully:', data);
+                // Give a brief moment before redirecting so user sees the success message
+                setTimeout(() => {
+                    window.location.href = `/workout-session?sessionId=${data.sessionID}`;
+                }, 500);
+            } catch (error) {
+                console.error('Error creating session from template:', error);
+                showMessage('Error: ' + error.message, 'error');
+            }
         }
 
         // Edit template functionality

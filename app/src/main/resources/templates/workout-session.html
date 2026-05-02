@@ -598,7 +598,16 @@
         // Initialize: load exercises and show session name modal
         document.addEventListener('DOMContentLoaded', async () => {
             await loadExercises();
-            focusSessionNameInput();
+
+            // Check if loading from template (sessionId in URL)
+            const params = new URLSearchParams(window.location.search);
+            const sessionId = params.get('sessionId');
+
+            if (sessionId) {
+                await loadExistingSession(sessionId);
+            } else {
+                focusSessionNameInput();
+            }
         });
 
         async function loadExercises() {
@@ -608,6 +617,53 @@
                 generateFilterChips();
             } catch (err) {
                 console.error('Failed to load exercises:', err);
+            }
+        }
+
+        async function loadExistingSession(sessionId) {
+            try {
+                console.log('Loading existing session:', sessionId);
+                const response = await fetch(`/api/workouts/${sessionId}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: Failed to load session`);
+                }
+
+                const data = await response.json();
+                console.log('Session data loaded:', data);
+
+                // Populate sessionData with existing session
+                sessionData.sessionID = data.sessionID;
+                sessionData.sessionName = data.sessionName;
+
+                // Map exercises with their sets
+                sessionData.exercises = (data.exercises || []).map((ex, index) => ({
+                    exerciseKey: index,
+                    exercise: {
+                        exerciseID: ex.exerciseID,
+                        exerciseName: ex.exerciseName,
+                        muscleGroup: ex.muscleGroup
+                    },
+                    sets: ex.sets || []
+                }));
+
+                console.log('Session exercises mapped:', sessionData.exercises);
+
+                // Hide the session name modal and show the session directly
+                const modal = document.getElementById('sessionNameModal');
+                if (modal) {
+                    modal.classList.add('hidden');
+                }
+                const display = document.getElementById('sessionNameDisplay');
+                if (display) {
+                    display.textContent = data.sessionName;
+                }
+                startTimer();
+                renderExercises();
+                console.log('Session loaded successfully');
+            } catch (err) {
+                console.error('Failed to load existing session:', err);
+                alert('Failed to load session: ' + err.message + '. Starting fresh session instead.');
+                focusSessionNameInput();
             }
         }
 
