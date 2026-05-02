@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GymBuddy - Profile</title>
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" th:href="@{/style.css}">
 </head>
 <body>
     <div class="container">
@@ -13,13 +13,13 @@
 
         <div style="text-align: left; margin-bottom: 32px;">
             <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
-                <div style="width: 60px; height: 60px; background: var(--rust); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: bold;">
+                <div style="width: 60px; height: 60px; background: #c44b1b; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: bold;">
                     JD
                 </div>
                 <div>
-                    <h3 style="color: var(--chalk); margin: 0 0 4px 0;">John Doe</h3>
-                    <p style="color: var(--chalk-dim); margin: 0; font-size: 14px;">john@example.com</p>
-                    <p style="color: var(--chalk-dim); margin: 0; font-size: 14px;">Member since: January 2024</p>
+                    <h3 style="color: #e9e5dc; margin: 0 0 4px 0;">John Doe</h3>
+                    <p style="color: #8a867e; margin: 0; font-size: 14px;">john@example.com</p>
+                    <p style="color: #8a867e; margin: 0; font-size: 14px;">Member since: January 2024</p>
                 </div>
             </div>
 
@@ -40,7 +40,7 @@
         </div>
 
         <div style="margin-bottom: 32px;">
-            <h3 style="color: var(--chalk); margin: 0 0 16px 0; font-size: 18px;">Quick Actions</h3>
+            <h3 style="color: #e9e5dc; margin: 0 0 16px 0; font-size: 18px;">Quick Actions</h3>
             <div style="display: flex; flex-direction: column; gap: 12px;">
                 <button class="cta-button" id="create-workout-btn" style="width: 100%; text-align: left; justify-content: flex-start;">
                     <span style="margin-right: 12px;">🏋️</span> Create New Workout
@@ -69,9 +69,9 @@
             </div>
         </div>
 
-        <div style="margin-top: 32px; border-top: 1px solid var(--steel); padding-top: 24px;">
-            <h3 style="color: var(--chalk); margin: 0 0 16px 0; font-size: 18px;">Recent Activity</h3>
-            <div style="color: var(--chalk-dim); font-size: 14px; line-height: 1.6;">
+        <div style="margin-top: 32px; border-top: 1px solid #3d3d3d; padding-top: 24px;">
+            <h3 style="color: #e9e5dc; margin: 0 0 16px 0; font-size: 18px;">Recent Activity</h3>
+            <div style="color: #8a867e; font-size: 14px; line-height: 1.6;">
                 <p>✅ Completed "Leg Day" workout - Yesterday</p>
                 <p>👥 Added friend: Jane Smith - 2 days ago</p>
                 <p>🎯 Set new goal: "Run 5K" - 3 days ago</p>
@@ -80,8 +80,10 @@
         </div>
 
         <div style="margin-top: 32px;">
-            <button class="cta-button secondary" onclick="window.location.href = '/'">Back to Home</button>
-            <button class="cta-button" style="margin-left: 12px;" onclick="alert('Logout functionality coming soon!')">Logout</button>
+            <a th:href="@{/}" class="cta-button secondary" style="text-decoration: none;">Back to Home</a>
+            <form th:action="@{/logout}" method="post" style="display: inline-block; margin-left: 12px;">
+                <button type="submit" class="cta-button">Logout</button>
+            </form>
         </div>
     </div>
 
