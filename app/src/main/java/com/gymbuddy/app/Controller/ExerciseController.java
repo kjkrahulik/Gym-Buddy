@@ -25,14 +25,4 @@ public class ExerciseController {
     public Exercise getExercise(@PathVariable String name) {
         return exerciseService.getExerciseByName(name);
     }
-
-    @PostMapping("/exercise")
-    public ResponseEntity<String> createExercise(@RequestBody Exercise exercise) {
-        exerciseService.createExercise(exercise);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Exercise created successfully");
-    }
-    
-    
-
-
 }

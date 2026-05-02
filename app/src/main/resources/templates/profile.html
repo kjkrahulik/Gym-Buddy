@@ -11,15 +11,15 @@
         <h1>Your Profile</h1>
         <p class="subtitle">Welcome back!</p>
 
-        <div style="text-align: left; margin-bottom: 32px;">
-            <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
-                <div id="avatar" style="width: 60px; height: 60px; background: #c44b1b; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: bold; overflow: hidden; flex-shrink: 0;">
+        <div class="profile-header">
+            <div class="profile-info">
+                <div id="avatar" class="avatar avatar-sm">
                     <span id="avatar-initial" th:text="${initial}"></span>
                 </div>
-                <div>
-                    <h3 style="color: #e9e5dc; margin: 0 0 4px 0;" th:text="${username}"></h3>
-                    <p style="color: #8a867e; margin: 0; font-size: 14px;" th:text="${email}"></p>
-                    <p style="color: #8a867e; margin: 0; font-size: 14px;" th:if="${bio != ''}" th:text="${bio}"></p>
+                <div class="profile-details">
+                    <h3 th:text="${username}"></h3>
+                    <p th:text="${email}"></p>
+                    <p th:if="${bio != ''}" th:text="${bio}"></p>
                 </div>
             </div>
 
@@ -39,49 +39,49 @@
             </div>
         </div>
 
-        <div style="margin-bottom: 32px;">
-            <h3 style="color: #e9e5dc; margin: 0 0 16px 0; font-size: 18px;">Quick Actions</h3>
-            <div style="display: flex; flex-direction: column; gap: 12px;">
-                <button class="cta-button" id="create-workout-btn" style="width: 100%; text-align: left; justify-content: flex-start;">
-                    <span style="margin-right: 12px;">🏋️</span> Create New Workout
+        <div class="quick-actions">
+            <h3 class="quick-actions-title">Quick Actions</h3>
+            <div class="quick-actions-grid">
+                <button class="cta-button action-button" id="create-workout-btn">
+                    <span>🏋️</span> Create New Workout
                 </button>
-                <button class="cta-button secondary" onclick="generateWorkout()" style="width: 100%; text-align: left; justify-content: flex-start;">
-                    <span style="margin-right: 12px;">🎯</span> Add Goals to Account
+                <button class="cta-button secondary action-button" onclick="generateWorkout()">
+                    <span>🎯</span> Add Goals to Account
                 </button>
-                <button class="cta-button secondary" id="generate-workout-btn" onclick="generateWorkout()" style="width: 100%; text-align: left; justify-content: flex-start;">
-                    <span style="margin-right: 12px;">💪</span> Generate Personal Workout
+                <button class="cta-button secondary action-button" id="generate-workout-btn" onclick="generateWorkout()">
+                    <span>💪</span> Generate Personal Workout
                 </button>
-                <button class="cta-button secondary" onclick="window.location.href = '/create-workout-template.html'" style="width: 100%; text-align: left; justify-content: flex-start;">
-                    <span style="margin-right: 12px;">📝</span> Make Workout Template
+                <a th:href="@{/create-workout-template}" class="cta-button secondary action-button">
+                    <span>📝</span> Make Workout Template
+                </a>
+                <a th:href="@{/workout-templates}" class="cta-button secondary action-button">
+                    <span>📋</span> View Saved Templates
+                </a>
+                <a th:href="@{/leaderboard}" class="cta-button secondary action-button">
+                    <span>🏆</span> View Leaderboard
+                </a>
+                <button class="cta-button secondary action-button">
+                    <span>👥</span> Find Friends
                 </button>
-                <button class="cta-button secondary" onclick="window.location.href = '/my-workout-templates.html'" style="width: 100%; text-align: left; justify-content: flex-start;">
-                    <span style="margin-right: 12px;">📋</span> View Saved Templates
-                </button>
-                <button class="cta-button secondary" onclick="window.location.href = '/leaderboard.html'" style="width: 100%; text-align: left; justify-content: flex-start;">
-                    <span style="margin-right: 12px;">🏆</span> View Leaderboard
-                </button>
-                <button class="cta-button secondary" style="width: 100%; text-align: left; justify-content: flex-start;">
-                    <span style="margin-right: 12px;">👥</span> Find Friends
-                </button>
-                <a href="/account-settings" class="cta-button" style="width: 100%; text-align: left; justify-content: flex-start; text-decoration: none; display: flex; align-items: center;">
-                    <span style="margin-right: 12px;">⚙️</span> Account Settings
+                <a th:href="@{/account-settings}" class="cta-button action-button">
+                    <span>⚙️</span> Account Settings
                 </a>
             </div>
         </div>
 
-        <div style="margin-top: 32px; border-top: 1px solid #3d3d3d; padding-top: 24px;">
-            <h3 style="color: #e9e5dc; margin: 0 0 16px 0; font-size: 18px;">Recent Activity</h3>
-            <div style="color: #8a867e; font-size: 14px; line-height: 1.6;">
-                <p>✅ Completed "Leg Day" workout - Yesterday</p>
-                <p>👥 Added friend: Jane Smith - 2 days ago</p>
-                <p>🎯 Set new goal: "Run 5K" - 3 days ago</p>
-                <p>💪 Logged "Chest Press" PR: 225 lbs - 5 days ago</p>
+        <div class="recent-activity">
+            <h3 class="recent-activity-title">Recent Activity</h3>
+            <div class="recent-activity-list">
+                <p class="recent-activity-item">✅ Completed "Leg Day" workout - Yesterday</p>
+                <p class="recent-activity-item">👥 Added friend: Jane Smith - 2 days ago</p>
+                <p class="recent-activity-item">🎯 Set new goal: "Run 5K" - 3 days ago</p>
+                <p class="recent-activity-item">💪 Logged "Chest Press" PR: 225 lbs - 5 days ago</p>
             </div>
         </div>
 
-        <div style="margin-top: 32px;">
-            <a th:href="@{/}" class="cta-button secondary" style="text-decoration: none;">Back to Home</a>
-            <form th:action="@{/logout}" method="post" style="display: inline-block; margin-left: 12px;">
+        <div class="page-actions-section">
+            <a th:href="@{/}" class="cta-button secondary no-decoration">Back to Home</a>
+            <form th:action="@{/logout}" method="post" class="inline-block ml-lg">
                 <button type="submit" class="cta-button">Logout</button>
             </form>
         </div>
@@ -159,7 +159,7 @@
                 closeGenerateModal();
                 profileBtn.innerHTML = '<span style="margin-right:12px;">✅</span> Workout Generated!';
                 setTimeout(() => {
-                    window.location.href = '/my-workout-templates.html';
+                    window.location.href = '/workout-templates';
                 }, 1000);
             } catch (err) {
                 btn.textContent = 'Generate';

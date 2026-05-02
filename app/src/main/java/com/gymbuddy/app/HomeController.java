@@ -14,9 +14,8 @@ public class HomeController {
     //Denotes that this method will handle HTTP requests to the root URL ("/") and return the name of the view to be rendered, which in this case is "index".
     @GetMapping("/")
     public String index() {
-        System.out.println("HomeController: Application Name: " + appName); // Log the application name to the console
-        // Forward to the static index.html file
-        return "forward:/pages/index.html";
+        System.out.println("HomeController: Application Name: " + appName);
+        return "index";
     }
 }
 

@@ -239,7 +239,7 @@
         <h2>Account Settings</h2>
 
         <!-- Username stored for JS API calls -->
-        <span id="current-username" th:text="${username}" style="display:none;"></span>
+        <span id="current-username" th:text="${username}" class="hidden"></span>
 
         <!-- ── Profile Info ─────────────────────── -->
         <div class="section">
@@ -282,7 +282,7 @@
                 <div class="picture-actions">
                     <button class="btn" onclick="document.getElementById('picture-file').click()">Upload New Photo</button>
                     <button class="btn btn-danger" onclick="deletePicture()">Remove Photo</button>
-                    <input type="file" id="picture-file" accept="image/*" style="display:none" onchange="uploadPicture(this)">
+                    <input type="file" id="picture-file" accept="image/*" class="hidden file-input-hidden" onchange="uploadPicture(this)">
                 </div>
             </div>
             <span id="picture-msg" class="msg"></span>
@@ -291,10 +291,10 @@
         <!-- ── Change Password ──────────────────── -->
         <div class="section">
             <p class="section-title">Change Password</p>
-            <p style="color: #8a867e; font-size: 13px; margin-bottom: 16px;">
+            <p class="text-secondary font-sm mb-lg">
                 A verification code will be sent to your registered email address.
             </p>
-            <div class="btn-row" style="margin-bottom: 20px;">
+            <div class="btn-row mb-lg">
                 <button class="btn btn-secondary" onclick="sendCode()">Send Verification Code</button>
                 <span id="code-sent-msg" class="msg"></span>
             </div>
@@ -317,9 +317,9 @@
         </div>
 
         <!-- ── Navigation ───────────────────────── -->
-        <div style="padding-top: 24px; display: flex; gap: 12px;">
+        <div class="nav-footer">
             <a th:href="@{/profile}" class="btn btn-secondary">Back to Profile</a>
-            <form th:action="@{/logout}" method="post" style="display: inline;">
+            <form th:action="@{/logout}" method="post" class="inline">
                 <button type="submit" class="btn">Logout</button>
             </form>
         </div>

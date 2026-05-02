@@ -1,20 +1,4 @@
 // API utility functions
-function submitExercise(formData) {
-    return fetch('/exercise', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.text();
-    });
-}
-
 function createAccount(accountData) {
     return fetch('/api/accounts', {
         method: 'POST',

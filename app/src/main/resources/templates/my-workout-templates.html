@@ -1,27 +1,57 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GymBuddy - My Workout Templates</title>
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/css/style.css">
     <style>
         .container {
+            position: relative;
+            z-index: 1;
             max-width: 1000px;
+            width: 92vw;
             margin: 2rem auto;
-            padding: 2rem;
-            background-color: var(--concrete);
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-            border: 1px solid var(--steel);
+            padding: 52px 48px 48px;
+            background: var(--concrete);
+            border-top: 4px solid var(--rust);
+            border-bottom: 1px solid var(--steel);
+            clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 0 100%);
+            animation: rise 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .container::after {
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            width: 0; height: 0;
+            border-style: solid;
+            border-width: 0 28px 28px 0;
+            border-color: transparent var(--smoke) transparent transparent;
+        }
+
+        @keyframes rise {
+            from { opacity: 0; transform: translateY(28px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
 
         h1 {
-            color: var(--chalk);
-            text-align: center;
-            margin-bottom: 0.5rem;
             font-family: 'Barlow Condensed', sans-serif;
-            font-weight: 700;
+            font-weight: 900;
+            letter-spacing: -1px;
+            text-transform: uppercase;
+            color: var(--chalk);
+            font-size: 0;
+        }
+
+        h1::before {
+            content: 'MY TEMPLATES';
+            font-size: clamp(28px, 6vw, 46px);
+            color: var(--chalk);
+        }
+
+        h1::after {
+            content: none;
         }
 
         .subtitle {
@@ -263,17 +293,17 @@
             <div class="search-box">
                 <input type="text" id="searchInput" class="search-input" placeholder="Search templates...">
             </div>
-            <button onclick="window.location.href = '/create-workout-template.html'" class="btn">
+            <a th:href="@{/create-workout-template}" class="btn">
                 + Create New Template
-            </button>
+            </a>
         </div>
 
         <div id="templatesContainer">
             <div class="loading" id="loading">Loading templates...</div>
         </div>
 
-        <div style="margin-top: 2rem; text-align: center;">
-            <button onclick="window.location.href = '/profile.html'" class="btn btn-secondary">Back to Profile</button>
+        <div class="page-actions">
+            <a th:href="@{/profile}" class="btn btn-secondary">Back to Profile</a>
         </div>
     </div>
 
@@ -345,9 +375,9 @@
                     <div class="empty-state">
                         <h3>No Workout Templates Yet</h3>
                         <p>You haven't created any workout templates yet.</p>
-                        <button onclick="window.location.href = '/create-workout-template.html'" class="btn" style="margin-top: 1rem;">
+                        <a href="/create-workout-template" class="btn" style="margin-top: 1rem; display: inline-block;">
                             Create Your First Template
-                        </button>
+                        </a>
                     </div>
                 `;
                 return;
@@ -449,6 +479,13 @@
             if (!templateToDelete) return;
 
             try {
+                // Remove card from DOM immediately for instant feedback
+                const templateCard = document.querySelector(`[data-template-id="${templateToDelete}"]`);
+                if (templateCard) {
+                    templateCard.style.opacity = '0.5';
+                    templateCard.style.pointerEvents = 'none';
+                }
+
                 const response = await fetch(`/api/workout-templates/${templateToDelete}`, {
                     method: 'DELETE'
                 });
@@ -458,15 +495,35 @@
                     throw new Error(errorData.error || errorData.message || errorData);
                 }
 
+                // Remove from allTemplates array
+                allTemplates = allTemplates.filter(t => t.workoutTemplateID !== templateToDelete);
+
+                // Animate removal from DOM
+                if (templateCard) {
+                    templateCard.style.transition = 'all 0.3s ease';
+                    setTimeout(() => {
+                        templateCard.remove();
+                        // Check if container is empty and show empty state
+                        const container = document.getElementById('templatesContainer');
+                        if (container && container.children.length === 0) {
+                            displayTemplates([]);
+                        }
+                    }, 300);
+                }
+
                 showMessage('Template deleted successfully', 'success');
                 closeDeleteModal();
-
-                // Reload templates
-                await loadWorkoutTemplates();
 
             } catch (error) {
                 console.error('Error deleting template:', error);
                 showMessage('Error deleting template: ' + error.message, 'error');
+                
+                // Restore opacity if deletion failed
+                const templateCard = document.querySelector(`[data-template-id="${templateToDelete}"]`);
+                if (templateCard) {
+                    templateCard.style.opacity = '1';
+                    templateCard.style.pointerEvents = 'auto';
+                }
             } finally {
                 templateToDelete = null;
             }

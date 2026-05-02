@@ -1,27 +1,57 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GymBuddy - Create Workout Template</title>
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/css/style.css">
     <style>
         .container {
+            position: relative;
+            z-index: 1;
             max-width: 800px;
+            width: 92vw;
             margin: 2rem auto;
-            padding: 2rem;
-            background-color: var(--concrete);
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-            border: 1px solid var(--steel);
+            padding: 52px 48px 48px;
+            background: var(--concrete);
+            border-top: 4px solid var(--rust);
+            border-bottom: 1px solid var(--steel);
+            clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 0 100%);
+            animation: rise 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .container::after {
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            width: 0; height: 0;
+            border-style: solid;
+            border-width: 0 28px 28px 0;
+            border-color: transparent var(--smoke) transparent transparent;
+        }
+
+        @keyframes rise {
+            from { opacity: 0; transform: translateY(28px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
 
         h1 {
-            color: var(--chalk);
-            text-align: center;
-            margin-bottom: 0.5rem;
             font-family: 'Barlow Condensed', sans-serif;
-            font-weight: 700;
+            font-weight: 900;
+            letter-spacing: -1px;
+            text-transform: uppercase;
+            color: var(--chalk);
+            font-size: 0;
+        }
+
+        h1::before {
+            content: 'CREATE TEMPLATE';
+            font-size: clamp(28px, 6vw, 46px);
+            color: var(--chalk);
+        }
+
+        h1::after {
+            content: none;
         }
 
         .subtitle {
@@ -252,7 +282,7 @@
             <div class="exercise-section">
                 <div class="exercise-header">
                     <h3>Exercises</h3>
-                    <span id="exerciseCount" style="color: var(--chalk);">0 exercises</span>
+                    <span id="exerciseCount" class="exercise-count">0 exercises</span>
                 </div>
 
                 <div id="exerciseList" class="exercise-list">
@@ -273,8 +303,8 @@
             </div>
         </form>
 
-        <div style="margin-top: 2rem; text-align: center;">
-            <button onclick="window.location.href = '/profile.html'" class="btn btn-secondary">Back to Profile</button>
+        <div class="page-actions">
+            <a th:href="@{/profile}" class="btn btn-secondary">Back to Profile</a>
         </div>
     </div>
 
@@ -446,9 +476,9 @@
                 selectedExercises = [];
                 updateExerciseList();
 
-                // Optionally redirect to profile after a delay
+                // Redirect to profile after a delay
                 setTimeout(() => {
-                    window.location.href = '/profile.html';
+                    window.location.href = window.location.origin + '/profile';
                 }, 2000);
 
             } catch (error) {

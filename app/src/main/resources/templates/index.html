@@ -1,13 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GymBuddy - Your Fitness Companion</title>
-    <link rel="stylesheet" href="/css/common.css">
-    <link rel="stylesheet" href="/css/layout.css">
-    <link rel="stylesheet" href="/css/components.css">
-    <link rel="stylesheet" href="/css/pages.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
     <div class="container">
@@ -31,13 +28,12 @@
             </div>
         </div>
 
-        <div class="auth-links" style="margin-top: 30px; text-align: center;">
-            <button id="login-btn" class="cta-button" style="text-decoration: none; margin-right: 10px;">Login</button>
-            <button id="create-account-btn" class="cta-button" style="text-decoration: none;">Create Account</button>
+        <div class="auth-links">
+            <a th:href="@{/login}" class="cta-button no-decoration">Login</a>
+            <a th:href="@{/register}" class="cta-button no-decoration">Create Account</a>
         </div>
     </div>
-    <script src="/js/main.js"></script>
-    <script src="/js/api.js"></script>
-    <script src="/js/auth.js"></script>
+    <script th:src="@{/js/main.js}"></script>
+    <script th:src="@{/js/api.js}"></script>
 </body>
 </html>

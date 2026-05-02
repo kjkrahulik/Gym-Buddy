@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GymBuddy - Leaderboard</title>
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
     <div class="container">
@@ -12,26 +12,26 @@
         <p class="subtitle">Top Lifts from the Community</p>
 
         <!-- Bench Press -->
-        <div style="margin-bottom: 32px;">
-            <h3 style="color: var(--chalk);">🏋️ Bench Press</h3>
+        <div class="mb-3xl">
+            <h3 class="text-primary">🏋️ Bench Press</h3>
             <div id="bench-list"></div>
         </div>
 
         <!-- Squat -->
-        <div style="margin-bottom: 32px;">
-            <h3 style="color: var(--chalk);">🦵 Squat</h3>
+        <div class="mb-3xl">
+            <h3 class="text-primary">🦵 Squat</h3>
             <div id="squat-list"></div>
         </div>
 
         <!-- Deadlift -->
-        <div style="margin-bottom: 32px;">
-            <h3 style="color: var(--chalk);">💀 Deadlift</h3>
+        <div class="mb-3xl">
+            <h3 class="text-primary">💀 Deadlift</h3>
             <div id="deadlift-list"></div>
         </div>
 
-        <button class="cta-button secondary" onclick="window.location.href='/'">
-            Back to Home
-        </button>
+        <div class="page-actions">
+            <a th:href="@{/profile}" class="btn btn-secondary">Back to Profile</a>
+        </div>
     </div>
 
     <script>
@@ -55,12 +55,10 @@
 
             list.forEach((user, index) => {
                 const div = document.createElement('div');
-                div.style.padding = '10px';
-                div.style.borderBottom = '1px solid var(--steel)';
-                div.style.color = 'var(--chalk)';
+                div.className = 'list-item';
 
                 div.innerHTML = `
-                    <strong>#${index + 1}</strong> 
+                    <strong><span class="list-item-rank">#${index + 1}</span></strong>
                     ${user.name} - ${user.weight} lbs
                 `;
 
