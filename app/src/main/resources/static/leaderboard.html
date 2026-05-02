@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymBuddy - Leaderboard</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Leaderboard 🏆</h1>
+        <p class="subtitle">Top Lifts from the Community</p>
+
+        <!-- Bench Press -->
+        <div style="margin-bottom: 32px;">
+            <h3 style="color: var(--chalk);">🏋️ Bench Press</h3>
+            <div id="bench-list"></div>
+        </div>
+
+        <!-- Squat -->
+        <div style="margin-bottom: 32px;">
+            <h3 style="color: var(--chalk);">🦵 Squat</h3>
+            <div id="squat-list"></div>
+        </div>
+
+        <!-- Deadlift -->
+        <div style="margin-bottom: 32px;">
+            <h3 style="color: var(--chalk);">💀 Deadlift</h3>
+            <div id="deadlift-list"></div>
+        </div>
+
+        <button class="cta-button secondary" onclick="window.location.href='/'">
+            Back to Home
+        </button>
+    </div>
+
+    <script>
+        async function loadLeaderboard() {
+            try {
+                const res = await fetch('/api/leaderboard');
+                const data = await res.json();
+
+                renderList('bench-list', data.bench);
+                renderList('squat-list', data.squat);
+                renderList('deadlift-list', data.deadlift);
+
+            } catch (err) {
+                alert('Failed to load leaderboard');
+            }
+        }
+
+        function renderList(elementId, list) {
+            const container = document.getElementById(elementId);
+            container.innerHTML = '';
+
+            list.forEach((user, index) => {
+                const div = document.createElement('div');
+                div.style.padding = '10px';
+                div.style.borderBottom = '1px solid var(--steel)';
+                div.style.color = 'var(--chalk)';
+
+                div.innerHTML = `
+                    <strong>#${index + 1}</strong> 
+                    ${user.name} - ${user.weight} lbs
+                `;
+
+                container.appendChild(div);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', loadLeaderboard);
+    </script>
+</body>
+</html>

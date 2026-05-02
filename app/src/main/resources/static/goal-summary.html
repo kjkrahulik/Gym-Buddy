@@ -238,11 +238,18 @@
             <a th:href="@{/workout}" class="btn btn-outline">View Workout Plans</a>
         </div>
 
+        <!-- Generate Personal Workout Button -->
+        <div style="margin-top: 1.5rem;">
+            <button id="generateBtn" onclick="generatePersonalWorkout()" class="btn btn-primary" style="width: 100%; font-size: 1.2rem; padding: 1.2rem;">
+                Generate Personal Workout
+            </button>
+        </div>
+
         <!-- Next Steps Information -->
         <div style="margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid #dee2e6;">
             <h3 style="color: #495057; margin-bottom: 1rem;">What's Next?</h3>
             <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
-                <div style="background-color: #f8f9fa; padding: 1rem; border-radius:165px 8px;">
+                <div style="background-color: #f8f9fa; padding: 1rem; border-radius: 8px; cursor: pointer;" onclick="generatePersonalWorkout()">
                     <h4 style="color: #007bff; margin-top: 0;">🏋️‍♀️ Generate Workout</h4>
                     <p style="color: #6c757d; font-size: 0.9rem;">Based on your goal, we'll create personalized workout routines.</p>
                 </div>
@@ -253,5 +260,42 @@
             </div>
         </div>
     </div>
+    <script th:inline="javascript">
+        const GOAL_TYPE       = /*[[${goal?.goalType}]]*/ 'BEGINNER';
+        const WORKOUT_DAYS    = /*[[${goal?.workoutDays}]]*/ 3;
+        const TIME_COMMITMENT = /*[[${goal?.timeCommitment}]]*/ false;
+
+        async function generatePersonalWorkout() {
+            const btn = document.getElementById('generateBtn');
+            btn.textContent = 'Generating Workout...';
+            btn.disabled = true;
+            btn.style.opacity = '0.7';
+            btn.style.cursor = 'not-allowed';
+
+            try {
+                const res = await fetch('/api/workout-templates/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        goalType:       GOAL_TYPE,
+                        workoutDays:    WORKOUT_DAYS,
+                        timeCommitment: TIME_COMMITMENT
+                    })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Generation failed');
+
+                btn.textContent = 'Workout Generated!';
+                btn.style.backgroundColor = '#28a745';
+                setTimeout(() => { window.location.href = '/my-workout-templates.html'; }, 1000);
+            } catch (err) {
+                btn.textContent = 'Generate Personal Workout';
+                btn.disabled = false;
+                btn.style.opacity = '1';
+                btn.style.cursor = 'pointer';
+                alert('Error generating workout: ' + err.message);
+            }
+        }
+    </script>
 </body>
 </html>
