@@ -8,7 +8,7 @@ public class ProfileController {
 
     @GetMapping("/profile")
     public String profile() {
-        // Forward to the static profile.html file
-        return "forward:/profile.html";
+        // Return the profile template
+        return "profile";
     }
 }

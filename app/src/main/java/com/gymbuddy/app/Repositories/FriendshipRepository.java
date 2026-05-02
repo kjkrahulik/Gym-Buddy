@@ -1,3 +1,5 @@
+//Flagged for Removal
+/* 
 package com.gymbuddy.app.Repositories;
 
 import com.gymbuddy.app.SocialDomain.FriendRequest;
@@ -15,3 +17,5 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
     List<Friendship> findByUser1OrUser2(Account user1, Account user2);
  
 }
+
+*/

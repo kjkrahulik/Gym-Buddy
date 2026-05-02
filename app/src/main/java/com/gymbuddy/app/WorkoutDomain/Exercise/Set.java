@@ -1,6 +1,5 @@
 package com.gymbuddy.app.WorkoutDomain.Exercise;
 
-import com.gymbuddy.app.WorkoutDomain.Exercise.WorkoutExercise;
 import lombok.*;
 import jakarta.persistence.*;
 
@@ -18,7 +17,4 @@ public abstract class Set {
     @Column(name = "order_index")
     private int order_index;
 
-    @ManyToOne
-    @JoinColumn(name = "workout_exercise_id")
-    private WorkoutExercise workoutExercise;
 }
