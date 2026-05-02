@@ -364,7 +364,7 @@
             const bio = document.getElementById('bio-input').value.trim();
             try {
                 const res = await fetch(
-                    `/accounts/me/${encodeURIComponent(username)}/profile/bio?bio=${encodeURIComponent(bio)}`,
+                    `/profile/${encodeURIComponent(username)}/bio?bio=${encodeURIComponent(bio)}`,
                     { method: 'PUT' }
                 );
                 if (res.ok) {
@@ -379,7 +379,7 @@
 
         async function loadProfilePicture() {
             try {
-                const res = await fetch(`/accounts/me/${encodeURIComponent(username)}/profile/picture/base64`);
+                const res = await fetch(`/profile/${encodeURIComponent(username)}/picture`);
                 if (res.ok) {
                     const base64 = await res.text();
                     if (base64 && base64.length > 0) setAvatarImage(base64);
@@ -415,7 +415,7 @@
 
             try {
                 const res = await fetch(
-                    `/accounts/me/${encodeURIComponent(username)}/profile/picture`,
+                    `/profile/${encodeURIComponent(username)}/picture`,
                     { method: 'POST', body: formData }
                 );
                 if (res.ok) {
@@ -435,7 +435,7 @@
         async function deletePicture() {
             try {
                 const res = await fetch(
-                    `/accounts/me/${encodeURIComponent(username)}/profile/picture`,
+                    `/profile/${encodeURIComponent(username)}/picture`,
                     { method: 'DELETE' }
                 );
                 if (res.ok) {

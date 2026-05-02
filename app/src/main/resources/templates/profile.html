@@ -84,7 +84,7 @@
             });
 
             // Load profile picture if one exists
-            fetch(`/accounts/me/${encodeURIComponent(username)}/profile/picture/base64`)
+            fetch(`/profile/${encodeURIComponent(username)}/picture`)
                 .then(res => res.ok ? res.text() : '')
                 .then(base64 => {
                     if (base64 && base64.length > 0) {
