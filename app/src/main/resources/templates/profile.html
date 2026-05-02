@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GymBuddy - Profile</title>
-    <link rel="stylesheet" th:href="@{/style.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
     <div class="container">
@@ -13,13 +13,13 @@
 
         <div style="text-align: left; margin-bottom: 32px;">
             <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
-                <div style="width: 60px; height: 60px; background: #c44b1b; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: bold;">
-                    JD
+                <div id="avatar" style="width: 60px; height: 60px; background: #c44b1b; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: bold; overflow: hidden; flex-shrink: 0;">
+                    <span id="avatar-initial" th:text="${initial}"></span>
                 </div>
                 <div>
-                    <h3 style="color: #e9e5dc; margin: 0 0 4px 0;">John Doe</h3>
-                    <p style="color: #8a867e; margin: 0; font-size: 14px;">john@example.com</p>
-                    <p style="color: #8a867e; margin: 0; font-size: 14px;">Member since: January 2024</p>
+                    <h3 style="color: #e9e5dc; margin: 0 0 4px 0;" th:text="${username}"></h3>
+                    <p style="color: #8a867e; margin: 0; font-size: 14px;" th:text="${email}"></p>
+                    <p style="color: #8a867e; margin: 0; font-size: 14px;" th:if="${bio != ''}" th:text="${bio}"></p>
                 </div>
             </div>
 
@@ -63,9 +63,9 @@
                 <button class="cta-button secondary" style="width: 100%; text-align: left; justify-content: flex-start;">
                     <span style="margin-right: 12px;">👥</span> Find Friends
                 </button>
-                <button class="cta-button secondary" style="width: 100%; text-align: left; justify-content: flex-start;">
+                <a href="/account-settings" class="cta-button" style="width: 100%; text-align: left; justify-content: flex-start; text-decoration: none; display: flex; align-items: center;">
                     <span style="margin-right: 12px;">⚙️</span> Account Settings
-                </button>
+                </a>
             </div>
         </div>
 

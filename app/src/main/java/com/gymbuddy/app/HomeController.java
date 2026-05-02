@@ -16,7 +16,7 @@ public class HomeController {
     public String index() {
         System.out.println("HomeController: Application Name: " + appName); // Log the application name to the console
         // Forward to the static index.html file
-        return "forward:/index.html";
+        return "forward:/pages/index.html";
     }
 }
 

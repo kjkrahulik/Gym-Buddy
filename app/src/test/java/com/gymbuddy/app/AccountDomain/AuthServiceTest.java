@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
@@ -25,9 +26,11 @@ class AuthServiceTest {
     @Mock
     private AccountRepository accountRepo;
 
-    // Mock the mail sender so no real emails are sent during tests
     @Mock
     private JavaMailSender mailSender;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @InjectMocks
     private AuthService authService;
@@ -135,9 +138,10 @@ class AuthServiceTest {
         String code = captor.getValue().getText()
                 .replace("Your verification code is: ", "").trim();
 
+        when(passwordEncoder.encode("newpassword123")).thenReturn("$2a$hashed");
         authService.resetPassword("testuser", "newpassword123", code);
 
-        // Account should be saved with the new password
+        verify(passwordEncoder).encode("newpassword123");
         verify(accountRepo).save(testAccount);
     }
 
