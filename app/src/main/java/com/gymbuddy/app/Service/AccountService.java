@@ -70,7 +70,7 @@ public class AccountService {
         }
 
        if (newPassword != null && !newPassword.isBlank()) {
-         account.setPassword(newPassword); // later: hash this
+         account.setPassword(passwordEncoder.encode(newPassword));
        }
 
       return accountRepo.save(account);

@@ -1,5 +1,6 @@
 package com.gymbuddy.app.Controller;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,9 +14,11 @@ import com.gymbuddy.app.Service.AccountService;
 public class RegistrationController {
 
     private final AccountService accountService;
+    private final PasswordEncoder passwordEncoder;
 
-    public RegistrationController(AccountService accountService) {
+    public RegistrationController(AccountService accountService, PasswordEncoder passwordEncoder) {
         this.accountService = accountService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping("/register")
@@ -32,7 +35,7 @@ public class RegistrationController {
             Model model) {
 
         try {
-            Account newAccount = new Account(email, username, password);
+            Account newAccount = new Account(email, username, passwordEncoder.encode(password));
             accountService.addAccount(newAccount);
             model.addAttribute("success", "Account created successfully! You can now login.");
             model.addAttribute("account", new Account()); // Reset form
