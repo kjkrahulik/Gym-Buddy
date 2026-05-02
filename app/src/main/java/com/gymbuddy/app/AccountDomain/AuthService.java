@@ -6,6 +6,7 @@ import java.security.SecureRandom;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.gymbuddy.app.Repositories.AccountRepository;
@@ -22,6 +23,9 @@ public class AuthService {
 
     @Autowired
     private JavaMailSender mailSender;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     private final SecureRandom secureRandom = new SecureRandom();
     private final Map<String, String> verificationCodes = new ConcurrentHashMap<>();
@@ -77,7 +81,7 @@ public class AuthService {
         Account account = accountRepo.findByUsername(username)
             .orElseThrow(() -> new RuntimeException("Account not found"));
 
-        account.setPassword(newPassword);
+        account.setPassword(passwordEncoder.encode(newPassword));
         accountRepo.save(account);
     }
 
