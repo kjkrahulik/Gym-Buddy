@@ -159,6 +159,24 @@ public class WorkoutTemplateController {
         }
     }
 
+    @DeleteMapping("/{id}/exercises")
+    public ResponseEntity<?> clearExercisesFromTemplate(@PathVariable Long id) {
+        try {
+            workoutTemplateService.clearExercisesFromTemplate(id);
+            Map<String, String> successResponse = new HashMap<>();
+            successResponse.put("message", "Exercises cleared from template");
+            return ResponseEntity.ok(successResponse);
+        } catch (IllegalArgumentException e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        } catch (Exception e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Error clearing exercises: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
     // ─── Delete ────────────────────────────────────────────────────────
 
     @DeleteMapping("/{id}")

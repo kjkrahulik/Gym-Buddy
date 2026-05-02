@@ -84,6 +84,10 @@ public class Account {
     /** Object holding users Profile */
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
     private Profile profile;
+    /** Persisted goal stored by the user */
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private StoredGoal storedGoal;
     /** Object with users goal */
     @Transient
     private Goal goal;

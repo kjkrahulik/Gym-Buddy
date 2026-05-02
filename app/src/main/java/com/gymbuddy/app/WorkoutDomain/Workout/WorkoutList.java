@@ -79,4 +79,9 @@ public abstract class WorkoutList {
     public Exercise getExercise(int orderKey) {
         return exercises.get(orderKey);
     }
+
+    public void clearExercises() {
+        exercises.clear();
+        numExercises = 0;
+    }
 }

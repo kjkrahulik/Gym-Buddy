@@ -30,7 +30,7 @@
         </div>
 
         <div class="page-actions">
-            <a th:href="@{/profile}" class="btn btn-secondary">Back to Profile</a>
+            <a th:href="@{/profile}" class="cta-button no-decoration">Back to Profile</a>
         </div>
     </div>
 
@@ -53,13 +53,18 @@
             const container = document.getElementById(elementId);
             container.innerHTML = '';
 
-            list.forEach((user, index) => {
+            if (!list || list.length === 0) {
+                container.innerHTML = '<p class="text-muted">No data yet.</p>';
+                return;
+            }
+
+            list.forEach((entry, index) => {
                 const div = document.createElement('div');
                 div.className = 'list-item';
 
                 div.innerHTML = `
                     <strong><span class="list-item-rank">#${index + 1}</span></strong>
-                    ${user.name} - ${user.weight} lbs
+                    Username: ${entry.username} &nbsp;|&nbsp; Weight: ${entry.weight} lbs &nbsp;|&nbsp; Reps: ${entry.reps}
                 `;
 
                 container.appendChild(div);

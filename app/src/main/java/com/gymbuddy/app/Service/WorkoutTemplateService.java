@@ -67,6 +67,12 @@ public class WorkoutTemplateService {
         return workoutTemplateRepository.save(template);
     }
 
+    public WorkoutTemplate clearExercisesFromTemplate(Long id) {
+        WorkoutTemplate template = getWorkoutTemplateById(id);
+        template.clearExercises();
+        return workoutTemplateRepository.save(template);
+    }
+
     public void deleteWorkoutTemplate(Long id) {
         WorkoutTemplate template = getWorkoutTemplateById(id);
         workoutTemplateRepository.delete(template);

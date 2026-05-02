@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.gymbuddy.app.AccountDomain.Account;
 import com.gymbuddy.app.AccountDomain.Profile;
+import com.gymbuddy.app.Repositories.AccountRepository;
+import com.gymbuddy.app.Repositories.WorkoutSessionRepository;
 import com.gymbuddy.app.Service.AccountService;
 import com.gymbuddy.app.Service.ProfileService;
 
@@ -22,6 +24,12 @@ public class PageController {
 
     @Autowired
     private ProfileService profileService;
+
+    @Autowired
+    private AccountRepository accountRepository;
+
+    @Autowired
+    private WorkoutSessionRepository workoutSessionRepository;
 
     // ── Auth pages ───────────────────────────────────────────────────
 
@@ -58,10 +66,15 @@ public class PageController {
         Account account = accountService.searchAccount(username);
         Profile profile = profileService.getProfile(username);
 
+        long friendCount = accountRepository.countFriendsByUsername(username);
+        long workoutCount = workoutSessionRepository.countByAccount(account);
+
         model.addAttribute("username", username);
         model.addAttribute("email", account.getEmail());
         model.addAttribute("bio", profile.getBio() != null ? profile.getBio() : "");
         model.addAttribute("initial", String.valueOf(username.charAt(0)).toUpperCase());
+        model.addAttribute("friendCount", friendCount);
+        model.addAttribute("workoutCount", workoutCount);
 
         return "profile";
     }
