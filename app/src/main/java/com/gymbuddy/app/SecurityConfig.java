@@ -17,14 +17,15 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
-                // Allow access to static resources and home page
-                .requestMatchers("/", "/index.html", "/style.css", "/script.js", "/jsons/**", "/static/**").permitAll()
-                // Allow access to registration page and endpoint
-                .requestMatchers("/register", "/login", "/api/account/register").permitAll()
+                // Most specific rules first
                 // Profile page requires authentication
-                .requestMatchers("/profile", "/profile.html").authenticated()
+                .requestMatchers("/profile").authenticated()
                 // API endpoints require authentication
                 .requestMatchers("/api/**", "/exercises", "/exercise/**").authenticated()
+                // Allow access to registration page and endpoint
+                .requestMatchers("/register", "/login", "/api/account/register").permitAll()
+                // Allow access to static resources and home page
+                .requestMatchers("/", "/index.html", "/style.css", "/script.js", "/jsons/**", "/static/**").permitAll()
                 // All other requests require authentication
                 .anyRequest().authenticated()
             )
@@ -39,9 +40,8 @@ public class SecurityConfig {
                 .logoutSuccessUrl("/")
                 .permitAll()
             )
-            .csrf(csrf -> csrf
-                .ignoringRequestMatchers("/api/account/register")
-            );
+            .csrf(csrf -> csrf.disable())
+            .httpBasic(basic -> basic.disable()); // Disable HTTP Basic authentication
 
         return http.build();
     }
