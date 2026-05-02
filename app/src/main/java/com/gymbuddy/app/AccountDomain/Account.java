@@ -21,10 +21,8 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Transient;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
-import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.FetchType;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -99,12 +97,6 @@ public class Account {
     private List<Invitation> invitationList;
     @Transient
     private List<Account> friendList;
-
-
-    // Test Constuctor to be deleted
-    public Account() {
-        
-    }
 
     /** Constructor to create an account
      * Automatically give account and accountID
