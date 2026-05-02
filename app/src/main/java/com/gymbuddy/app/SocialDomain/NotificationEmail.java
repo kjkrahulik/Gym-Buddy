@@ -18,16 +18,17 @@ import java.util.Properties;
 public class NotificationEmail  extends  Notification {
 
     // Simple test email
+    /* 
     @GetMapping("/send-test-email")
         public String sendTest() {
             sendEmail("youremail@example.com");
             return "Sent!";
         }
-
+    */
     public void createNotificationEmail() {
          // Email creation logic here
     }
-
+    /* 
     //Using Jakarta Mail
     Properties props = new Properties();
     props.put("mail.smtp.auth", "true");
@@ -51,6 +52,6 @@ public class NotificationEmail  extends  Notification {
     message.setText("Hello from Java!");
 
     Transport.send(message);
-
+    */
 
 }
