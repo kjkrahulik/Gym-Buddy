@@ -9,6 +9,6 @@ import java.util.Optional;
 
 @Repository
 public interface WorkoutTemplateRepository extends JpaRepository<WorkoutTemplate, Long> {
-    Optional<WorkoutTemplate> findByWorkoutName(String workoutName);
-    List<WorkoutTemplate> findByWorkoutNameContainingIgnoreCase(String keyword);
+    Optional<WorkoutTemplate> findByListName(String listName);
+    List<WorkoutTemplate> findByListNameContainingIgnoreCase(String keyword);
 }

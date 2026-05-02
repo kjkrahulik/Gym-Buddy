@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Abstract base class for all workout list types (sessions, templates, etc.).
@@ -42,7 +43,7 @@ public abstract class WorkoutList {
      */
     @ManyToMany
     @MapKeyColumn(name = "exercise_order")
-    protected HashMap<Integer, Exercise> exercises = new HashMap<>();
+    protected Map<Integer, Exercise> exercises = new HashMap<>();
 
     // ------------------------------------------------------------------
     // Shared exercise management — available to all subclasses

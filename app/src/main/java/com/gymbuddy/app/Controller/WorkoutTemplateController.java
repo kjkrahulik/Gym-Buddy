@@ -52,17 +52,17 @@ public class WorkoutTemplateController {
     @PostMapping
     public ResponseEntity<?> createWorkoutTemplate(@RequestBody Map<String, String> request) {
         try {
-            String workoutName = request.get("workoutName");
-            String workoutDescription = request.get("workoutDescription");
+            String listName = request.get("listName");
+            String notes = request.get("notes");
 
-            if (workoutName == null || workoutName.trim().isEmpty()) {
+            if (listName == null || listName.trim().isEmpty()) {
                 Map<String, String> errorResponse = new HashMap<>();
                 errorResponse.put("error", "Workout name is required");
                 return ResponseEntity.badRequest().body(errorResponse);
             }
 
             WorkoutTemplate template = workoutTemplateService
-                    .createWorkoutTemplate(workoutName, workoutDescription);
+                    .createWorkoutTemplate(listName, notes);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(template);
 
@@ -139,11 +139,11 @@ public class WorkoutTemplateController {
             @RequestBody Map<String, String> request) {
 
         try {
-            String workoutName = request.get("workoutName");
-            String workoutDescription = request.get("workoutDescription");
+            String listName = request.get("listName");
+            String notes = request.get("notes");
 
             WorkoutTemplate template = workoutTemplateService
-                    .updateWorkoutTemplate(id, workoutName, workoutDescription);
+                    .updateWorkoutTemplate(id, listName, notes);
 
             return ResponseEntity.ok(template);
 

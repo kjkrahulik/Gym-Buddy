@@ -268,14 +268,14 @@
 
         <form id="workoutTemplateForm">
             <div class="form-group">
-                <label for="workoutName">Workout Template Name</label>
-                <input type="text" id="workoutName" class="form-control"
+                <label for="listName">Workout Template Name</label>
+                <input type="text" id="listName" class="form-control"
                        placeholder="e.g., Upper Body Strength, Leg Day, Full Body Circuit" required>
             </div>
 
             <div class="form-group">
-                <label for="workoutDescription">Description (Optional)</label>
-                <textarea id="workoutDescription" class="form-control" rows="3"
+                <label for="notes">Description (Optional)</label>
+                <textarea id="notes" class="form-control" rows="3"
                           placeholder="Describe this workout template..."></textarea>
             </div>
 
@@ -410,10 +410,10 @@
         async function saveWorkoutTemplate(e) {
             e.preventDefault();
 
-            const workoutName = document.getElementById('workoutName').value.trim();
-            const workoutDescription = document.getElementById('workoutDescription').value.trim();
+            const listName = document.getElementById('listName').value.trim();
+            const notes = document.getElementById('notes').value.trim();
 
-            if (!workoutName) {
+            if (!listName) {
                 showMessage('Please enter a name for the workout template', 'error');
                 return;
             }
@@ -437,8 +437,8 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        workoutName: workoutName,
-                        workoutDescription: workoutDescription
+                        listName: listName,
+                        notes: notes
                     })
                 });
 
@@ -447,7 +447,7 @@
                     throw new Error(templateData.error || templateData.message || templateData);
                 }
 
-                const templateId = templateData.workoutTemplateID;
+                const templateId = templateData.listID;
 
                 // Then, add each exercise to the template
                 for (let i = 0; i < selectedExercises.length; i++) {

@@ -9,10 +9,8 @@ import org.springframework.stereotype.Service;
 
 import com.gymbuddy.app.AccountDomain.Goal;
 import com.gymbuddy.app.Repositories.ExerciseRepository;
-import com.gymbuddy.app.Repositories.WorkoutExerciseRepository;
 import com.gymbuddy.app.Repositories.WorkoutTemplateRepository;
 import com.gymbuddy.app.WorkoutDomain.Exercise.Exercise;
-import com.gymbuddy.app.WorkoutDomain.Exercise.WorkoutExercise;
 import com.gymbuddy.app.WorkoutDomain.Workout.WorkoutTemplate;
 
 @Service
@@ -24,37 +22,28 @@ public class WorkoutTemplateService {
     @Autowired
     private ExerciseRepository exerciseRepository;
 
-    @Autowired
-    private WorkoutExerciseRepository workoutExerciseRepository;
+    // Note: WorkoutTemplate now extends WorkoutList and uses HashMap<Integer, Exercise> instead of List<WorkoutExercise>
+
 
     // ─── Template CRUD ────────────────────────────────────────────────────────
 
-    public WorkoutTemplate createWorkoutTemplate(String workoutName, String workoutDescription) {
-        Optional<WorkoutTemplate> existingTemplate = workoutTemplateRepository.findByWorkoutName(workoutName);
+    public WorkoutTemplate createWorkoutTemplate(String listName, String notes) {
+        Optional<WorkoutTemplate> existingTemplate = workoutTemplateRepository.findByListName(listName);
         if (existingTemplate.isPresent()) {
-            throw new IllegalArgumentException("Workout template with name '" + workoutName + "' already exists");
+            throw new IllegalArgumentException("Workout template with name '" + listName + "' already exists");
         }
-        WorkoutTemplate template = new WorkoutTemplate(workoutName, workoutDescription);
+        WorkoutTemplate template = new WorkoutTemplate(listName, notes);
         return workoutTemplateRepository.save(template);
     }
 
-    public WorkoutTemplate addExerciseToTemplate(Long templateId, Long exerciseId, int listOrder) {
+    public WorkoutTemplate addExerciseToTemplate(Long templateId, Long exerciseId, int orderKey) {
         WorkoutTemplate template = workoutTemplateRepository.findById(templateId)
                 .orElseThrow(() -> new IllegalArgumentException("Workout template not found with ID: " + templateId));
 
         Exercise exercise = exerciseRepository.findById(exerciseId)
                 .orElseThrow(() -> new IllegalArgumentException("Exercise not found with ID: " + exerciseId));
 
-        WorkoutExercise workoutExercise = new WorkoutExercise();
-        workoutExercise.setExercise(exercise);
-        workoutExercise.setListOrder(listOrder);
-        workoutExercise.setWorkoutTemplate(template);
-
-        WorkoutExercise savedWorkoutExercise = workoutExerciseRepository.save(workoutExercise);
-
-        template.getExercises().add(savedWorkoutExercise);
-        template.setExerciseCount(template.getExercises().size());
-
+        template.addExercise(exercise);
         return workoutTemplateRepository.save(template);
     }
 
@@ -68,21 +57,18 @@ public class WorkoutTemplateService {
     }
 
     public List<WorkoutTemplate> searchWorkoutTemplates(String keyword) {
-        return workoutTemplateRepository.findByWorkoutNameContainingIgnoreCase(keyword);
+        return workoutTemplateRepository.findByListNameContainingIgnoreCase(keyword);
     }
 
-    public WorkoutTemplate updateWorkoutTemplate(Long id, String workoutName, String workoutDescription) {
+    public WorkoutTemplate updateWorkoutTemplate(Long id, String listName, String notes) {
         WorkoutTemplate template = getWorkoutTemplateById(id);
-        template.setWorkoutName(workoutName);
-        template.setWorkoutDescription(workoutDescription);
+        template.setListName(listName);
+        template.setNotes(notes);
         return workoutTemplateRepository.save(template);
     }
 
     public void deleteWorkoutTemplate(Long id) {
         WorkoutTemplate template = getWorkoutTemplateById(id);
-        if (template.getExercises() != null && !template.getExercises().isEmpty()) {
-            workoutExerciseRepository.deleteAll(template.getExercises());
-        }
         workoutTemplateRepository.delete(template);
     }
 
@@ -742,26 +728,20 @@ public class WorkoutTemplateService {
     public List<WorkoutTemplate> saveGeneratedTemplates(List<WorkoutTemplate> templates) {
         List<WorkoutTemplate> saved = new ArrayList<>();
         for (WorkoutTemplate t : templates) {
-            if (workoutTemplateRepository.findByWorkoutName(t.getWorkoutName()).isPresent()) {
+            if (workoutTemplateRepository.findByListName(t.getListName()).isPresent()) {
                 continue;
             }
             WorkoutTemplate savedTemplate = workoutTemplateRepository.save(
-                new WorkoutTemplate(t.getWorkoutName(), t.getWorkoutDescription())
+                new WorkoutTemplate(t.getListName(), t.getNotes())
             );
-            if (t.getExercises() != null) {
-                for (WorkoutExercise we : t.getExercises()) {
-                    Exercise ex = we.getExercise();
-                    Exercise savedEx = exerciseRepository.findByExerciseName(ex.getExerciseName())
+            if (t.getExercises() != null && !t.getExercises().isEmpty()) {
+                for (Exercise exercise : t.getExercises().values()) {
+                    Exercise savedEx = exerciseRepository.findByExerciseName(exercise.getExerciseName())
                         .orElseGet(() -> exerciseRepository.save(
-                            new Exercise(null, ex.getExerciseName(), ex.getMuscleGroup(), "")
+                            new Exercise(null, exercise.getExerciseName(), exercise.getMuscleGroup(), "")
                         ));
-                    WorkoutExercise newWe = new WorkoutExercise();
-                    newWe.setExercise(savedEx);
-                    newWe.setListOrder(we.getListOrder());
-                    newWe.setWorkoutTemplate(savedTemplate);
-                    workoutExerciseRepository.save(newWe);
+                    savedTemplate.addExercise(savedEx);
                 }
-                savedTemplate.setExerciseCount(t.getExercises().size());
                 workoutTemplateRepository.save(savedTemplate);
             }
             saved.add(savedTemplate);
@@ -777,8 +757,6 @@ public class WorkoutTemplateService {
 
     private void addExercise(WorkoutTemplate template, String name, String muscleGroup, int order) {
         Exercise exercise = new Exercise(null, name, muscleGroup, "");
-        WorkoutExercise we = new WorkoutExercise(null, exercise, order, null, template);
-        template.getExercises().add(we);
-        template.setExerciseCount(template.getExerciseCount() + 1);
+        template.addExercise(exercise);
     }
 }

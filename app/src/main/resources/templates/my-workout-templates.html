@@ -386,20 +386,20 @@
             let html = '<div class="templates-grid">';
             templates.forEach(template => {
                 const exerciseNames = template.exercises
-                    ? template.exercises.map(e => e.exercise?.exerciseName || 'Unknown Exercise').slice(0, 5)
+                    ? Object.values(template.exercises).map(e => e?.exerciseName || 'Unknown Exercise').slice(0, 5)
                     : [];
 
                 html += `
-                    <div class="template-card" data-template-id="${template.workoutTemplateID}">
+                    <div class="template-card" data-template-id="${template.listID}">
                         <div class="template-header">
-                            <h3 class="template-name">${escapeHtml(template.workoutName)}</h3>
+                            <h3 class="template-name">${escapeHtml(template.listName)}</h3>
                             <span style="color: var(--chalk-dim); font-size: 0.9rem;">
-                                ${template.exercises?.length || 0} exercises
+                                ${template.numExercises || 0} exercises
                             </span>
                         </div>
 
-                        ${template.workoutDescription ? `
-                            <p class="template-description">${escapeHtml(template.workoutDescription)}</p>
+                        ${template.notes ? `
+                            <p class="template-description">${escapeHtml(template.notes)}</p>
                         ` : ''}
 
                         <div class="template-exercises">
@@ -407,22 +407,22 @@
                                 ? exerciseNames.map(name => `<span class="exercise-chip">${escapeHtml(name)}</span>`).join('')
                                 : '<div style="color: var(--chalk-dim); font-size: 0.9rem;">No exercises added</div>'
                             }
-                            ${template.exercises?.length > 5 ? '<span class="exercise-chip">+' + (template.exercises.length - 5) + ' more</span>' : ''}
+                            ${template.numExercises > 5 ? '<span class="exercise-chip">+' + (template.numExercises - 5) + ' more</span>' : ''}
                         </div>
 
                         <div class="template-meta">
                             <span>Created</span>
-                            <span>ID: ${template.workoutTemplateID}</span>
+                            <span>ID: ${template.listID}</span>
                         </div>
 
                         <div class="template-actions">
-                            <button class="btn btn-sm" onclick="useTemplate(${template.workoutTemplateID})">
+                            <button class="btn btn-sm" onclick="useTemplate(${template.listID})">
                                 Use Template
                             </button>
-                            <button class="btn btn-secondary btn-sm" onclick="editTemplate(${template.workoutTemplateID})">
+                            <button class="btn btn-secondary btn-sm" onclick="editTemplate(${template.listID})">
                                 Edit
                             </button>
-                            <button class="btn btn-danger btn-sm" onclick="showDeleteModal(${template.workoutTemplateID}, '${escapeAttr(template.workoutName)}')">
+                            <button class="btn btn-danger btn-sm" onclick="showDeleteModal(${template.listID}, '${escapeAttr(template.listName)}')">
                                 Delete
                             </button>
                         </div>
@@ -443,8 +443,8 @@
             }
 
             const filteredTemplates = allTemplates.filter(template =>
-                template.workoutName.toLowerCase().includes(searchTerm) ||
-                (template.workoutDescription && template.workoutDescription.toLowerCase().includes(searchTerm))
+                template.listName.toLowerCase().includes(searchTerm) ||
+                (template.notes && template.notes.toLowerCase().includes(searchTerm))
             );
 
             displayTemplates(filteredTemplates);
