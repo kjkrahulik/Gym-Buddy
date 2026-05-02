@@ -636,15 +636,25 @@
                 sessionData.sessionName = data.sessionName;
 
                 // Map exercises with their sets
-                sessionData.exercises = (data.exercises || []).map((ex, index) => ({
-                    exerciseKey: index,
-                    exercise: {
-                        exerciseID: ex.exerciseID,
-                        exerciseName: ex.exerciseName,
-                        muscleGroup: ex.muscleGroup
-                    },
-                    sets: ex.sets || []
-                }));
+                sessionData.exercises = (data.exercises || []).map((ex, index) => {
+                    const exerciseObj = {
+                        exerciseKey: index,
+                        exercise: {
+                            exerciseID: ex.exerciseID,
+                            exerciseName: ex.exerciseName,
+                            muscleGroup: ex.muscleGroup
+                        },
+                        sets: ex.sets || []
+                    };
+
+                    // If no sets exist, add one empty set to allow user to enter data
+                    if (exerciseObj.sets.length === 0) {
+                        const isTimed = ['Core', 'Cardio'].includes(ex.muscleGroup);
+                        exerciseObj.sets = [isTimed ? { type: 'TIMED', duration: 0 } : { type: 'WEIGHTED', weight: 0, reps: 0 }];
+                    }
+
+                    return exerciseObj;
+                });
 
                 console.log('Session exercises mapped:', sessionData.exercises);
 
