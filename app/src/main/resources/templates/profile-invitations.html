@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymBuddy - Profile</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<!-- View all invitations to workout sessions most recent first -->
+
+<body>
+    <div class="container">
+
+        <div class="top-nav">
+            <a th:href="@{/profile}" class="btn btn-secondary">Back to Profile</a>
+        </div>
+
+        <h1>Invitations</h1>
+        <p>Here are your workout invitations:</p>
+
+        <div th:if="${#lists.isEmpty(invitations)}">
+            <p>You do not have any invitations yet.</p>
+        </div>
+
+        <div th:if="${!#lists.isEmpty(invitations)}">
+            <div th:each="invitation : ${invitations}" class="friend-card">
+                <p>
+                    From:
+                    <span th:text="${invitation.sender.username}">Sender username</span>
+                </p>
+
+                <p>
+                    Status:
+                    <span th:text="${invitation.status}">PENDING</span>
+                </p>
+
+                <p th:if="${invitation.workoutSession != null}">
+                    Workout:
+                    <span th:text="${invitation.workoutSession.sessionName}">Workout name</span>
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

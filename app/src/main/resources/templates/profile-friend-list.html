@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymBuddy - Profile</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<!-- View all friends in the user's friend list -->
+<body>
+    <div class="container">
+
+       <div class="top-nav">
+            <a th:href="@{/profile}" class="btn btn-secondary">Back to Profile</a>
+        </div>
+
+        <h1>Friends</h1>
+        <p>Here are all your friends:</p>
+
+        <div th:if="${#lists.isEmpty(friends)}">
+            <p>You do not have any friends yet.</p>
+        </div>
+
+        <ul th:if="${!#lists.isEmpty(friends)}">
+            <li th:each="friend : ${friends}">
+                <span th:text="${friend.username}">Friend username</span>
+            </li>
+        </ul>
+        
+    </div>
+</body>
+</html>
+
+
