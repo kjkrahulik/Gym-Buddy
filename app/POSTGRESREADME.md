@@ -3,7 +3,7 @@ Installer configuration: set password to admin and don't change port number (sho
 
 Update your user variables via system environment. Edit the user variable "Path" to include the path to the postgres/18/bin folder in program files. Not sure what it is like for MAC OS. As long as you can run psql --version in terminal and it prints fine, then you're good.
 
-Open "psql" via windows explorer
+Open "psql" via windows explorer (or terminal via: psql -U postgres -h localhost)
 Create your profile:
 1. CREATE ROLE testdev WITH LOGIN PASSWORD 'admin' SUPERUSER CREATEDB CREATEROLE;
 verify using \du (there should be a role named testdev with 3 permissions)
