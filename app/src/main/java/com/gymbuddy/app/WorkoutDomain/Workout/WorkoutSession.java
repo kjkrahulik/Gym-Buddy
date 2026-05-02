@@ -1,24 +1,15 @@
 package com.gymbuddy.app.WorkoutDomain.Workout;
-
+ 
 import com.gymbuddy.app.WorkoutDomain.Exercise.Set;
+import com.gymbuddy.app.WorkoutDomain.Exercise.WeightedSet;
 import jakarta.persistence.*;
 import lombok.*;
-
+ 
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-
-/**
- * Represents a live or completed workout session.
- *
- * Inherits exercise management from AbstractWorkoutList and adds:
- *  - start/end timestamps
- *  - per-exercise set tracking via the WorkoutSessionSet interface
- *
- * 'sets' maps the same exercise order-key used in AbstractWorkoutList#exercises
- * to an ordered list of Set entities recorded during the session.
- */
+import java.util.stream.Collectors;
+ 
 @Entity
 @Table(name = "workout_sessions")
 @Data
@@ -26,82 +17,80 @@ import java.util.List;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class WorkoutSession extends WorkoutList implements WorkoutSessionSet {
-
+ 
     @Column(name = "start_time")
     private LocalTime startTime;
-
+ 
     @Column(name = "end_time")
     private LocalTime endTime;
-
+ 
     /**
-     * Key   = exercise order-key (matches AbstractWorkoutList#exercises key)
-     * Value = ordered list of sets performed for that exercise
+     * Flat list of all sets in this session.
+     * Each Set carries its own exerciseOrder so you always know
+     * which exercise it belongs to.
+     * Cascade = sets are persisted/deleted automatically with the session.
      */
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @MapKeyColumn(name = "exercise_order")
-    private HashMap<Integer, List<Set>> sets = new HashMap<>();
-
+    @JoinColumn(name = "workout_session_id")
+    @OrderBy("exerciseOrder ASC, orderIndex ASC")
+    private List<Set> sets = new ArrayList<>();
+ 
+    // ------------------------------------------------------------------
+    // Convenience — get all sets for one exercise as an ordered list
+    // ------------------------------------------------------------------
+ 
+    public List<Set> getSetsByExercise(int exerciseKey) {
+        return sets.stream()
+            .filter(s -> s.getExerciseOrder() == exerciseKey)
+            .collect(Collectors.toList());
+    }
+ 
     // ------------------------------------------------------------------
     // WorkoutSessionSet implementation
     // ------------------------------------------------------------------
-
-    /**
-     * {@inheritDoc}
-     *
-     * Creates a new WeightedSet and appends it to the exercise's set list.
-     * If no list exists yet for this exercise key, one is created automatically.
-     */
+ 
     @Override
     public void addSet(int exerciseKey, float weight, int reps, LocalTime time) {
         if (!exercises.containsKey(exerciseKey)) {
             throw new IllegalArgumentException(
-                "No exercise found at order-key " + exerciseKey + ". Add the exercise first."
+                "No exercise at order-key " + exerciseKey + ". Add the exercise first."
             );
         }
-
-        com.gymbuddy.app.WorkoutDomain.Exercise.WeightedSet newSet =
-            new com.gymbuddy.app.WorkoutDomain.Exercise.WeightedSet();
+ 
+        WeightedSet newSet = new WeightedSet();
         newSet.setWeight(weight);
         newSet.setReps(reps);
         newSet.setTime(time);
-
-        // Auto-assign the order index within this exercise's set list
-        List<Set> exerciseSets = sets.computeIfAbsent(exerciseKey, k -> new ArrayList<>());
-        newSet.setOrderIndex(exerciseSets.size());
-        exerciseSets.add(newSet);
+        newSet.setExerciseOrder(exerciseKey);
+ 
+        // Order index = how many sets already exist for this exercise
+        long existingCount = sets.stream()
+            .filter(s -> s.getExerciseOrder() == exerciseKey)
+            .count();
+        newSet.setOrderIndex((int) existingCount);
+ 
+        sets.add(newSet);
     }
-
-    /**
-     * {@inheritDoc}
-     */
+ 
     @Override
     public boolean removeSet(int exerciseKey, int order) {
-        List<Set> exerciseSets = sets.get(exerciseKey);
-        if (exerciseSets == null || order < 0 || order >= exerciseSets.size()) {
-            return false;
-        }
-        exerciseSets.remove(order);
-        return true;
+        List<Set> exerciseSets = getSetsByExercise(exerciseKey);
+        if (order < 0 || order >= exerciseSets.size()) return false;
+        return sets.remove(exerciseSets.get(order));
     }
-
-    /**
-     * {@inheritDoc}
-     */
+ 
     @Override
     public boolean updateSet(int exerciseKey, int order, float weight, int reps, LocalTime time) {
-        List<Set> exerciseSets = sets.get(exerciseKey);
-        if (exerciseSets == null || order < 0 || order >= exerciseSets.size()) {
-            return false;
-        }
-
+        List<Set> exerciseSets = getSetsByExercise(exerciseKey);
+        if (order < 0 || order >= exerciseSets.size()) return false;
+ 
         Set target = exerciseSets.get(order);
-
-        // Update fields common to WeightedSet; extend here if TimedSet is also used
-        if (target instanceof com.gymbuddy.app.WorkoutDomain.Exercise.WeightedSet ws) {
+        if (target instanceof WeightedSet ws) {
             ws.setWeight(weight);
             ws.setReps(reps);
             ws.setTime(time);
+            return true;
         }
-        return true;
+        return false;
     }
 }
