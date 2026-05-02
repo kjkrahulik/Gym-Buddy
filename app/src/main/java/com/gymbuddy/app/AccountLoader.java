@@ -22,7 +22,7 @@ public class AccountLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        AccountTest user = new AccountTest();
+        /**AccountTest user = new AccountTest();
         if (accountTestRepository.findByUsername("dan").isEmpty()) {
 
             user.setUsername("dan");
@@ -40,7 +40,7 @@ public class AccountLoader implements CommandLineRunner {
         System.out.println("User ready " + user.getUsername());
         // test email
         authService.requestPasswordReset(user.getUsername());
-        
+        **/
 
     }
 }
