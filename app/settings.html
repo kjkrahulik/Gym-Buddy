@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gym Buddy - Account Settings</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+    <style>
+        .settings-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 2rem;
+        }
+
+        .settings-header {
+            margin-bottom: 2rem;
+        }
+
+        .settings-header h1 {
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .settings-header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .settings-tabs {
+            display: flex;
+            border-bottom: 2px solid #dee2e6;
+            margin-bottom: 2rem;
+        }
+
+        .tab {
+            padding: 1rem 2rem;
+            cursor: pointer;
+            font-weight: 600;
+            color: #6c757d;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            color: #007bff;
+            border-bottom-color: #007bff;
+        }
+
+        .tab:hover {
+            color: #0056b3;
+        }
+
+        .settings-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .settings-card h2 {
+            color: #333;
+            font-size: 1.5rem;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .current-goal-card {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-left: 4px solid #007bff;
+        }
+
+        .current-goal-card h3 {
+            color: #495057;
+            margin-top: 0;
+        }
+
+        .goal-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .stat-box {
+            background-color: white;
+            padding: 1rem;
+            border-radius: 6px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #444;
+        }
+
+        .goal-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .goal-card {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .goal-card:hover {
+            border-color: #007bff;
+            transform: translateY(-2px);
+        }
+
+        .goal-card.selected {
+            border-color: #007bff;
+            background-color: #f0f8ff;
+        }
+
+        .goal-card h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .goal-card p {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0;
+        }
+
+        .time-commitment-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .time-option {
+            flex: 1;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 1rem;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .time-option:hover {
+            border-color: #007bff;
+        }
+
+        .time-option.selected {
+            border-color: #007bff;
+            background-color: #f0f8ff;
+        }
+
+        .time-option h4 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .days-slider {
+            width: 100%;
+            margin: 1rem 0;
+        }
+
+        .days-display {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #007bff;
+            margin: 0.5rem 0;
+        }
+
+        .days-text {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .btn-submit {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 1rem;
+            font-weight: 600;
+        }
+
+        .btn-submit:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-cancel {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-right: 1rem;
+            font-weight: 600;
+        }
+
+        .btn-cancel:hover {
+            background-color: #545b62;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border: 1px solid #f5c6cb;
+        }
+
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border: 1px solid #c3e6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="settings-container">
+        <div class="settings-header">
+            <h1>Account Settings</h1>
+            <p>Manage your account information and fitness goals</p>
+        </div>
+
+        <div class="settings-tabs">
+            <div class="tab active" onclick="showTab('profile')">Profile</div>
+            <div class="tab" onclick="showTab('security')">Security</div>
+            <div class="tab" onclick="showTab('goals')">Fitness Goals</div>
+            <div class="tab" onclick="showTab('notifications')">Notifications</div>
+        </div>
+
+        <!-- Error/Success Messages -->
+        <div th:if="${errorMessage}" class="error-message" th:text="${errorMessage}"></div>
+        <div th:if="${successMessage}" class="success-message" th:text="${successMessage}"></div>
+
+        <!-- Current Goal -->
+        <div class="settings-card" id="goalsTab">
+            <h2>Current Fitness Goal</h2>
+
+            <div class="current-goal-card" th:if="${goal}">
+                <h3>Your Current Goal</h3>
+                <div class="goal-stats">
+                    <div class="stat-box">
+                        <div class="stat-value" th:text="${goal.goalType}">BEGINNER</div>
+                        <div class="stat-label">Goal Type</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" th:text="${goal.workoutDays}">3</div>
+                        <div class="stat-label">Workout Days/Week</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" th:text="${goal.timeCommitmentDescription}">≤ 45 min</div>
+                        <div class="stat-label">Time Commitment</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="current-goal-card" th:unless="${goal}">
+                <h3>No Goal Set Yet</h3>
+                <p>You haven't set up your fitness goal yet. Create one now to get personalized workout plans.</p>
+                <a th:href="@{/account/goal}" class="btn-submit" style="background-color: #28a745;">Set Up Goal</a>
+            </div>
+
+            <!-- Update Goal Form -->
+            <h2 style="margin-top:119rem;">Update Fitness Goal</h2>
+            <form th:action="@{/account/update-goal}" method="post">
+                <!-- Goal Type Selection -->
+                <div class="form-group">
+                    <label for="updateGoalType">Select Your Fitness Goal</label>
+                    <div class="goal-options" id="updateGoalTypeOptions">
+                        <div th:each="goalType : ${goalTypes}" class="goal-card" onclick="selectUpdateGoalType(this, '[[${goalType}]]')">
+                            <h3 th:text="${goalType}">BEGINNER</h3>
+                            <p th:text="${goalType.tipMessage}">Focus on form and consistency...</p>
+                        </div>
+                    </div>
+                    <input type="hidden" id="updateGoalType" name="goalType" th:value="${goal?.goalType ?: goalTypes[0]}" />
+                </div>
+
+                <!-- Time Commitment -->
+                <div class="form-group">
+                    <label>How much time can you commit per workout?</label>
+                    <div class="time-commitment-group">
+                        <div class="time-option" onclick="selectUpdateTimeCommitment(this, false)">
+                            <h4>≤ 45 minutes</h4>
+                            <p>Short, focused workouts</p>
+                        </div>
+                        <div class="time-option" onclick="selectUpdateTimeCommitment(this, true)">
+                            <h4>> 45 minutes</h4>
+                            <p>Extended workout sessions</p>
+                        </div>
+                    </div>
+                    <input type="hidden" id="updateTimeCommitment" name="timeCommitment" th:value="${goal?.timeCommitment ?: false}" />
+                </div>
+
+                <!-- Workout Days -->
+                <div class="form-group">
+                    <label for="updateWorkoutDays">How many days per week can you workout?</label>
+                    <input type="range" id="updateWorkoutDaysSlider" name="workoutDays" min="1" max="6"
+                           th:value="${goal?.workoutDays ?: 3}" class="days-slider"
+                           oninput="updateUpdateDaysDisplay(this.value)">
+                    <div class="days-display">
+                        <span id="updateDaysValue" th:text="${goal?.workoutDays ?: 3}">3</span> days/week
+                    </div>
+                    <div class="days-text">
+                        <span id="updateDaysDescription">Push/Pull/Legs split</span>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <a th:href="@{/account/settings}" class="btn-cancel">Cancel</a>
+                    <button type="submit" class="btn-submit">Update Fitness Goal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Tab Switching
+        function showTab(tabName) {
+            // Update tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Hide all content areas (in real app, you'd load different content)
+        }
+
+        // Update Goal Type Selection
+        function selectUpdateGoalType(element, goalType) {
+            // Remove selected class from all goal cards
+            document.querySelectorAll('#updateGoalTypeOptions .goal-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            // Add selected class to clicked card
+            element.classList.add('selected');
+
+            // Update hidden input
+            document.getElementById('updateGoalType').value = goalType;
+        }
+
+        // Update Time Commitment Selection
+        function selectUpdateTimeCommitment(element, value) {
+            // Remove selected class from all time options
+            document.querySelectorAll('.time-commitment-group .time-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+
+            // Add selected class to clicked option
+            element.classList.add('selected');
+
+            // Update hidden input
+            document.getElementById('updateTimeCommitment').value = value;
+        }
+
+        // Update Workout Days Slider
+        function updateUpdateDaysDisplay(value) {
+            document.getElementById('updateDaysValue').textContent = value;
+
+            // Update description based on days
+            const descriptions = {
+                1: 'Full Body split (1 day/week)',
+                2: 'Upper/Lower split (2 days/week)',
+                3: 'Push/Pull/Legs split (3 days/week)',
+                4: 'Upper/Lower split x2 (4 days/week)',
+                5: 'Push/Pull/Legs/Upper/Lower split (5 days/week)',
+                6: 'Push/Pull/Legs split x2 (6 days/week)'
+            };
+
+            document.getElementById('updateDaysDescription').textContent = descriptions[value];
+        }
+
+        // Initialize update form selections on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Select current goal type
+            const currentGoal = document.getElementById('updateGoalType').value;
+            const goalCards = document.querySelectorAll('#updateGoalTypeOptions .goal-card');
+            goalCards.forEach(card => {
+                if (card.querySelector('h3').textContent === currentGoal) {
+                    card.classList.add('selected');
+                }
+            });
+
+            // Select current time commitment
+            const currentTime = document.getElementById('updateTimeCommitment').value === 'true';
+            const timeOptions = document.querySelectorAll('.time-commitment-group .time-option');
+            if (currentTime) {
+                timeOptions[1].classList.add('selected'); // > 45 minutes
+            } else {
+                timeOptions[0].classList.add('selected'); // ≤ 45 minutes
+            }
+
+            // Initialize days display
+            const currentDays = document.getElementById('updateWorkoutDaysSlider').value;
+            updateUpdateDaysDisplay(currentDays);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Login - Gym Buddy</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            position: relative;
+            z-index: 1;
+            max-width: 450px;
+            width: 100%;
+            background: #1e1e1e;
+            padding: 40px 32px;
+            border-radius: 0;
+            border-top: 4px solid #c44b1b;
+            border-bottom: 1px solid #3d3d3d;
+            clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 0 100%);
+            animation: rise 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .login-container::after {
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            width: 0; height: 0;
+            border-style: solid;
+            border-width: 0 28px 28px 0;
+            border-color: transparent #2a2a2a transparent transparent;
+        }
+
+        .login-container h2 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 32px;
+            letter-spacing: -0.5px;
+            line-height: 1;
+            text-transform: uppercase;
+            color: #e9e5dc;
+            font-size: clamp(28px, 5vw, 40px);
+        }
+
+        .login-container h2::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 3px;
+            background: #c44b1b;
+            margin: 12px auto 0;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            text-align: left;
+            margin: 0 0 8px;
+            color: #8a867e;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #3d3d3d;
+            border-radius: 0;
+            background-color: #2a2a2a;
+            color: #e9e5dc;
+            font-size: 14px;
+            font-family: 'Barlow', sans-serif;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #c44b1b;
+            box-shadow: 0 0 0 2px rgba(196, 75, 27, 0.25);
+        }
+
+        .error-message {
+            color: #ff6b6b;
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 12px 16px;
+            background: rgba(255, 107, 107, 0.1);
+            border-left: 3px solid #ff6b6b;
+            font-family: 'Barlow', sans-serif;
+            font-size: 14px;
+        }
+
+        .success-message {
+            color: #51cf66;
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 12px 16px;
+            background: rgba(81, 207, 102, 0.1);
+            border-left: 3px solid #51cf66;
+            font-family: 'Barlow', sans-serif;
+            font-size: 14px;
+        }
+
+        .btn {
+            width: 100%;
+            background: #c44b1b;
+            color: white;
+            padding: 14px 24px;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            border: none;
+            border-radius: 0;
+            cursor: pointer;
+            transition: background 0.15s, transform 0.15s, letter-spacing 0.2s, box-shadow 0.15s;
+            text-decoration: none;
+            clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+            margin-top: 8px;
+        }
+
+        .btn:hover {
+            background: #e0581f;
+            letter-spacing: 3px;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(196, 75, 27, 0.35);
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid #3d3d3d;
+        }
+
+        .register-link p {
+            color: #8a867e;
+            font-size: 14px;
+        }
+
+        .register-link a {
+            color: #c44b1b;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .register-link a:hover {
+            color: #e0581f;
+        }
+
+        @keyframes rise {
+            from { opacity: 0; transform: translateY(28px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Login to Gym Buddy</h2>
+
+        <div th:if="${param.error}" class="error-message">
+            Invalid username or password.
+        </div>
+
+        <div th:if="${param.logout}" class="success-message" style="border-left-color: #51cf66;">
+            You have been logged out successfully.
+        </div>
+
+        <form th:action="@{/login}" method="post">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required autofocus>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+
+            <button type="submit" class="btn">Login</button>
+        </form>
+
+        <div class="register-link">
+            <p>Don't have an account? <a th:href="@{/register}">Register here</a></p>
+        </div>
+    </div>
+</body>
+</html>

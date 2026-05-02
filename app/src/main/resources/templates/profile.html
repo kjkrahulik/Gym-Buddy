@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymBuddy - Profile</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div class="container">
+        <h1>Your Profile</h1>
+        <p class="subtitle">Welcome back!</p>
+
+        <div class="profile-header">
+            <div class="profile-info">
+                <div id="avatar" class="avatar avatar-sm">
+                    <span id="avatar-initial" th:text="${initial}"></span>
+                </div>
+                <div class="profile-details">
+                    <h3 th:text="${username}"></h3>
+                    <p th:text="${email}"></p>
+                    <p th:if="${bio != ''}" th:text="${bio}"></p>
+                </div>
+            </div>
+
+            <div class="stats-container">
+                <div class="stat-box">
+                    <p class="stat-label">Workouts</p>
+                    <p class="stat-value">12</p>
+                </div>
+                <div class="stat-box">
+                    <p class="stat-label">Friends</p>
+                    <p class="stat-value">8</p>
+                </div>
+                <div class="stat-box">
+                    <p class="stat-label">Days Streak</p>
+                    <p class="stat-value">7</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="quick-actions">
+            <h3 class="quick-actions-title">Quick Actions</h3>
+            <div class="quick-actions-grid">
+                <button class="cta-button action-button" id="create-workout-btn">
+                    <span>🏋️</span> Create New Workout
+                </button>
+                <button class="cta-button secondary action-button" onclick="generateWorkout()">
+                    <span>🎯</span> Add Goals to Account
+                </button>
+                <button class="cta-button secondary action-button" id="generate-workout-btn" onclick="generateWorkout()">
+                    <span>💪</span> Generate Personal Workout
+                </button>
+                <a th:href="@{/create-workout-template}" class="cta-button secondary action-button">
+                    <span>📝</span> Make Workout Template
+                </a>
+                <a th:href="@{/workout-templates}" class="cta-button secondary action-button">
+                    <span>📋</span> View Saved Templates
+                </a>
+                <a th:href="@{/leaderboard}" class="cta-button secondary action-button">
+                    <span>🏆</span> View Leaderboard
+                </a>
+                <button class="cta-button secondary action-button">
+                    <span>👥</span> Find Friends
+                </button>
+                <a th:href="@{/account-settings}" class="cta-button action-button">
+                    <span>⚙️</span> Account Settings
+                </a>
+            </div>
+        </div>
+
+        <div class="recent-activity">
+            <h3 class="recent-activity-title">Recent Activity</h3>
+            <div class="recent-activity-list">
+                <p class="recent-activity-item">✅ Completed "Leg Day" workout - Yesterday</p>
+                <p class="recent-activity-item">👥 Added friend: Jane Smith - 2 days ago</p>
+                <p class="recent-activity-item">🎯 Set new goal: "Run 5K" - 3 days ago</p>
+                <p class="recent-activity-item">💪 Logged "Chest Press" PR: 225 lbs - 5 days ago</p>
+            </div>
+        </div>
+
+        <div class="page-actions-section">
+            <a th:href="@{/}" class="cta-button secondary no-decoration">Back to Home</a>
+            <form th:action="@{/logout}" method="post" class="inline-block ml-lg">
+                <button type="submit" class="cta-button">Logout</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Generate Workout Modal -->
+    <div id="generateModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:1000; align-items:center; justify-content:center;">
+        <div style="background:var(--concrete); border:1px solid var(--steel); border-radius:8px; padding:2rem; width:90%; max-width:400px;">
+            <h3 style="color:var(--chalk); margin-top:0;">Generate Personal Workout</h3>
+            <div style="margin-bottom:1rem;">
+                <label style="color:var(--chalk-dim); display:block; margin-bottom:0.5rem;">Goal Type</label>
+                <select id="modalGoalType" style="width:100%; padding:0.75rem; background:var(--iron); border:1px solid var(--steel); color:var(--chalk); border-radius:6px;">
+                    <option value="BEGINNER">Beginner</option>
+                    <option value="BULKING">Bulking</option>
+                    <option value="CUTTING">Cutting</option>
+                    <option value="WEIGHT_LOSS">Weight Loss</option>
+                </select>
+            </div>
+            <div style="margin-bottom:1rem;">
+                <label style="color:var(--chalk-dim); display:block; margin-bottom:0.5rem;">Days Per Week (1–6)</label>
+                <input id="modalDays" type="number" min="1" max="6" value="3" style="width:100%; padding:0.75rem; background:var(--iron); border:1px solid var(--steel); color:var(--chalk); border-radius:6px; box-sizing:border-box;">
+            </div>
+            <div style="margin-bottom:1.5rem;">
+                <label style="color:var(--chalk-dim);">
+                    <input id="modalExtended" type="checkbox" style="margin-right:8px;">
+                    Extended sessions (&gt;45 min)
+                </label>
+            </div>
+            <div style="display:flex; gap:1rem;">
+                <button onclick="closeGenerateModal()" style="flex:1; padding:0.75rem; background:var(--steel); color:var(--chalk); border:none; border-radius:6px; cursor:pointer;">Cancel</button>
+                <button id="modalGenerateBtn" onclick="submitGenerate()" style="flex:1; padding:0.75rem; background:var(--rust); color:white; border:none; border-radius:6px; cursor:pointer; font-weight:600;">Generate</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const createWorkoutBtn = document.getElementById('create-workout-btn');
+            if (createWorkoutBtn) {
+                createWorkoutBtn.addEventListener('click', function() {
+                    window.location.href = '/workout-session';
+                });
+            }
+        });
+
+        function generateWorkout() {
+            document.getElementById('generateModal').style.display = 'flex';
+        }
+
+        function closeGenerateModal() {
+            document.getElementById('generateModal').style.display = 'none';
+        }
+
+        async function submitGenerate() {
+            const btn = document.getElementById('modalGenerateBtn');
+            const profileBtn = document.getElementById('generate-workout-btn');
+            btn.textContent = 'Generating...';
+            btn.disabled = true;
+
+            const body = {
+                goalType:       document.getElementById('modalGoalType').value,
+                workoutDays:    parseInt(document.getElementById('modalDays').value),
+                timeCommitment: document.getElementById('modalExtended').checked
+            };
+
+            try {
+                const res = await fetch('/api/workout-templates/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Generation failed');
+
+                closeGenerateModal();
+                profileBtn.innerHTML = '<span style="margin-right:12px;">✅</span> Workout Generated!';
+                setTimeout(() => {
+                    window.location.href = '/workout-templates';
+                }, 1000);
+            } catch (err) {
+                btn.textContent = 'Generate';
+                btn.disabled = false;
+                alert('Error: ' + err.message);
+            }
+        }
+    </script>
+</body>
+</html>

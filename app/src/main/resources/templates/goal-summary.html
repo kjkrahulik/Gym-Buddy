@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gym Buddy - Goal Summary</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .summary-container {
+            position: relative;
+            z-index: 1;
+            max-width: 600px;
+            width: 92vw;
+            margin: 2rem auto;
+            padding: 52px 48px 48px;
+            background-color: var(--concrete);
+            border-top: 4px solid var(--rust);
+            border-bottom: 1px solid var(--steel);
+            clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 0 100%);
+            animation: rise 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .summary-container::after {
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            width: 0; height: 0;
+            border-style: solid;
+            border-width: 0 28px 28px 0;
+            border-color: transparent var(--smoke) transparent transparent;
+        }
+
+        @keyframes rise {
+            from { opacity: 0; transform: translateY(28px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .summary-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .summary-header h1 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 900;
+            letter-spacing: -1px;
+            text-transform: uppercase;
+            color: var(--chalk);
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            font-size: 0;
+        }
+
+        .summary-header h1::before {
+            content: '🎉 GOAL SAVED';
+            font-size: 1.8rem;
+            color: var(--rust);
+        }
+
+        .summary-header p {
+            color: var(--chalk-dim);
+            font-size: 1rem;
+        }
+
+        .goal-card-large {
+            background-color: var(--iron);
+            border-radius: 0;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--steel);
+            border-left: 5px solid var(--rust);
+        }
+
+        .goal-details {
+            margin-bottom: 1rem;
+        }
+
+        .goal-detail {
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--steel);
+        }
+
+        .goal-detail:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .goal-detail h3 {
+            color: var(--chalk);
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .goal-detail p {
+            color: var(--chalk-dim);
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        .goal-detail strong {
+            color: var(--rust);
+            font-weight: 600;
+        }
+
+        .tip-box {
+            background-color: rgba(196, 75, 27, 0.1);
+            border-radius: 0;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            border-left: 4px solid var(--rust);
+            border: 1px solid var(--steel);
+            border-left: 4px solid var(--rust);
+        }
+
+        .tip-box h3 {
+            color: var(--rust);
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .tip-box p {
+            color: var(--chalk-dim);
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 13px 28px;
+            font-size: 0.95rem;
+            border-radius: 0;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s ease;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            flex: 1;
+            min-width: 150px;
+            border: none;
+            clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+        }
+
+        .btn-primary {
+            background-color: var(--rust);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--rust-hot);
+            text-decoration: none;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(196, 75, 27, 0.35);
+        }
+
+        .btn-secondary {
+            background-color: var(--steel);
+            color: var(--chalk-dim);
+            border: 1px solid var(--steel);
+            clip-path: none;
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--smoke);
+            border-color: var(--chalk-dim);
+            color: var(--chalk);
+            text-decoration: none;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--chalk-dim);
+            border: 1px solid var(--steel);
+            clip-path: none;
+        }
+
+        .btn-outline:hover {
+            background-color: var(--smoke);
+            color: var(--chalk);
+            border-color: var(--chalk-dim);
+        }
+
+        .workout-plan {
+            display: inline-block;
+            background-color: rgba(196, 75, 27, 0.1);
+            color: var(--rust);
+            padding: 0.5rem 1rem;
+            border-radius: 0;
+            font-weight: bold;
+            border: 1px solid var(--rust);
+        }
+
+        .days-badge {
+            display: inline-block;
+            background-color: rgba(196, 75, 27, 0.1);
+            color: var(--rust);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-left: 0.5rem;
+            border: 1px solid var(--rust);
+        }
+
+        .time-badge {
+            display: inline-block;
+            background-color: rgba(212, 130, 10, 0.1);
+            color: var(--amber);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-left: 0.5rem;
+            border: 1px solid var(--amber);
+        }
+
+        .next-steps {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--steel);
+        }
+
+        .next-steps h3 {
+            color: var(--chalk);
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .step-card {
+            background-color: var(--smoke);
+            padding: 1rem;
+            border-radius: 0;
+            border: 1px solid var(--steel);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .step-card:hover {
+            border-color: var(--rust);
+            background-color: var(--iron);
+        }
+
+        .step-card h4 {
+            color: var(--rust);
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .step-card p {
+            color: var(--chalk-dim);
+            font-size: 0.85rem;
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .generate-btn-wrapper {
+            margin-top: 1.5rem;
+        }
+
+        .generate-btn-wrapper .btn {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="summary-container">
+        <div class="summary-header">
+            <h1>Goal Saved Successfully!</h1>
+            <p>Your personalized fitness goal has been saved</p>
+        </div>
+
+        <!-- Goal Summary Card -->
+        <div class="goal-card-large">
+            <div class="goal-details">
+                <div class="goal-detail">
+                    <h3>Goal Type</h3>
+                    <p th:if="${goal}">
+                        <strong th:text="${goal.goalType}">BEGINNER</strong>
+                        <span th:if="${goal.goalType?.name() == 'BEGINNER'}" class="days-badge">Great for New Starters!</span>
+                        <span th:if="${goal.goalType?.name() == 'BULKING'}" class="days-badge">Muscle Building</span>
+                        <span th:if="${goal.goalType?.name() == 'CUTTING'}" class="days-badge">Fat Loss Focus</span>
+                        <span th:if="${goal.goalType?.name() == 'WEIGHT_LOSS'}" class="days-badge">Weight Management</span>
+                    </p>
+                </div>
+
+                <div class="goal-detail">
+                    <h3>Workout Schedule</h3>
+                    <p th:if="${goal}">
+                        <strong th:text="${goal.workoutDays}">3</strong> days per week
+                        <span class="days-badge" th:if="${goal.workoutDays == 1}">Full Body</span>
+                        <span class="days-badge" th:if="${goal.workoutDays == 2}">Upper/Lower</span>
+                        <span class="days-badge" th:if="${goal.workoutDays == 3}">Push/Pull/Legs</span>
+                        <span class="days-badge" th:if="${goal.workoutDays == 4}">Upper/Lower x2</span>
+                        <span class="days-badge" th:if="${goal.workoutDays == 5}">Push/Pull/Legs/Upper/Lower</span>
+                        <span class="days-badge" th:if="${goal.workoutDays == 6}">Push/Pull/Legs x2</span>
+                    </p>
+                </div>
+
+                <div class="goal-detail">
+                    <h3>Time Commitment</h3>
+                    <p th:if="${goal}">
+                        <span th:text="${goal.timeCommitmentDescription}">45 minutes or less per day</span>
+                        <span th:if="${goal?.timeCommitment}" class="time-badge">Extended Sessions</span>
+                        <span th:unless="${goal?.timeCommitment}" class="time-badge">Quick Workouts</span>
+                    </p>
+                </div>
+
+                <div class="goal-detail" th:if="${goal}">
+                    <h3>Workout Plan</h3>
+                    <p>
+                        <span class="workout-plan">Generated Plan</span>
+                        <br>
+                        <small>Your personalized workout plan will be generated based on these settings.</small>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Goal Tip -->
+            <div class="tip-box" th:if="${goal}">
+                <h3>📝 Pro Tip</h3>
+                <p th:text="${goal.goalTip}">Focus on form and consistency - start with lighter weights to learn proper technique</p>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <a th:href="@{/}" class="btn btn-primary">Go to Dashboard</a>
+            <a th:href="@{/account/goal}" class="btn btn-secondary">Edit Goal</a>
+        </div>
+
+        <!-- Generate Personal Workout Button -->
+        <div class="generate-btn-wrapper">
+            <button id="generateBtn" onclick="generatePersonalWorkout()" class="btn btn-primary">
+                Generate Personal Workout
+            </button>
+        </div>
+
+        <!-- Next Steps Information -->
+        <div class="next-steps">
+            <h3>What's Next?</h3>
+            <div class="steps-grid">
+                <div class="step-card" onclick="generatePersonalWorkout()">
+                    <h4>🏋️‍♀️ Generate Workout</h4>
+                    <p>Create personalized workout routines based on your goal.</p>
+                </div>
+                <div class="step-card">
+                    <h4>📅 Track Progress</h4>
+                    <p>Monitor your fitness journey with our tracking tools.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script th:inline="javascript">
+        const GOAL_TYPE       = /*[[${goal?.goalType}]]*/ 'BEGINNER';
+        const WORKOUT_DAYS    = /*[[${goal?.workoutDays}]]*/ 3;
+        const TIME_COMMITMENT = /*[[${goal?.timeCommitment}]]*/ false;
+
+        async function generatePersonalWorkout() {
+            const btn = document.getElementById('generateBtn');
+            btn.textContent = 'GENERATING...';
+            btn.disabled = true;
+            btn.style.opacity = '0.7';
+            btn.style.cursor = 'not-allowed';
+
+            try {
+                const res = await fetch('/api/workout-templates/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        goalType:       GOAL_TYPE,
+                        workoutDays:    WORKOUT_DAYS,
+                        timeCommitment: TIME_COMMITMENT
+                    })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Generation failed');
+
+                btn.textContent = 'WORKOUT GENERATED!';
+                setTimeout(() => { window.location.href = '/my-workout-templates.html'; }, 1000);
+            } catch (err) {
+                btn.textContent = 'GENERATE PERSONAL WORKOUT';
+                btn.disabled = false;
+                btn.style.opacity = '1';
+                btn.style.cursor = 'pointer';
+                alert('Error generating workout: ' + err.message);
+            }
+        }
+    </script>
+</body>
+</html>

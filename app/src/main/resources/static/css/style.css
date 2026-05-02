@@ -1,0 +1,6 @@
+/* Consolidated stylesheet - imports all CSS modules */
+@import url('./common.css');
+@import url('./layout.css');
+@import url('./components.css');
+@import url('./pages.css');
+@import url('./theme.css');

@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymBuddy - Set Your Fitness Goal</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        /* Custom styles for goal form */
+        h1 {
+            font-size: clamp(28px, 6vw, 46px);
+        }
+
+        h1::before,
+        h1::after {
+            content: none;
+        }
+
+        .goal-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 24px;
+        }
+
+        .goal-card {
+            border: 2px solid var(--steel);
+            border-radius: 0;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            background-color: var(--smoke);
+            clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+        }
+
+        .goal-card:hover {
+            border-color: var(--rust);
+            transform: translateY(-2px);
+            background-color: #2f2f2f;
+        }
+
+        .goal-card.selected {
+            border-color: var(--rust);
+            background-color: rgba(196, 75, 27, 0.1);
+        }
+
+        .goal-card h3 {
+            margin-top: 0;
+            color: var(--chalk);
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .goal-card p {
+            color: var(--chalk-dim);
+            font-size: 0.9rem;
+            margin-bottom: 0;
+            line-height: 1.5;
+        }
+
+        .time-commitment-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .time-option {
+            flex: 1;
+            border: 2px solid var(--steel);
+            border-radius: 0;
+            padding: 1.2rem;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+            background-color: var(--smoke);
+            clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+        }
+
+        .time-option:hover {
+            border-color: var(--rust);
+            background-color: #2f2f2f;
+        }
+
+        .time-option.selected {
+            border-color: var(--rust);
+            background-color: rgba(196, 75, 27, 0.1);
+        }
+
+        .time-option h4 {
+            margin-top: 0;
+            color: var(--chalk);
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 0.25rem;
+        }
+
+        .time-option p {
+            color: var(--chalk-dim);
+            font-size: 0.85rem;
+            margin-bottom: 0;
+        }
+
+        .days-slider {
+            width: 100%;
+            margin: 1rem 0;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            background: var(--smoke);
+            border-radius: 0;
+            border: 1px solid var(--steel);
+        }
+
+        .days-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--rust);
+            border: 2px solid var(--chalk);
+            border-radius: 0;
+            cursor: pointer;
+            transition: background 0.15s, transform 0.15s;
+        }
+
+        .days-slider::-webkit-slider-thumb:hover {
+            background: var(--rust-hot);
+            transform: scale(1.1);
+        }
+
+        .days-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: var(--rust);
+            border: 2px solid var(--chalk);
+            border-radius: 0;
+            cursor: pointer;
+            transition: background 0.15s, transform 0.15s;
+        }
+
+        .days-display {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--rust);
+            margin: 0.5rem 0;
+            font-family: 'Barlow Condensed', sans-serif;
+            letter-spacing: 1px;
+        }
+
+        .days-text {
+            color: var(--chalk-dim);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-group label {
+            display: block;
+            text-align: left;
+            margin: 0 0 8px 0;
+            color: var(--chalk-dim);
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+        }
+
+        .btn-submit {
+            background-color: var(--rust);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.15s, transform 0.15s, letter-spacing 0.2s, box-shadow 0.15s;
+            margin-top: 2rem;
+            clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+            border-radius: 0;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--rust-hot);
+            letter-spacing: 3px;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(196, 75, 27, 0.35);
+        }
+
+        .btn-submit:active {
+            transform: scale(0.97);
+        }
+
+        .message {
+            padding: 1rem;
+            border-radius: 0;
+            margin-bottom: 1rem;
+            border: 1px solid;
+            clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+        }
+
+        .error-message {
+            background-color: rgba(196, 75, 27, 0.1);
+            border-color: var(--rust);
+            color: var(--rust);
+        }
+
+        .success-message {
+            background-color: rgba(76, 175, 80, 0.1);
+            border-color: #4caf50;
+            color: #4caf50;
+        }
+
+        @media (max-width: 600px) {
+            .goal-options {
+                grid-template-columns: 1fr;
+            }
+            .time-commitment-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Set Your Fitness Goal</h1>
+        <p class="subtitle">Customize your workout plan</p>
+
+        <!-- Error/Success Messages -->
+        <div th:if="${errorMessage}" class="error-message" th:text="${errorMessage}"></div>
+        <div th:if="${successMessage}" class="success-message" th:text="${successMessage}"></div>
+
+        <form th:action="@{/account/goal}" method="post">
+            <!-- Goal Type Selection -->
+            <div class="form-group">
+                <label>Select Your Fitness Goal</label>
+                <div class="goal-options" id="goalTypeOptions">
+                    <div class="goal-card" onclick="selectGoalType(this, 'BEGINNER')">
+                        <h3>BEGINNER</h3>
+                        <p>Focus on form and consistency - start with lighter weights to learn proper technique</p>
+                    </div>
+                    <div class="goal-card" onclick="selectGoalType(this, 'BULKING')">
+                        <h3>BULKING</h3>
+                        <p>Focus on progressive overload and caloric surplus for muscle growth</p>
+                    </div>
+                    <div class="goal-card" onclick="selectGoalType(this, 'WEIGHT_LOSS')">
+                        <h3>WEIGHT LOSS</h3>
+                        <p>Combine cardio with strength training for optimal fat loss</p>
+                    </div>
+                    <div class="goal-card" onclick="selectGoalType(this, 'CUTTING')">
+                        <h3>CUTTING</h3>
+                        <p>Maintain protein intake while in caloric deficit to preserve muscle mass</p>
+                    </div>
+                </div>
+                <input type="hidden" id="goalType" name="goalType" th:value="${selectedGoal}" />
+            </div>
+
+            <!-- Time Commitment -->
+            <div class="form-group">
+                <label>How much time can you commit per workout?</label>
+                <div class="time-commitment-group">
+                    <div class="time-option" onclick="selectTimeCommitment(this, 'false')">
+                        <h4>≤ 45 minutes</h4>
+                        <p>Short, focused workouts</p>
+                    </div>
+                    <div class="time-option" onclick="selectTimeCommitment(this, 'true')">
+                        <h4>> 45 minutes</h4>
+                        <p>Extended workout sessions</p>
+                    </div>
+                </div>
+                <input type="hidden" id="timeCommitment" name="timeCommitment" th:value="${timeCommitment}" />
+            </div>
+
+            <!-- Workout Days -->
+            <div class="form-group">
+                <label for="workoutDays">How many days per week can you workout?</label>
+                <input type="range" id="workoutDaysSlider" name="workoutDays" min="1" max="6"
+                       th:value="${workoutDays != null ? workoutDays : 3}" class="days-slider"
+                       oninput="updateDaysDisplay(this.value)">
+                <div class="days-display">
+                    <span id="daysValue" th:if="${workoutDays != null}" th:text="${workoutDays}">3</span>
+                    <span id="daysValue" th:unless="${workoutDays != null}">3</span> days/week
+                </div>
+                <div class="days-text">
+                    <span id="daysDescription">Push/Pull/Legs split</span>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">Save My Fitness Goal</button>
+
+            <div style="margin-top: 2rem; text-align: center;">
+                <button type="button" onclick="window.location.href='/profile.html'" class="cta-button secondary">Back to Profile</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Goal Type Selection
+        function selectGoalType(element, goalType) {
+            console.log('Selecting goal:', goalType);
+            // Remove selected class from all goal cards
+            document.querySelectorAll('.goal-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            // Add selected class to clicked card
+            element.classList.add('selected');
+
+            // Update hidden input
+            document.getElementById('goalType').value = goalType;
+        }
+
+        // Time Commitment Selection
+        function selectTimeCommitment(element, value) {
+            console.log('Selecting time commitment:', value);
+            // Remove selected class from all time options
+            document.querySelectorAll('.time-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+
+            // Add selected class to clicked option
+            element.classList.add('selected');
+
+            // Update hidden input
+            document.getElementById('timeCommitment').value = value;
+        }
+
+        // Workout Days Slider
+        function updateDaysDisplay(value) {
+            console.log('Updating days display:', value);
+            const daysValueSpan = document.getElementById('daysValue');
+            if (daysValueSpan) {
+                daysValueSpan.textContent = value;
+            }
+
+            // Update description based on days
+            const descriptions = {
+                1: 'Full Body split (1 day/week)',
+                2: 'Upper/Lower split (2 days/week)',
+                3: 'Push/Pull/Legs split (3 days/week)',
+                4: 'Upper/Lower split x2 (4 days/week)',
+                5: 'Push/Pull/Legs/Upper/Lower split (5 days/week)',
+                6: 'Push/Pull/Legs split x2 (6 days/week)'
+            };
+
+            const daysDescription = document.getElementById('daysDescription');
+            if (daysDescription) {
+                daysDescription.textContent = descriptions[value] || 'Custom split';
+            }
+        }
+
+        // Initialize selections on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Initializing goal form...');
+
+            // Select default goal type from hidden input
+            const defaultGoal = document.getElementById('goalType').value;
+            console.log('Default goal:', defaultGoal);
+
+            if (defaultGoal) {
+                // Find and select the matching goal card
+                const goalCards = document.querySelectorAll('.goal-card');
+                goalCards.forEach(card => {
+                    const cardGoal = card.querySelector('h3').textContent.trim();
+                    console.log('Checking card:', cardGoal);
+                    if (cardGoal === defaultGoal) {
+                        card.classList.add('selected');
+                        console.log('Selected card:', cardGoal);
+                    }
+                });
+            }
+
+            // Select default time commitment
+            const defaultTime = document.getElementById('timeCommitment').value;
+            console.log('Default time:', defaultTime);
+            const timeOptions = document.querySelectorAll('.time-option');
+
+            if (defaultTime === 'true') {
+                timeOptions[1].classList.add('selected'); // > 45 minutes
+                console.log('Selected > 45 minutes');
+            } else {
+                timeOptions[0].classList.add('selected'); // ≤ 45 minutes
+                console.log('Selected ≤ 45 minutes');
+            }
+
+            // Initialize days display
+            const initialDays = document.getElementById('workoutDaysSlider').value;
+            console.log('Initial days:', initialDays);
+            updateDaysDisplay(initialDays);
+
+            // Test slider functionality
+            const slider = document.getElementById('workoutDaysSlider');
+            if (slider) {
+                slider.addEventListener('input', function(e) {
+                    console.log('Slider moved to:', e.target.value);
+                });
+                console.log('Slider event listener added');
+            }
+        });
+    </script>
+</body>
+</html>

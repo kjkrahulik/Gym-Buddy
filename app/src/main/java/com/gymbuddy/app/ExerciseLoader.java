@@ -19,15 +19,28 @@ public class ExerciseLoader implements CommandLineRunner {
 
 
     public void run(String... args) throws Exception {
-        if (exerciseRepository.count() == 0) {
+        System.out.println("ExerciseLoader: Checking if exercises need to be loaded...");
+        long count = exerciseRepository.count();
+        System.out.println("ExerciseLoader: Current exercise count in DB: " + count);
+
+        if (count == 0) {
+            System.out.println("ExerciseLoader: Loading exercises from JSON file...");
             ObjectMapper mapper = new ObjectMapper();
-            InputStream is = getClass().getResourceAsStream("/static/jsons/exercises.json");
+            InputStream is = getClass().getClassLoader().getResourceAsStream("static/jsons/exercises.json");
             if (is == null) {
+                System.err.println("ExerciseLoader: ERROR - Could not find exercises.json file");
                 throw new RuntimeException("Could not find exercises.json file");
             }
+            System.out.println("ExerciseLoader: Successfully opened exercises.json file");
             List<Exercise> exercises =
                 Arrays.asList(mapper.readValue(is, Exercise[].class));
+            System.out.println("ExerciseLoader: Parsed " + exercises.size() + " exercises from JSON");
+
+            // Save all exercises
             exerciseRepository.saveAll(exercises);
+            System.out.println("ExerciseLoader: Successfully saved " + exercises.size() + " exercises to database");
+        } else {
+            System.out.println("ExerciseLoader: Database already has exercises, skipping load");
         }
     }
 }

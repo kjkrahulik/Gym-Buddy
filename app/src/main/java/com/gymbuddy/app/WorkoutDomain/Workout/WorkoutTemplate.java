@@ -1,60 +1,20 @@
 package com.gymbuddy.app.WorkoutDomain.Workout;
-import java.util.ArrayList;
 
-import com.gymbuddy.app.WorkoutDomain.Exercise.Exercise;
-import com.gymbuddy.app.WorkoutDomain.Exercise.WorkoutExercise;
 import jakarta.persistence.*;
 import lombok.*;
+
 @Entity
 @Table(name = "workout_templates")
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
-public class WorkoutTemplate {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long workoutTemplateID;
-    private String workoutName;
-    private String workoutDescription;
-    private ArrayList<WorkoutExercise> exercises;
-    private int exerciseCount;
+@EqualsAndHashCode(callSuper = true)
+public class WorkoutTemplate extends WorkoutList {
 
-    /*public WorkoutTemplate(String workoutName, String workoutDescription) {
-        this.workoutName = workoutName;
-        this.workoutDescription = workoutDescription;
-        this.exercises = new ArrayList<WorkoutExercise>(5); // Initial capacity for 5 exercises
-        this.exerciseCount = 0;
+    public WorkoutTemplate(String listName, String notes) {
+        super();
+        this.listName = listName;
+        this.notes = notes;
+        this.numExercises = 0;
     }
 
-    public void addExercise(Exercise exercise, boolean isWeighted) {
-        WorkoutExercise workoutExercise;
-        if (isWeighted) {
-            workoutExercise = new WeightedExercise(exercise, exerciseCount);
-        } else {
-            workoutExercise = new TimedExercise(exercise, exerciseCount); // Default duration of 0 seconds
-        }
-        exercises.add(workoutExercise);
-        exerciseCount++;
-    }
-
-    public boolean deleteExercise(WorkoutExercise exercise) {
-        if (exercises.remove(exercise)) {
-            exerciseCount--;
-            return true;
-        } else {
-            return false; // Exercise not found in the list
-        }
-    }
-
-    public String getWorkoutName() {
-        return workoutName;
-    }
-
-    public String getWorkoutDescription() {
-        return workoutDescription;
-    }
-
-    public ArrayList<WorkoutExercise> getExercises() {
-        return exercises;
-    } */
 }

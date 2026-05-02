@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Not Found - Gym Buddy</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+        }
+
+        .error-container {
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .error-code {
+            font-family: 'Barlow Condensed', monospace;
+            font-size: 120px;
+            font-weight: 900;
+            color: #c44b1b;
+            margin: 0;
+            line-height: 1;
+            text-shadow: 0 4px 12px rgba(196, 75, 27, 0.3);
+        }
+
+        .error-title {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 36px;
+            font-weight: 700;
+            color: #e9e5dc;
+            margin: 16px 0 8px;
+            letter-spacing: 1px;
+        }
+
+        .error-message {
+            font-family: 'Barlow', sans-serif;
+            color: #8a867e;
+            font-size: 16px;
+            margin: 0 0 32px;
+            line-height: 1.6;
+        }
+
+        .error-details {
+            background: rgba(196, 75, 27, 0.1);
+            border-left: 4px solid #c44b1b;
+            padding: 20px;
+            margin-bottom: 32px;
+            border-radius: 4px;
+            text-align: left;
+        }
+
+        .error-details p {
+            margin: 0;
+            color: #8a867e;
+            font-size: 14px;
+            font-family: monospace;
+            word-break: break-all;
+        }
+
+        .error-details label {
+            display: block;
+            color: #c44b1b;
+            font-weight: bold;
+            margin-bottom: 4px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #c44b1b;
+            color: white;
+            padding: 14px 28px;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-decoration: none;
+            border: none;
+            border-radius: 0;
+            cursor: pointer;
+            transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+            clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+        }
+
+        .btn:hover {
+            background: #e0581f;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(196, 75, 27, 0.35);
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn.secondary {
+            background: transparent;
+            border: 2px solid #c44b1b;
+            color: #c44b1b;
+        }
+
+        .btn.secondary:hover {
+            background: rgba(196, 75, 27, 0.1);
+        }
+
+        @media (max-width: 600px) {
+            .error-code {
+                font-size: 80px;
+            }
+            .error-title {
+                font-size: 24px;
+            }
+            .actions {
+                flex-direction: column;
+            }
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <p class="error-code">404</p>
+        <h1 class="error-title">Page Not Found</h1>
+        <p class="error-message">
+            Oops! The page you're looking for doesn't exist. It might have been moved or deleted.
+        </p>
+
+        <div class="error-details">
+            <label>Requested Path:</label>
+            <p th:text="${path}"></p>
+        </div>
+
+        <div class="actions">
+            <a th:href="@{/}" class="btn">Go to Home</a>
+            <button onclick="window.history.back()" class="btn secondary">Go Back</button>
+        </div>
+    </div>
+</body>
+</html>

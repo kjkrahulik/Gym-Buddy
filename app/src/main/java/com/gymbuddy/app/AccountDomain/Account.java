@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import com.gymbuddy.app.SocialDomain.Invitation;
+import com.gymbuddy.app.WorkoutDomain.Workout.WorkoutSession;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -13,9 +17,12 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Transient;
 import jakarta.persistence.CascadeType;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.FetchType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -30,17 +37,26 @@ import com.gymbuddy.app.SocialDomain.FriendRequest;
 @Entity
 @Table(name = "accounts")
 @Data
+@NoArgsConstructor
 public class Account {
     /** Holds account ID */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID accountID;
     /** Holds user email */
+    @Column(unique = true, nullable = false)
     private String email;
     /** Holds users username */
+    @Column(unique = true, nullable = false)
     private String username;
     /** Holds users password */
     private String password;
+
+    /** User roles for authorization */
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "account_roles", joinColumns = @JoinColumn(name = "account_id"))
+    @Column(name = "role")
+    private List<String> roles = new ArrayList<>();
 
 
     //List of friends of the user
@@ -66,7 +82,7 @@ public class Account {
     private List<FriendRequest> sentRequests = new ArrayList<>();
 
     /** Object holding users Profile */
-    @Transient
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
     private Profile profile;
     /** Object with users goal */
     @Transient
@@ -75,13 +91,20 @@ public class Account {
     @Transient
     private Diet diet;
 
+    @Transient
+    private List<WorkoutSession> workoutSession;
+    @Transient
+    private List<Invitation> invitationList;
+    @Transient
+    private List<Account> friendList;
 
-
-    /** Constructor to create an account 
+    /** Constructor to create an account
      * Automatically give account and accountID
     */
     public Account(String email, String username, String password) {
         setAccountDetails(email, username, password);
+        // Add default role for new users
+        this.roles.add("USER");
     }
 
     private void setAccountDetails(String email, String username, String password){
@@ -92,6 +115,13 @@ public class Account {
         this.email = email;
         this.username = username;
         this.password = password;
+    }
+
+    /** Add a role to the account */
+    public void addRole(String role) {
+        if (!roles.contains(role)) {
+            roles.add(role);
+        }
     }
 
     private void validateAccountEmail(String email){
@@ -109,6 +139,65 @@ public class Account {
         if (password == null || password.trim().isEmpty()) {
             throw new IllegalArgumentException("Account holder password cannot be null or empty");
         }
+    }
+
+    public void setEmail(String email) {
+        validateAccountEmail(email);
+        this.email = email;
+    }
+
+    public void setUsername(String username) {
+        validateAccountUsername(username);
+        this.username = username;
+    }
+
+    public void setPassword(String password) {
+        validateAccountPassword(password);
+        this.password = password;
+    }
+
+    public Profile getProfile() {
+        return profile;
+    }
+
+    /**
+     * Sets the profile for this account (for creating accounts with profiles)
+     */
+    public void setProfile(Profile profile) {
+        this.profile = profile;
+    }
+
+    public Goal getGoal() {
+        return goal;
+    }
+
+    public Diet getDiet() {
+        return diet;
+    }
+
+    /**
+     * Gets the profile picture as InputStream (for image display)
+     */
+    public java.io.InputStream getProfilePictureInputStream() {
+        if (profile == null) {
+            return null;
+        }
+        return profile.getProfilePictureInputStream();
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    /**
+     * Gets the account ID (UUID)
+     */
+    public UUID getAccountID() {
+        return accountID;
     }
 
     public void addNotification(Notification notification) {
@@ -137,4 +226,3 @@ public class Account {
     }
     
 }
-

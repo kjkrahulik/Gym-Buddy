@@ -1,65 +1,93 @@
 package com.gymbuddy.app.AccountDomain;
-import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.security.SecureRandom;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import com.gymbuddy.app.Repositories.AccountRepository;
 
 /**
  * Handles authentication-related operations such as login,
  * logout, password reset, and account creation.
  */
-public class AuthService implements Authentication {
+@Service
+public class AuthService {
 
-    // Stores all registered accounts (temporary storage example)
-    private List<Account> accounts;
+    @Autowired
+    private AccountRepository accountRepo;
 
-    /**
-     * Attempts to authenticate a user using username and password.
-     */
-    @Override
-    public boolean signIn(String username, String password) {
-        return false;
+    @Autowired
+    private JavaMailSender mailSender;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    private final SecureRandom secureRandom = new SecureRandom();
+    private final Map<String, String> verificationCodes = new ConcurrentHashMap<>();
+    private final Map<String, Long> verificationExpiry = new ConcurrentHashMap<>();
+
+    private static final long CODE_EXPIRY_MS = 15 * 60 * 1000;
+
+    public void requestPasswordReset(String username) {
+        Account account = accountRepo.findByUsername(username)
+            .orElseThrow(() -> new RuntimeException("Account not found"));
+
+        String code = generateCode();
+        verificationCodes.put(username, code);
+        verificationExpiry.put(username, System.currentTimeMillis() + CODE_EXPIRY_MS);
+        sendVerificationEmail(account.getEmail(), code);
     }
 
-    /**
-     * Logs a user out of the system.
-     */
-    @Override
-    public void signOut(Account account) {
+    private void sendVerificationEmail(String toEmail, String code) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(toEmail);
+        message.setSubject("GymBuddy Password Reset");
+        message.setText("Your verification code is: " + code);
+        mailSender.send(message);
     }
 
-    /**
-     * Sends a password reset request to the given email.
-     */
-    public boolean requestPasswordReset(String email) {
-        return false;
+    public boolean verifyCode(String username, String code) {
+        if (!verificationCodes.containsKey(username)) {
+            return false;
+        }
+
+        Long expiry = verificationExpiry.get(username);
+        if (expiry == null || System.currentTimeMillis() > expiry) {
+            verificationCodes.remove(username);
+            verificationExpiry.remove(username);
+            return false;
+        }
+
+        String storedCode = verificationCodes.get(username);
+        if (!storedCode.equals(code)) {
+            return false;
+        }
+
+        verificationCodes.remove(username);
+        verificationExpiry.remove(username);
+        return true;
     }
 
-    /**
-     * Verifies a password reset code.
-     */
-    public boolean verifyCode(String code) {
-        return false;
+    public void resetPassword(String username, String newPassword, String code) {
+        if (!verifyCode(username, code)) {
+            throw new RuntimeException("Invalid verification code");
+        }
+
+        Account account = accountRepo.findByUsername(username)
+            .orElseThrow(() -> new RuntimeException("Account not found"));
+
+        account.setPassword(passwordEncoder.encode(newPassword));
+        accountRepo.save(account);
     }
 
-    /**
-     * Resets the user's password.
-     */
-    public void resetPassword(Account account, String newPassword) {
-    }
-
-    /**
-     * Creates a new account in the system.
-     */
-    public void createAccount(Account account) {
-    }
-
-    /**
-     * Deletes an existing account from the system.
-     */
-    public void deleteAccount(Account account) {
-    }
-
-    public void check() {
-        Account test = accounts.get(0);
-       test.getAccountID();
+    private String generateCode() {
+        int code = secureRandom.nextInt(900000) + 100000;
+        return String.valueOf(code);
     }
 
 }

@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymBuddy - My Workout Templates</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1000px;
+            width: 92vw;
+            margin: 2rem auto;
+            padding: 52px 48px 48px;
+            background: var(--concrete);
+            border-top: 4px solid var(--rust);
+            border-bottom: 1px solid var(--steel);
+            clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 0 100%);
+            animation: rise 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .container::after {
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            width: 0; height: 0;
+            border-style: solid;
+            border-width: 0 28px 28px 0;
+            border-color: transparent var(--smoke) transparent transparent;
+        }
+
+        @keyframes rise {
+            from { opacity: 0; transform: translateY(28px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 900;
+            letter-spacing: -1px;
+            text-transform: uppercase;
+            color: var(--chalk);
+            font-size: 0;
+        }
+
+        h1::before {
+            content: 'MY TEMPLATES';
+            font-size: clamp(28px, 6vw, 46px);
+            color: var(--chalk);
+        }
+
+        h1::after {
+            content: none;
+        }
+
+        .subtitle {
+            color: var(--chalk-dim);
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--steel);
+        }
+
+        .templates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .template-card {
+            background-color: var(--iron);
+            border: 1px solid var(--steel);
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .template-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--rust);
+        }
+
+        .template-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .template-name {
+            color: var(--chalk);
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin: 0;
+        }
+
+        .template-description {
+            color: var(--chalk-dim);
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .template-exercises {
+            margin-bottom: 1.5rem;
+        }
+
+        .exercise-chip {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background-color: rgba(196, 75, 27, 0.1);
+            color: var(--rust);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .template-meta {
+            display: flex;
+            justify-content: space-between;
+            color: var(--chalk-dim);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .template-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            background-color: var(--rust);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn:hover {
+            background-color: var(--rust-hot);
+        }
+
+        .btn-secondary {
+            background-color: var(--steel);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--chalk-dim);
+        }
+
+        .btn-danger {
+            background-color: #d32f2f;
+        }
+
+        .btn-danger:hover {
+            background-color: #c62828;
+        }
+
+        .btn-sm {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.85rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--chalk-dim);
+        }
+
+        .empty-state h3 {
+            color: var(--chalk);
+            margin-bottom: 1rem;
+        }
+
+        .loading {
+            text-align: center;
+            color: var(--chalk-dim);
+            padding: 2rem;
+        }
+
+        .message {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .message-success {
+            background-color: rgba(76, 175, 80, 0.1);
+            border: 1px solid #4caf50;
+            color: #4caf50;
+        }
+
+        .message-error {
+            background-color: rgba(211, 47, 47, 0.1);
+            border: 1px solid #d32f2f;
+            color: #d32f2f;
+        }
+
+        .search-box {
+            flex: 1;
+            max-width: 300px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background-color: var(--iron);
+            border: 1px solid var(--steel);
+            border-radius: 6px;
+            color: var(--chalk);
+            font-family: inherit;
+            font-size: 1rem;
+        }
+
+        .search-input::placeholder {
+            color: var(--chalk-dim);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: var(--concrete);
+            border-radius: 8px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid var(--steel);
+        }
+
+        .modal-title {
+            color: var(--chalk);
+            margin-bottom: 1rem;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+        }
+
+        .modal-message {
+            color: var(--chalk-dim);
+            margin-bottom: 2rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        .btn-block {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>My Workout Templates</h1>
+        <p class="subtitle">View and manage your saved workout templates</p>
+
+        <div id="message" class="message"></div>
+
+        <div class="header-actions">
+            <div class="search-box">
+                <input type="text" id="searchInput" class="search-input" placeholder="Search templates...">
+            </div>
+            <a th:href="@{/create-workout-template}" class="btn">
+                + Create New Template
+            </a>
+        </div>
+
+        <div id="templatesContainer">
+            <div class="loading" id="loading">Loading templates...</div>
+        </div>
+
+        <div class="page-actions">
+            <a th:href="@{/profile}" class="btn btn-secondary">Back to Profile</a>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <h3 class="modal-title">Delete Template</h3>
+            <p class="modal-message" id="deleteModalMessage">Are you sure you want to delete this template? This action cannot be undone.</p>
+            <div class="modal-actions">
+                <button id="cancelDeleteBtn" class="btn btn-secondary">Cancel</button>
+                <button id="confirmDeleteBtn" class="btn btn-danger">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allTemplates = [];
+        let templateToDelete = null;
+
+        // Load workout templates from the API
+        async function loadWorkoutTemplates() {
+            const loading = document.getElementById('loading');
+            const templatesContainer = document.getElementById('templatesContainer');
+
+            if (!loading) {
+                console.error('loading element not found!');
+                return false;
+            }
+
+            if (!templatesContainer) {
+                console.error('templatesContainer element not found!');
+                loading.innerHTML = '<div class="empty-state">Page element error</div>';
+                return false;
+            }
+
+            try {
+                const response = await fetch('/api/workout-templates');
+                if (!response.ok) throw new Error('Failed to load templates');
+                allTemplates = await response.json();
+
+                loading.style.display = 'none';
+                displayTemplates(allTemplates);
+
+                // Set up search functionality
+                const searchInput = document.getElementById('searchInput');
+                if (searchInput) {
+                    searchInput.addEventListener('input', handleSearch);
+                }
+
+                return true;
+            } catch (error) {
+                console.error('Error loading templates:', error);
+                loading.innerHTML = `<div class="empty-state">Error loading templates: ${error.message}</div>`;
+                return false;
+            }
+        }
+
+        // Display templates in the grid
+        function displayTemplates(templates) {
+            const templatesContainer = document.getElementById('templatesContainer');
+
+            if (!templatesContainer) {
+                console.error('templatesContainer element not found!');
+                return;
+            }
+
+            if (templates.length === 0) {
+                templatesContainer.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No Workout Templates Yet</h3>
+                        <p>You haven't created any workout templates yet.</p>
+                        <a href="/create-workout-template" class="btn" style="margin-top: 1rem; display: inline-block;">
+                            Create Your First Template
+                        </a>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '<div class="templates-grid">';
+            templates.forEach(template => {
+                const exerciseNames = template.exercises
+                    ? Object.values(template.exercises).map(e => e?.exerciseName || 'Unknown Exercise').slice(0, 5)
+                    : [];
+
+                html += `
+                    <div class="template-card" data-template-id="${template.listID}">
+                        <div class="template-header">
+                            <h3 class="template-name">${escapeHtml(template.listName)}</h3>
+                            <span style="color: var(--chalk-dim); font-size: 0.9rem;">
+                                ${template.numExercises || 0} exercises
+                            </span>
+                        </div>
+
+                        ${template.notes ? `
+                            <p class="template-description">${escapeHtml(template.notes)}</p>
+                        ` : ''}
+
+                        <div class="template-exercises">
+                            ${exerciseNames.length > 0
+                                ? exerciseNames.map(name => `<span class="exercise-chip">${escapeHtml(name)}</span>`).join('')
+                                : '<div style="color: var(--chalk-dim); font-size: 0.9rem;">No exercises added</div>'
+                            }
+                            ${template.numExercises > 5 ? '<span class="exercise-chip">+' + (template.numExercises - 5) + ' more</span>' : ''}
+                        </div>
+
+                        <div class="template-meta">
+                            <span>Created</span>
+                            <span>ID: ${template.listID}</span>
+                        </div>
+
+                        <div class="template-actions">
+                            <button class="btn btn-sm" onclick="useTemplate(${template.listID})">
+                                Use Template
+                            </button>
+                            <button class="btn btn-secondary btn-sm" onclick="editTemplate(${template.listID})">
+                                Edit
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="showDeleteModal(${template.listID}, '${escapeAttr(template.listName)}')">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            templatesContainer.innerHTML = html;
+        }
+
+        // Handle search functionality
+        function handleSearch() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+
+            if (!searchTerm) {
+                displayTemplates(allTemplates);
+                return;
+            }
+
+            const filteredTemplates = allTemplates.filter(template =>
+                template.listName.toLowerCase().includes(searchTerm) ||
+                (template.notes && template.notes.toLowerCase().includes(searchTerm))
+            );
+
+            displayTemplates(filteredTemplates);
+        }
+
+        // Use template functionality
+        function useTemplate(templateId) {
+            showMessage('Starting workout with template...', 'success');
+            // In a real app, this would start a workout session with the template
+            // For now, just show a message
+            setTimeout(() => {
+                showMessage('Workout started with template!', 'success');
+            }, 1000);
+        }
+
+        // Edit template functionality
+        function editTemplate(templateId) {
+            showMessage('Edit functionality coming soon!', 'success');
+            // In a real app, this would redirect to an edit page
+        }
+
+        // Show delete confirmation modal
+        function showDeleteModal(templateId, templateName) {
+            templateToDelete = templateId;
+            document.getElementById('deleteModalMessage').textContent =
+                `Are you sure you want to delete the template "${templateName}"? This action cannot be undone.`;
+            document.getElementById('deleteModal').style.display = 'flex';
+        }
+
+        // Delete template
+        async function deleteTemplate() {
+            if (!templateToDelete) return;
+
+            try {
+                // Remove card from DOM immediately for instant feedback
+                const templateCard = document.querySelector(`[data-template-id="${templateToDelete}"]`);
+                if (templateCard) {
+                    templateCard.style.opacity = '0.5';
+                    templateCard.style.pointerEvents = 'none';
+                }
+
+                const response = await fetch(`/api/workout-templates/${templateToDelete}`, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || errorData.message || errorData);
+                }
+
+                // Remove from allTemplates array
+                allTemplates = allTemplates.filter(t => t.workoutTemplateID !== templateToDelete);
+
+                // Animate removal from DOM
+                if (templateCard) {
+                    templateCard.style.transition = 'all 0.3s ease';
+                    setTimeout(() => {
+                        templateCard.remove();
+                        // Check if container is empty and show empty state
+                        const container = document.getElementById('templatesContainer');
+                        if (container && container.children.length === 0) {
+                            displayTemplates([]);
+                        }
+                    }, 300);
+                }
+
+                showMessage('Template deleted successfully', 'success');
+                closeDeleteModal();
+
+            } catch (error) {
+                console.error('Error deleting template:', error);
+                showMessage('Error deleting template: ' + error.message, 'error');
+                
+                // Restore opacity if deletion failed
+                const templateCard = document.querySelector(`[data-template-id="${templateToDelete}"]`);
+                if (templateCard) {
+                    templateCard.style.opacity = '1';
+                    templateCard.style.pointerEvents = 'auto';
+                }
+            } finally {
+                templateToDelete = null;
+            }
+        }
+
+        // Close delete modal
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+            templateToDelete = null;
+        }
+
+        // Show message to user
+        function showMessage(message, type = 'info') {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = message;
+            messageDiv.className = `message message-${type}`;
+            messageDiv.style.display = 'block';
+
+            // Auto-hide success messages
+            if (type === 'success') {
+                setTimeout(() => {
+                    messageDiv.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        // Helper functions for escaping HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function escapeAttr(text) {
+            return text.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Load templates
+            await loadWorkoutTemplates();
+
+            // Set up modal event listeners
+            document.getElementById('cancelDeleteBtn').addEventListener('click', closeDeleteModal);
+            document.getElementById('confirmDeleteBtn').addEventListener('click', deleteTemplate);
+
+            // Close modal when clicking outside
+            document.getElementById('deleteModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeDeleteModal();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
