@@ -91,8 +91,10 @@ public class Account {
     @Transient
     private Diet diet;
 
-    @Transient
-    private List<WorkoutSession> workoutSession;
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<WorkoutSession> workoutSessions = new ArrayList<>();
+
     @Transient
     private List<Invitation> invitationList;
     @Transient

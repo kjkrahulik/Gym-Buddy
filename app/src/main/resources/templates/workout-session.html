@@ -526,19 +526,13 @@
 
             <!-- Filter Chips -->
             <div class="filter-chips" id="filterChips">
-                <button class="chip active" data-filter="all">All</button>
-                <button class="chip" data-filter="Chest">Chest</button>
-                <button class="chip" data-filter="Shoulders">Shoulders</button>
-                <button class="chip" data-filter="Triceps">Triceps</button>
-                <button class="chip" data-filter="Back">Back</button>
-                <button class="chip" data-filter="Legs">Legs</button>
-                <button class="chip" data-filter="Core">Core</button>
+                <button type="button" class="chip active" data-filter="all">All</button>
             </div>
 
             <!-- Exercises List -->
             <div class="exercises-list" id="exercisesList">
                 <div class="empty-state">
-                    <p>No exercises added yet. Click "+ Add Exercise" to get started!</p>
+                    <p>No exercises added yet. Search an exercise and click on it to add it to your workout!</p>
                 </div>
             </div>
         </div>
@@ -575,6 +569,19 @@
         </div>
     </div>
 
+    <!-- Finish Workout Modal (Notes) -->
+    <div class="session-name-modal hidden" id="finishWorkoutModal">
+        <div class="session-name-modal-content">
+            <h2>Finish Workout</h2>
+            <p>Add any notes about this workout (optional)</p>
+            <textarea id="workoutNotes" class="session-name-input" style="font-family: 'Barlow', sans-serif; min-height: 100px; resize: vertical;" placeholder="How did it feel? Any observations?"></textarea>
+            <div class="session-name-modal-actions">
+                <button class="modal-btn modal-btn-secondary" id="skipNotesBtn">Skip</button>
+                <button class="modal-btn modal-btn-primary" id="finishWithNotesBtn">Save & Finish</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let sessionData = {
             sessionName: '',
@@ -591,16 +598,116 @@
         // Initialize: load exercises and show session name modal
         document.addEventListener('DOMContentLoaded', async () => {
             await loadExercises();
-            focusSessionNameInput();
+
+            // Check if loading from template (sessionId in URL)
+            const params = new URLSearchParams(window.location.search);
+            const sessionId = params.get('sessionId');
+
+            if (sessionId) {
+                await loadExistingSession(sessionId);
+            } else {
+                focusSessionNameInput();
+            }
         });
 
         async function loadExercises() {
             try {
                 const response = await fetch('/exercises');
                 sessionData.allExercises = await response.json();
+                generateFilterChips();
             } catch (err) {
                 console.error('Failed to load exercises:', err);
             }
+        }
+
+        async function loadExistingSession(sessionId) {
+            try {
+                console.log('Loading existing session:', sessionId);
+                const response = await fetch(`/api/workouts/${sessionId}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: Failed to load session`);
+                }
+
+                const data = await response.json();
+                console.log('Session data loaded:', data);
+
+                // Populate sessionData with existing session
+                sessionData.sessionID = data.sessionID;
+                sessionData.sessionName = data.sessionName;
+
+                // Map exercises with their sets
+                sessionData.exercises = (data.exercises || []).map((ex, index) => {
+                    const exerciseObj = {
+                        exerciseKey: index,
+                        exercise: {
+                            exerciseID: ex.exerciseID,
+                            exerciseName: ex.exerciseName,
+                            muscleGroup: ex.muscleGroup
+                        },
+                        sets: ex.sets || []
+                    };
+
+                    // If no sets exist, add one empty set to allow user to enter data
+                    if (exerciseObj.sets.length === 0) {
+                        const isTimed = ['Core', 'Cardio'].includes(ex.muscleGroup);
+                        exerciseObj.sets = [isTimed ? { type: 'TIMED', duration: 0 } : { type: 'WEIGHTED', weight: 0, reps: 0 }];
+                    }
+
+                    return exerciseObj;
+                });
+
+                console.log('Session exercises mapped:', sessionData.exercises);
+
+                // Hide the session name modal and show the session directly
+                const modal = document.getElementById('sessionNameModal');
+                if (modal) {
+                    modal.classList.add('hidden');
+                }
+                const display = document.getElementById('sessionNameDisplay');
+                if (display) {
+                    display.textContent = data.sessionName;
+                }
+                startTimer();
+                renderExercises();
+                console.log('Session loaded successfully');
+            } catch (err) {
+                console.error('Failed to load existing session:', err);
+                alert('Failed to load session: ' + err.message + '. Starting fresh session instead.');
+                focusSessionNameInput();
+            }
+        }
+
+        function generateFilterChips() {
+            const filterChips = document.getElementById('filterChips');
+
+            // Extract unique muscle groups
+            const muscleGroups = [...new Set(sessionData.allExercises.map(e => e.muscleGroup))].sort();
+
+            // Add "All" button (already exists)
+            // Add buttons for each muscle group
+            muscleGroups.forEach(group => {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'chip';
+                button.dataset.filter = group;
+                button.textContent = group;
+                filterChips.appendChild(button);
+            });
+
+            // Re-attach event listeners to all chips
+            attachChipListeners();
+        }
+
+        function attachChipListeners() {
+            document.querySelectorAll('.chip').forEach(chip => {
+                chip.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+                    e.target.classList.add('active');
+                    currentFilter = e.target.dataset.filter;
+                    renderExercises();
+                });
+            });
         }
 
         function focusSessionNameInput() {
@@ -704,10 +811,11 @@
 
         function addExerciseBlock(exercise) {
             const exerciseKey = sessionData.exercises.length;
+            const isTimed = ['Core', 'Cardio'].includes(exercise.muscleGroup);
             sessionData.exercises.push({
                 exerciseKey,
                 exercise: exercise,
-                sets: []
+                sets: [isTimed ? { type: 'TIMED', duration: 0 } : { type: 'WEIGHTED', weight: 0, reps: 0 }]
             });
 
             renderExercises();
@@ -718,7 +826,7 @@
             const exercises = getFilteredExercisesInSession();
 
             if (exercises.length === 0) {
-                list.innerHTML = '<div class="empty-state"><p>No exercises added yet. Click "+ Add Exercise" to get started!</p></div>';
+                list.innerHTML = '<div class="empty-state"><p>No exercises added yet. Search an exercise and click on it to add it to your workout!</p></div>';
                 return;
             }
 
@@ -730,8 +838,8 @@
                                 <div class="exercise-name">${item.exercise.exerciseName}</div>
                                 <div class="exercise-muscle">${item.exercise.muscleGroup}</div>
                             </div>
-                            <span class="set-type-badge ${item.sets.length === 0 ? (isTimedExercise(item.exercise) ? 'badge-timed' : 'badge-weighted') : item.sets[0].type === 'WEIGHTED' ? 'badge-weighted' : 'badge-timed'}">
-                                ${item.sets.length === 0 ? (isTimedExercise(item.exercise) ? 'Timed' : 'Weighted') : item.sets[0].type === 'WEIGHTED' ? 'Weighted' : 'Timed'}
+                            <span class="set-type-badge ${item.sets[0].type === 'WEIGHTED' ? 'badge-weighted' : 'badge-timed'}">
+                                ${item.sets[0].type === 'WEIGHTED' ? 'Weighted' : 'Timed'}
                             </span>
                         </div>
                         <button class="remove-exercise-btn" onclick="removeExercise(${item.exerciseKey})">Remove</button>
@@ -743,11 +851,32 @@
                 </div>
             `).join('');
 
+            // Add input change listeners to save values in real-time
+            document.querySelectorAll('.weight-input, .reps-input, .duration-input').forEach(input => {
+                input.addEventListener('change', (e) => {
+                    const block = e.target.closest('.exercise-block');
+                    const exerciseKey = parseInt(block.dataset.exerciseKey);
+                    const setIdx = parseInt(e.target.dataset.setIdx);
+                    const exercise = sessionData.exercises.find(ex => ex.exerciseKey === exerciseKey);
+
+                    if (exercise && exercise.sets[setIdx]) {
+                        if (e.target.classList.contains('weight-input')) {
+                            exercise.sets[setIdx].weight = parseFloat(e.target.value) || 0;
+                        } else if (e.target.classList.contains('reps-input')) {
+                            exercise.sets[setIdx].reps = parseInt(e.target.value) || 0;
+                        } else if (e.target.classList.contains('duration-input')) {
+                            exercise.sets[setIdx].duration = parseInt(e.target.value) || 0;
+                        }
+                        updateVolume();
+                    }
+                });
+            });
+
             updateVolume();
         }
 
         function renderSetTable(item) {
-            const isTimed = item.sets.length > 0 && item.sets[0].type === 'TIMED';
+            const isTimed = item.sets[0].type === 'TIMED';
 
             if (isTimed) {
                 return `
@@ -765,7 +894,7 @@
                                 <tr>
                                     <td>${idx + 1}</td>
                                     <td>-</td>
-                                    <td><input type="number" value="${set.duration || ''}" placeholder="seconds" data-set-idx="${idx}" class="duration-input"></td>
+                                    <td><input type="number" value="${set.duration !== undefined && set.duration !== null ? set.duration : ''}" placeholder="seconds" data-set-idx="${idx}" class="duration-input"></td>
                                     <td><button class="set-remove-btn" onclick="removeSet(${item.exerciseKey}, ${idx})">Remove</button></td>
                                 </tr>
                             `).join('')}
@@ -789,8 +918,8 @@
                                 <tr>
                                     <td>${idx + 1}</td>
                                     <td>-</td>
-                                    <td><input type="number" value="${set.weight || ''}" placeholder="lbs" data-set-idx="${idx}" class="weight-input" step="0.5"></td>
-                                    <td><input type="number" value="${set.reps || ''}" placeholder="reps" data-set-idx="${idx}" class="reps-input"></td>
+                                    <td><input type="number" value="${set.weight !== undefined && set.weight !== null ? set.weight : ''}" placeholder="lbs" data-set-idx="${idx}" class="weight-input" step="0.5"></td>
+                                    <td><input type="number" value="${set.reps !== undefined && set.reps !== null ? set.reps : ''}" placeholder="reps" data-set-idx="${idx}" class="reps-input"></td>
                                     <td><button class="set-remove-btn" onclick="removeSet(${item.exerciseKey}, ${idx})">Remove</button></td>
                                 </tr>
                             `).join('')}
@@ -803,6 +932,24 @@
         function addSetRow(exerciseKey) {
             const exercise = sessionData.exercises.find(e => e.exerciseKey === exerciseKey);
             if (!exercise) return;
+
+            // Save any existing input values before adding new set
+            const block = document.querySelector(`[data-exercise-key="${exerciseKey}"]`);
+            if (block) {
+                const inputs = block.querySelectorAll('input');
+                inputs.forEach(input => {
+                    const setIdx = parseInt(input.dataset.setIdx);
+                    if (exercise.sets[setIdx]) {
+                        if (input.classList.contains('weight-input')) {
+                            exercise.sets[setIdx].weight = parseFloat(input.value) || 0;
+                        } else if (input.classList.contains('reps-input')) {
+                            exercise.sets[setIdx].reps = parseInt(input.value) || 0;
+                        } else if (input.classList.contains('duration-input')) {
+                            exercise.sets[setIdx].duration = parseInt(input.value) || 0;
+                        }
+                    }
+                });
+            }
 
             const isTimed = ['Core', 'Cardio'].includes(exercise.exercise.muscleGroup);
             exercise.sets.push(isTimed ? { type: 'TIMED', duration: 0 } : { type: 'WEIGHTED', weight: 0, reps: 0 });
@@ -845,16 +992,6 @@
             return sessionData.exercises.filter(e => e.exercise.muscleGroup === currentFilter);
         }
 
-        // Filter chips
-        document.querySelectorAll('.chip').forEach(chip => {
-            chip.addEventListener('click', (e) => {
-                document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-                e.target.classList.add('active');
-                currentFilter = e.target.dataset.filter;
-                renderExercises();
-            });
-        });
-
         // Discard button
         document.getElementById('discardBtn').addEventListener('click', () => {
             document.getElementById('discardModal').classList.remove('hidden');
@@ -870,8 +1007,72 @@
 
         // Finish button
         document.getElementById('finishBtn').addEventListener('click', () => {
-            window.location.href = '/profile';
+            document.getElementById('finishWorkoutModal').classList.remove('hidden');
+            document.getElementById('workoutNotes').focus();
         });
+
+        document.getElementById('skipNotesBtn').addEventListener('click', () => {
+            finishWorkout('');
+        });
+
+        document.getElementById('finishWithNotesBtn').addEventListener('click', () => {
+            const notes = document.getElementById('workoutNotes').value.trim();
+            finishWorkout(notes);
+        });
+
+        document.getElementById('workoutNotes').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                document.getElementById('finishWithNotesBtn').click();
+            }
+        });
+
+        async function finishWorkout(notes) {
+            const finishBtn = document.getElementById('finishWithNotesBtn');
+            const skipBtn = document.getElementById('skipNotesBtn');
+            finishBtn.disabled = true;
+            skipBtn.disabled = true;
+
+            try {
+                // Prepare workout data
+                const workoutData = {
+                    sessionName: sessionData.sessionName,
+                    notes: notes,
+                    exercises: sessionData.exercises.map(item => ({
+                        exerciseID: item.exercise.exerciseID,
+                        exerciseName: item.exercise.exerciseName,
+                        muscleGroup: item.exercise.muscleGroup,
+                        sets: item.sets
+                    }))
+                };
+
+                console.log('Sending workout data:', JSON.stringify(workoutData, null, 2));
+
+                // Save workout
+                const response = await fetch('/api/workouts', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(workoutData)
+                });
+
+                const responseData = await response.json();
+                console.log('Response status:', response.status);
+                console.log('Response data:', responseData);
+
+                if (!response.ok) {
+                    throw new Error(responseData.error || 'Failed to save workout');
+                }
+
+                // Redirect to profile
+                window.location.href = '/profile';
+            } catch (error) {
+                console.error('Error saving workout:', error);
+                alert('Error saving workout: ' + error.message);
+                finishBtn.disabled = false;
+                skipBtn.disabled = false;
+            }
+        }
     </script>
 </body>
 </html>
