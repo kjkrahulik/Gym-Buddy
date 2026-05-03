@@ -300,12 +300,14 @@
 <body>
     <div class="summary-container">
         <div class="summary-header">
-            <h1>Goal Saved Successfully!</h1>
-            <p>Your personalized fitness goal has been saved</p>
+            <h1 th:if="${goal}">Goal Saved Successfully!</h1>
+            <h1 th:unless="${goal}">No Goal Found</h1>
+            <p th:if="${goal}">Your personalized fitness goal has been saved</p>
+            <p th:unless="${goal}">You need to create a fitness goal first before generating a workout</p>
         </div>
 
         <!-- Goal Summary Card -->
-        <div class="goal-card-large">
+        <div class="goal-card-large" th:if="${goal}">
             <div class="goal-details">
                 <div class="goal-detail">
                     <h3>Goal Type</h3>
@@ -357,14 +359,26 @@
             </div>
         </div>
 
+        <!-- No Goal Message -->
+        <div class="goal-card-large" th:unless="${goal}">
+            <div class="goal-details">
+                <div class="goal-detail">
+                    <h3>Getting Started</h3>
+                    <p>To generate a personalized workout, you need to set up your fitness goal first. Click the button below to create your goal and get started!</p>
+                </div>
+            </div>
+        </div>
+
         <!-- Action Buttons -->
         <div class="action-buttons">
-            <a th:href="@{/}" class="btn btn-primary">Go to Dashboard</a>
-            <a th:href="@{/account/goal}" class="btn btn-secondary">Edit Goal</a>
+            <a th:href="@{/}" class="btn btn-primary" th:if="${goal}">Go to Dashboard</a>
+            <a th:href="@{/account/goal}" class="btn btn-secondary" th:if="${goal}">Edit Goal</a>
+            <a th:href="@{/account/goal}" class="btn btn-primary" th:unless="${goal}">Create Your Goal</a>
+            <a th:href="@{/}" class="btn btn-secondary" th:unless="${goal}">Exit</a>
         </div>
 
         <!-- Generate Personal Workout Button -->
-        <div class="generate-btn-wrapper">
+        <div class="generate-btn-wrapper" th:if="${goal}">
             <button id="generateBtn" onclick="generatePersonalWorkout()" class="btn btn-primary">
                 Generate Personal Workout
             </button>

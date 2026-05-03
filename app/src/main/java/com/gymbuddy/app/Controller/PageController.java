@@ -41,6 +41,9 @@ public class PageController {
     @Autowired
     private InvitationService invitationService;
 
+    @Autowired
+    private WorkoutSessionRepository workoutSessionRepository;
+
     // ── Auth pages ───────────────────────────────────────────────────
 
     @GetMapping("/login")
