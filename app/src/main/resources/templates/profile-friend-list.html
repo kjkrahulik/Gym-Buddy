@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GymBuddy - Friends List</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script src="/js/api.js"></script>
 </head>
 <!-- View all friends in the user's friend list -->
 <body>
@@ -38,12 +39,10 @@
                             View Profile
                         </a>
 
-                        <form th:action="@{/profile-friend-list/remove-friend}" method="post">
-                            <input type="hidden" name="friendId" th:value="${friend.accountID}">
-                            <button type="submit" class="cta-button secondary">
-                                Remove Friend
-                            </button>
-                        </form>
+                        <button class="cta-button secondary"
+                                onclick="removeFriend([[${friend.accountID}]], this)">
+                            Remove Friend
+                        </button>
 
                     </div>
                 </li>

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GymBuddy - Pending Friend Requests</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script src="/js/api.js"></script>
 </head>
 
 <body>
@@ -22,7 +23,7 @@
         </div>
 
         <div th:if="${!#lists.isEmpty(requests)}">
-            <div th:each="request : ${requests}" class="friend-card">
+            <div th:each="request : ${requests}" class="friend-card friend-request-item">
 
                 <div>
                     <strong th:text="${request.sender.username}">Sender username</strong>
@@ -34,19 +35,15 @@
                 </div>
 
                 <div class="friend-actions">
-                    <form th:action="@{/friend-request/accept}" method="post">
-                        <input type="hidden" name="requestId" th:value="${request.id}">
-                        <button type="submit" class="cta-button">
-                            Accept
-                        </button>
-                    </form>
+                    <button class="cta-button"
+                            onclick="acceptFriendRequest([[${request.id}]], this)">
+                        Accept
+                    </button>
 
-                    <form th:action="@{/friend-request/decline}" method="post">
-                        <input type="hidden" name="requestId" th:value="${request.id}">
-                        <button type="submit" class="cta-button secondary">
-                            Decline
-                        </button>
-                    </form>
+                    <button class="cta-button secondary"
+                            onclick="declineFriendRequest([[${request.id}]], this)">
+                        Decline
+                    </button>
                 </div>
 
             </div>

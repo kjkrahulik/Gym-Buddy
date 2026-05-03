@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GymBuddy - Find Friends</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script src="/js/api.js"></script>
 </head>
 
 <body>
@@ -29,14 +30,10 @@
                     <p th:text="${account.email}">email@example.com</p>
                 </div>
 
-                <form th:action="@{/profile-find-friends/send-request}" method="post">
-
-                    <input type="hidden" name="receiverId" th:value="${account.accountID}">
-
-                    <button type="submit" class="cta-button">
-                        Send Friend Request
-                    </button>
-                </form>
+                <button class="cta-button"
+                        onclick="sendFriendRequest([[${account.accountID}]], this)">
+                    Send Friend Request
+                </button>
 
             </div>
         </div>

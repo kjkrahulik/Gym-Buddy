@@ -4,12 +4,14 @@ import java.security.Principal;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.gymbuddy.app.AccountDomain.Account;
 import com.gymbuddy.app.AccountDomain.Profile;
@@ -188,9 +190,81 @@ public class PageController {
         return "profile-view-friend";
     }
 
+    // ── Friend API endpoints (AJAX) ──────────────────────────
+
+    @PostMapping("/api/friend-request/send")
+    @ResponseBody
+    public ResponseEntity<?> sendFriendRequestApi(@RequestParam UUID receiverId, Principal principal) {
+        try {
+            String username = principal.getName();
+            Account originator = accountService.searchAccount(username);
+            Account targetAccount = accountRepository.findById(receiverId)
+                    .orElseThrow(() -> new RuntimeException("Target account not found"));
+
+            friendService.sendFriendRequest(originator, targetAccount);
+            return ResponseEntity.ok(new ApiResponse(true, "Friend request sent successfully"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage()));
+        }
+    }
+
+    @PostMapping("/api/friend-request/accept")
+    @ResponseBody
+    public ResponseEntity<?> acceptFriendRequestApi(@RequestParam Long requestId) {
+        try {
+            friendService.acceptRequest(requestId);
+            return ResponseEntity.ok(new ApiResponse(true, "Friend request accepted"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage()));
+        }
+    }
+
+    @PostMapping("/api/friend-request/decline")
+    @ResponseBody
+    public ResponseEntity<?> declineFriendRequestApi(@RequestParam Long requestId) {
+        try {
+            friendService.removeFriendRequest(requestId);
+            return ResponseEntity.ok(new ApiResponse(true, "Friend request declined"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage()));
+        }
+    }
+
+    @PostMapping("/api/friend/remove")
+    @ResponseBody
+    public ResponseEntity<?> removeFriendApi(@RequestParam UUID friendId, Principal principal) {
+        try {
+            String username = principal.getName();
+            Account account = accountService.searchAccount(username);
+            Account friend = accountService.getAccountById(friendId);
+
+            friendService.removeFriend(account, friend);
+            return ResponseEntity.ok(new ApiResponse(true, "Friend removed successfully"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage()));
+        }
+    }
+
+    // Simple response class for API
+    public static class ApiResponse {
+        public boolean success;
+        public String message;
+
+        public ApiResponse(boolean success, String message) {
+            this.success = success;
+            this.message = message;
+        }
+
+        public boolean isSuccess() {
+            return success;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+    }
 
 
-    
 
     @GetMapping("/account-settings")
     public String accountSettingsPage(Principal principal, Model model) {
