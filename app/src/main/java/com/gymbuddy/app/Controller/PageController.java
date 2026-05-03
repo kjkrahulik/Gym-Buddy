@@ -92,13 +92,8 @@ public class PageController {
     }
 
     @GetMapping("/profile-invitations")
-    public String profileInvitationsPage(Principal principal, Model model) {
-        String username = principal.getName();
-        Account account = accountService.searchAccount(username);
-
-        model.addAttribute("invitations", account.getIncomingRequests()); 
-        // temporary placeholder if you don't have InvitationService yet
-
+    public String profileInvitationsPage(Model model) {
+        model.addAttribute("invitations", java.util.Collections.emptyList());
         return "profile-invitations";
     }
 
