@@ -8,6 +8,8 @@ import com.gymbuddy.app.Repositories.InvitationRepository;
 import com.gymbuddy.app.SocialDomain.Invitation;
 import com.gymbuddy.app.SocialDomain.Notification;
 
+import java.util.List;
+
 @Service
 public class InvitationService {
 
@@ -41,6 +43,10 @@ public class InvitationService {
         public void sendWorkoutInvitation(Account sender, Account receiver) {
         Invitation invitation = new Invitation(sender, receiver);
         invitationRepository.save(invitation);
+    }
+
+    public List<Invitation> getPendingInvitationsFor(Account account) {
+        return invitationRepository.findByReceiverAndStatus(account, Invitation.Status.PENDING);
     }
 
 }
