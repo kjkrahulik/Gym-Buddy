@@ -5,9 +5,12 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.gymbuddy.app.AccountDomain.Account;
 import com.gymbuddy.app.AccountDomain.Goal;
+import com.gymbuddy.app.Repositories.AccountRepository;
 import com.gymbuddy.app.Repositories.ExerciseRepository;
 import com.gymbuddy.app.Repositories.WorkoutTemplateRepository;
 import com.gymbuddy.app.WorkoutDomain.Exercise.Exercise;
@@ -22,23 +25,38 @@ public class WorkoutTemplateService {
     @Autowired
     private ExerciseRepository exerciseRepository;
 
-    // Note: WorkoutTemplate now extends WorkoutList and uses HashMap<Integer, Exercise> instead of List<WorkoutExercise>
+    @Autowired
+    private AccountRepository accountRepository;
 
+    private Account getCurrentAccount() {
+        String username = SecurityContextHolder.getContext()
+            .getAuthentication()
+            .getName();
+
+        return accountRepository.findByUsername(username)
+            .orElseThrow(() -> new RuntimeException("Account not found"));
+    }
 
     // ─── Template CRUD ────────────────────────────────────────────────────────
 
     public WorkoutTemplate createWorkoutTemplate(String listName, String notes) {
-        Optional<WorkoutTemplate> existingTemplate = workoutTemplateRepository.findByListName(listName);
+        Account account = getCurrentAccount();
+
+        Optional<WorkoutTemplate> existingTemplate =
+            workoutTemplateRepository.findByListNameAndAccount(listName, account);
+
         if (existingTemplate.isPresent()) {
             throw new IllegalArgumentException("Workout template with name '" + listName + "' already exists");
         }
+
         WorkoutTemplate template = new WorkoutTemplate(listName, notes);
+        template.setAccount(account);
+
         return workoutTemplateRepository.save(template);
     }
 
     public WorkoutTemplate addExerciseToTemplate(Long templateId, Long exerciseId, int orderKey) {
-        WorkoutTemplate template = workoutTemplateRepository.findById(templateId)
-                .orElseThrow(() -> new IllegalArgumentException("Workout template not found with ID: " + templateId));
+        WorkoutTemplate template = getWorkoutTemplateById(templateId);
 
         Exercise exercise = exerciseRepository.findById(exerciseId)
                 .orElseThrow(() -> new IllegalArgumentException("Exercise not found with ID: " + exerciseId));
@@ -47,17 +65,21 @@ public class WorkoutTemplateService {
         return workoutTemplateRepository.save(template);
     }
 
-    public WorkoutTemplate getWorkoutTemplateById(Long id) {
-        return workoutTemplateRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Workout template not found with ID: " + id));
-    }
+public WorkoutTemplate getWorkoutTemplateById(Long id) {
+    Account account = getCurrentAccount();
+
+    return workoutTemplateRepository.findById(id)
+            .filter(t -> t.getAccount().getAccountID().equals(account.getAccountID()))
+            .orElseThrow(() -> new IllegalArgumentException("Workout template not found with ID: " + id));
+}
 
     public List<WorkoutTemplate> getAllWorkoutTemplates() {
-        return workoutTemplateRepository.findAll();
+        return workoutTemplateRepository.findByAccount(getCurrentAccount());
     }
 
     public List<WorkoutTemplate> searchWorkoutTemplates(String keyword) {
-        return workoutTemplateRepository.findByListNameContainingIgnoreCase(keyword);
+        return workoutTemplateRepository
+                .findByListNameContainingIgnoreCaseAndAccount(keyword, getCurrentAccount());
     }
 
     public WorkoutTemplate updateWorkoutTemplate(Long id, String listName, String notes) {
@@ -79,7 +101,6 @@ public class WorkoutTemplateService {
     }
 
     // ─── Workout Generation ───────────────────────────────────────────────────
-
     public List<WorkoutTemplate> generateAndSave(Goal goal) {
         List<WorkoutTemplate> generated = generateSplit(goal);
         return saveGeneratedTemplates(generated);
@@ -1144,28 +1165,49 @@ public class WorkoutTemplateService {
     }
 
     public List<WorkoutTemplate> saveGeneratedTemplates(List<WorkoutTemplate> templates) {
-        List<WorkoutTemplate> saved = new ArrayList<>();
-        for (WorkoutTemplate t : templates) {
-            if (workoutTemplateRepository.findByListName(t.getListName()).isPresent()) {
-                continue;
-            }
-            WorkoutTemplate savedTemplate = workoutTemplateRepository.save(
-                new WorkoutTemplate(t.getListName(), t.getNotes())
-            );
-            if (t.getExercises() != null && !t.getExercises().isEmpty()) {
-                for (Exercise exercise : t.getExercises().values()) {
-                    Exercise savedEx = exerciseRepository.findByExerciseName(exercise.getExerciseName())
-                        .orElseGet(() -> exerciseRepository.save(
-                            new Exercise(null, exercise.getExerciseName(), exercise.getMuscleGroup(), "")
-                        ));
-                    savedTemplate.addExercise(savedEx);
-                }
-                workoutTemplateRepository.save(savedTemplate);
-            }
-            saved.add(savedTemplate);
+    List<WorkoutTemplate> saved = new ArrayList<>();
+
+    //////// get current logged-in user ////////
+    String username = SecurityContextHolder.getContext().getAuthentication().getName();
+    Account currentUser = accountRepository.findByUsername(username)
+        .orElseThrow(() -> new RuntimeException("User not found"));
+
+    for (WorkoutTemplate t : templates) {
+
+        Optional<WorkoutTemplate> existing = workoutTemplateRepository
+            .findByListNameAndAccount(t.getListName(), currentUser);
+
+        if (existing.isPresent()) {
+            continue;
         }
-        return saved;
+
+
+        WorkoutTemplate savedTemplate = new WorkoutTemplate(t.getListName(), t.getNotes());
+        savedTemplate.setAccount(currentUser);
+
+        savedTemplate = workoutTemplateRepository.save(savedTemplate);
+
+        if (t.getExercises() != null && !t.getExercises().isEmpty()) {
+            for (Exercise exercise : t.getExercises().values()) {
+
+                Exercise savedEx = exerciseRepository
+                    .findByExerciseName(exercise.getExerciseName())
+                    .orElseGet(() -> exerciseRepository.save(
+                        new Exercise(null, exercise.getExerciseName(), exercise.getMuscleGroup(), "")
+                    ));
+
+                savedTemplate.addExercise(savedEx);
+            }
+
+            workoutTemplateRepository.save(savedTemplate);
+        }
+
+        saved.add(savedTemplate);
     }
+
+    return saved;
+}
+
 
     // ─── Private helpers ──────────────────────────────────────────────────────
 
@@ -1179,14 +1221,18 @@ public class WorkoutTemplateService {
     }
 
     public WorkoutTemplate createTemplateFromSession(String templateName, String notes, com.gymbuddy.app.WorkoutDomain.Workout.WorkoutSession session) {
-        Optional<WorkoutTemplate> existingTemplate = workoutTemplateRepository.findByListName(templateName);
+        Account account = getCurrentAccount();
+
+        Optional<WorkoutTemplate> existingTemplate =
+            workoutTemplateRepository.findByListNameAndAccount(templateName, account);
+
         if (existingTemplate.isPresent()) {
             throw new IllegalArgumentException("Workout template with name '" + templateName + "' already exists");
         }
 
         WorkoutTemplate template = new WorkoutTemplate(templateName, notes);
+        template.setAccount(account);
 
-        // Copy exercises from session (no sets)
         session.getExercises().forEach((order, exercise) -> template.addExercise(exercise));
 
         return workoutTemplateRepository.save(template);

@@ -1,7 +1,29 @@
 package com.gymbuddy.app.Controller;
 
+import java.security.Principal;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.gymbuddy.app.AccountDomain.Account;
 import com.gymbuddy.app.AccountDomain.Profile;
+import com.gymbuddy.app.Repositories.AccountRepository;
 import com.gymbuddy.app.Repositories.ExerciseRepository;
 import com.gymbuddy.app.Repositories.WorkoutSessionRepository;
 import com.gymbuddy.app.Repositories.WorkoutTemplateRepository;
@@ -15,18 +37,6 @@ import com.gymbuddy.app.WorkoutDomain.Exercise.WeightedSet;
 import com.gymbuddy.app.WorkoutDomain.Workout.WorkoutSession;
 import com.gymbuddy.app.WorkoutDomain.Workout.WorkoutSessionDTO;
 import com.gymbuddy.app.WorkoutDomain.Workout.WorkoutTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.security.Principal;
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/workouts")
@@ -49,6 +59,8 @@ public class WorkoutSessionController {
 
     @Autowired
     private ProfileService profileService;
+    @Autowired
+    private AccountRepository accountRepository;
 
     @GetMapping
     public ResponseEntity<List<WorkoutSessionDTO>> getUserWorkouts(Principal principal) {
@@ -298,17 +310,31 @@ public class WorkoutSessionController {
         }
     }
 
+    private Account getCurrentAccount() {
+    String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        return accountRepository.findByUsername(username)
+            .orElseThrow(() -> new RuntimeException("Account not found"));
+}
+
     private String generateUniqueTemplateName() {
-        int counter = 1;
-        String templateName;
-        while (true) {
-            templateName = "Workout Template #" + counter;
-            if (workoutTemplateRepository.findByListName(templateName).isEmpty()) {
-                return templateName;
-            }
-            counter++;
+    Account account = getCurrentAccount();
+
+    int counter = 1;
+    String templateName;
+
+    while (true) {
+        templateName = "Workout Template #" + counter;
+
+        if (workoutTemplateRepository
+                .findByListNameAndAccount(templateName, account)
+                .isEmpty()) {
+            return templateName;
         }
+
+        counter++;
     }
+}
 
     @GetMapping("/{sessionId}")
     public ResponseEntity<WorkoutSessionDTO> getWorkout(
