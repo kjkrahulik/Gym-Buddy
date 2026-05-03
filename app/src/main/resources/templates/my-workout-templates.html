@@ -139,47 +139,6 @@
             gap: 0.75rem;
         }
 
-        .btn {
-            padding: 0.5rem 1rem;
-            background-color: var(--rust);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-family: 'Barlow Condensed', sans-serif;
-            font-weight: 600;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .btn:hover {
-            background-color: var(--rust-hot);
-        }
-
-        .btn-secondary {
-            background-color: var(--steel);
-        }
-
-        .btn-secondary:hover {
-            background-color: var(--chalk-dim);
-        }
-
-        .btn-danger {
-            background-color: #d32f2f;
-        }
-
-        .btn-danger:hover {
-            background-color: #c62828;
-        }
-
-        .btn-sm {
-            padding: 0.25rem 0.75rem;
-            font-size: 0.85rem;
-        }
 
         .empty-state {
             text-align: center;
@@ -276,10 +235,6 @@
             justify-content: flex-end;
             gap: 1rem;
         }
-
-        .btn-block {
-            width: 100%;
-        }
     </style>
 </head>
 <body>
@@ -293,7 +248,7 @@
             <div class="search-box">
                 <input type="text" id="searchInput" class="search-input" placeholder="Search templates...">
             </div>
-            <a th:href="@{/create-workout-template}" class="btn">
+            <a th:href="@{/create-workout-template}" class="cta-button">
                 + Create New Template
             </a>
         </div>
@@ -303,7 +258,7 @@
         </div>
 
         <div class="page-actions">
-            <a th:href="@{/profile}" class="btn btn-secondary">Back to Profile</a>
+            <a th:href="@{/profile}" class="cta-button secondary">Back to Profile</a>
         </div>
     </div>
 
@@ -313,8 +268,8 @@
             <h3 class="modal-title">Delete Template</h3>
             <p class="modal-message" id="deleteModalMessage">Are you sure you want to delete this template? This action cannot be undone.</p>
             <div class="modal-actions">
-                <button id="cancelDeleteBtn" class="btn btn-secondary">Cancel</button>
-                <button id="confirmDeleteBtn" class="btn btn-danger">Delete</button>
+                <button id="cancelDeleteBtn" class="cta-button secondary">Cancel</button>
+                <button id="confirmDeleteBtn" class="cta-button danger">Delete</button>
             </div>
         </div>
     </div>
@@ -375,7 +330,7 @@
                     <div class="empty-state">
                         <h3>No Workout Templates Yet</h3>
                         <p>You haven't created any workout templates yet.</p>
-                        <a href="/create-workout-template" class="btn" style="margin-top: 1rem; display: inline-block;">
+                        <a href="/create-workout-template" class="cta-button" style="margin-top: 1rem; display: inline-block;">
                             Create Your First Template
                         </a>
                     </div>
@@ -416,13 +371,13 @@
                         </div>
 
                         <div class="template-actions">
-                            <button class="btn btn-sm" onclick="useTemplate(${template.listID})">
+                            <button class="cta-button cta-button-sm" onclick="useTemplate(${template.listID})">
                                 Use Template
                             </button>
-                            <button class="btn btn-secondary btn-sm" onclick="editTemplate(${template.listID})">
+                            <button class="cta-button secondary cta-button-sm" onclick="editTemplate(${template.listID})">
                                 Edit
                             </button>
-                            <button class="btn btn-danger btn-sm" onclick="showDeleteModal(${template.listID}, '${escapeAttr(template.listName)}')">
+                            <button class="cta-button danger cta-button-sm" onclick="showDeleteModal(${template.listID}, '${escapeAttr(template.listName)}')">
                                 Delete
                             </button>
                         </div>

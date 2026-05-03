@@ -18,14 +18,22 @@
   clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
 }
 
-.cta-button:hover {
+button.cta-button {
+  margin: 6px;
+}
+
+.cta-button:hover,
+button.cta-button:hover {
   background: var(--rust-hot);
   letter-spacing: 3px;
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(196, 75, 27, 0.35);
 }
 
-.cta-button:active { transform: scale(0.97); }
+.cta-button:active,
+button.cta-button:active {
+  transform: scale(0.97);
+}
 
 .cta-button.secondary {
   background: transparent;
@@ -34,12 +42,128 @@
   clip-path: none;
 }
 
-.cta-button.secondary:hover {
+.cta-button.secondary:hover,
+button.cta-button.secondary:hover {
   background: var(--smoke);
   border-color: var(--chalk-dim);
   color: var(--chalk);
   box-shadow: none;
   letter-spacing: 2.5px;
+}
+
+.cta-button.cta-button-sm {
+  padding: 8px 16px;
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  margin: 0;
+  clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%);
+}
+
+.cta-button.cta-button-sm:hover {
+  letter-spacing: 2px;
+}
+
+.cta-button:disabled,
+.cta-button.disabled {
+  background: #555555;
+  color: #888888;
+  cursor: not-allowed;
+  opacity: 0.6;
+  box-shadow: none;
+  transform: none;
+}
+
+.cta-button:disabled:hover,
+.cta-button.disabled:hover {
+  background: #555555;
+  color: #888888;
+  transform: none;
+  letter-spacing: 1.5px;
+}
+
+/* ─── Danger variant (red) ───────────────────────────────── */
+.cta-button.danger {
+  background: #ff6b6b;
+}
+
+.cta-button.danger:hover {
+  background: #ff5252;
+  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.35);
+}
+
+/* ─── Modal button variants ──────────────────────────────── */
+.cta-button.modal-cancel {
+  background: transparent;
+  color: var(--chalk);
+  border: 1px solid var(--steel);
+  clip-path: none;
+}
+
+.cta-button.modal-cancel:hover {
+  background: var(--smoke);
+  border-color: var(--chalk-dim);
+  box-shadow: none;
+  letter-spacing: 2.5px;
+}
+
+.cta-button.modal-confirm {
+  background: var(--rust);
+  color: white;
+  clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%);
+}
+
+.cta-button.modal-confirm:hover {
+  background: var(--rust-hot);
+  letter-spacing: 3px;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(196, 75, 27, 0.35);
+}
+
+/* ─── Tab button variant ────────────────────────────────── */
+.cta-button.tab {
+  background: transparent;
+  color: var(--chalk-dim);
+  border: none;
+  border-bottom: 2px solid transparent;
+  clip-path: none;
+  padding: 12px 16px;
+  font-size: 13px;
+  letter-spacing: 1.5px;
+  margin: 0 8px 0 0;
+}
+
+.cta-button.tab:hover {
+  color: var(--chalk);
+  border-bottom-color: var(--rust);
+  box-shadow: none;
+  transform: none;
+  letter-spacing: 1.5px;
+}
+
+.cta-button.tab.active {
+  color: var(--chalk);
+  border-bottom-color: var(--rust);
+  background: transparent;
+}
+
+/* ─── Accept button variant (green) ────────────────────── */
+.cta-button.accept {
+  background: #51cf66;
+}
+
+.cta-button.accept:hover {
+  background: #40c057;
+  box-shadow: 0 6px 20px rgba(81, 207, 102, 0.35);
+}
+
+/* ─── Decline button variant (red) ───────────────────────── */
+.cta-button.decline {
+  background: #ff6b6b;
+}
+
+.cta-button.decline:hover {
+  background: #ff5252;
+  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.35);
 }
 
 /* ─── Form labels ───────────────────────────────────────── */

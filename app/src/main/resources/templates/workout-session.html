@@ -238,21 +238,6 @@
             color: var(--amber);
         }
 
-        .remove-exercise-btn {
-            padding: 8px 12px;
-            background: transparent;
-            color: #ff6b6b;
-            border: 1px solid #ff6b6b;
-            cursor: pointer;
-            font-size: 12px;
-            font-family: 'Barlow', sans-serif;
-            transition: all 0.2s;
-        }
-
-        .remove-exercise-btn:hover {
-            background: #ff6b6b;
-            color: white;
-        }
 
         .sets-container {
             padding: 16px;
@@ -397,38 +382,6 @@
             gap: 12px;
         }
 
-        .modal-btn {
-            flex: 1;
-            padding: 12px 20px;
-            border: none;
-            cursor: pointer;
-            font-family: 'Barlow Condensed', sans-serif;
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-        }
-
-        .modal-btn-primary {
-            background: var(--rust);
-            color: white;
-        }
-
-        .modal-btn-primary:hover {
-            background: var(--rust-hot);
-        }
-
-        .modal-btn-secondary {
-            background: transparent;
-            color: var(--chalk-dim);
-            border: 1px solid var(--steel);
-        }
-
-        .modal-btn-secondary:hover {
-            background: var(--iron);
-            border-color: var(--chalk-dim);
-            color: var(--chalk);
-        }
 
         .discard-modal {
             position: fixed;
@@ -495,6 +448,241 @@
         .empty-state p {
             margin: 0 0 20px 0;
         }
+
+        .participants-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-right: 24px;
+        }
+
+        .participants-label {
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--chalk-dim);
+        }
+
+        .participants-list {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .participant-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--smoke);
+            border: 2px solid var(--steel);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--chalk);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .participant-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .participant-avatar.placeholder {
+            background: var(--rust);
+            color: white;
+            font-size: 14px;
+        }
+
+        .invitation-badge {
+            position: absolute;
+            bottom: -4px;
+            right: -4px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--rust);
+            border: 2px solid var(--concrete);
+            font-size: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .invitation-badge.accepted {
+            background: #4CAF50;
+        }
+
+        .invite-friends-btn {
+            padding: 10px 16px;
+            background: var(--rust);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            white-space: nowrap;
+            transition: background 0.2s;
+        }
+
+        .invite-friends-btn:hover {
+            background: var(--rust-hot);
+        }
+
+        .invite-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .invite-modal.hidden {
+            display: none;
+        }
+
+        .invite-modal-content {
+            background: var(--concrete);
+            padding: 40px;
+            border-top: 4px solid var(--rust);
+            border-bottom: 1px solid var(--steel);
+            max-width: 500px;
+            width: 90vw;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 0 100%);
+        }
+
+        .invite-modal h2 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 900;
+            color: var(--chalk);
+            font-size: 28px;
+            margin-bottom: 12px;
+            margin-top: 0;
+        }
+
+        .invite-modal p {
+            color: var(--chalk-dim);
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+
+        .friends-list {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            border: 1px solid var(--steel);
+            background: var(--smoke);
+        }
+
+        .friends-list.empty {
+            border: none;
+            background: transparent;
+        }
+
+        .friend-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--steel);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+            cursor: default;
+        }
+
+        .friend-item:last-child {
+            border-bottom: none;
+        }
+
+        .friend-item:hover {
+            background: var(--iron);
+        }
+
+        .friend-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .friend-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--rust);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .friend-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .friend-name {
+            color: var(--chalk);
+            font-weight: 500;
+        }
+
+        .friend-status {
+            font-size: 12px;
+            color: var(--chalk-dim);
+        }
+
+        .invite-btn {
+            padding: 8px 14px;
+            background: var(--rust);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            font-family: 'Barlow', sans-serif;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .invite-btn:hover {
+            background: var(--rust-hot);
+        }
+
+        .invite-btn:disabled {
+            background: var(--chalk-dim);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .friends-empty {
+            padding: 40px 20px;
+            text-align: center;
+            color: var(--chalk-dim);
+        }
+
+        .invite-modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: auto;
+        }
+
     </style>
 </head>
 <body>
@@ -503,6 +691,10 @@
         <div class="session-header">
             <div class="session-name" id="sessionNameDisplay">Loading...</div>
             <div class="session-stats">
+                <div id="participantsSection" class="participants-section" style="display: none;">
+                    <div class="participants-label">Invited</div>
+                    <div class="participants-list" id="participantsList"></div>
+                </div>
                 <div class="stat-item">
                     <div class="stat-label">Volume</div>
                     <div class="stat-value" id="volumeDisplay">0 lbs</div>
@@ -511,6 +703,7 @@
                     <div class="stat-label">Elapsed</div>
                     <div class="stat-value" id="timerDisplay">00:00</div>
                 </div>
+                <button class="invite-friends-btn" id="inviteFriendsBtn">Invite Friends</button>
             </div>
         </div>
 
@@ -551,8 +744,8 @@
             <p>Give your workout a name (optional)</p>
             <input type="text" class="session-name-input" id="sessionNameInput" placeholder="e.g., Chest Day">
             <div class="session-name-modal-actions">
-                <button class="modal-btn modal-btn-secondary" id="skipSessionBtn">Skip</button>
-                <button class="modal-btn modal-btn-primary" id="startSessionBtn">Start</button>
+                <button class="cta-button modal-cancel" id="skipSessionBtn">Skip</button>
+                <button class="cta-button modal-confirm" id="startSessionBtn">Start</button>
             </div>
         </div>
     </div>
@@ -565,6 +758,20 @@
             <div class="discard-modal-actions">
                 <button class="cta-button secondary" id="cancelDiscardBtn">Cancel</button>
                 <button class="cta-button danger" id="confirmDiscardBtn">Discard</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Invite Friends Modal -->
+    <div class="invite-modal hidden" id="inviteModal">
+        <div class="invite-modal-content">
+            <h2>Invite Friends</h2>
+            <p>Select friends to invite to this workout session</p>
+            <div class="friends-list" id="friendsList">
+                <div class="friends-empty">Loading friends...</div>
+            </div>
+            <div class="invite-modal-actions">
+                <button class="cta-button modal-cancel" id="closeInviteBtn">Close</button>
             </div>
         </div>
     </div>
@@ -585,8 +792,8 @@
             </div>
 
             <div class="session-name-modal-actions">
-                <button class="modal-btn modal-btn-secondary" id="skipNotesBtn">Skip</button>
-                <button class="modal-btn modal-btn-primary" id="finishWithNotesBtn">Save & Finish</button>
+                <button class="cta-button modal-cancel" id="skipNotesBtn">Skip</button>
+                <button class="cta-button modal-confirm" id="finishWithNotesBtn">Save & Finish</button>
             </div>
         </div>
     </div>
@@ -617,6 +824,20 @@
             } else {
                 focusSessionNameInput();
             }
+
+            // Setup invite functionality listeners
+            document.getElementById('inviteFriendsBtn').addEventListener('click', openInviteModal);
+            document.getElementById('closeInviteBtn').addEventListener('click', closeInviteModal);
+
+            // Update participants on page load and periodically
+            updateParticipantsList();
+
+            // Close modal when clicking outside
+            document.getElementById('inviteModal').addEventListener('click', (e) => {
+                if (e.target.id === 'inviteModal') {
+                    closeInviteModal();
+                }
+            });
         });
 
         async function loadExercises() {
@@ -727,7 +948,7 @@
         }
 
         // Session name modal handlers
-        function startSession(customName = null) {
+        async function startSession(customName = null) {
             let name = customName || document.getElementById('sessionNameInput').value.trim();
             if (!name) {
                 name = `Workout Session #${sessionData.sessionCount}`;
@@ -736,6 +957,33 @@
             sessionData.sessionName = name;
             document.getElementById('sessionNameModal').classList.add('hidden');
             document.getElementById('sessionNameDisplay').textContent = name;
+
+            // Create the session in the database to get an ID for inviting friends
+            try {
+                const response = await fetch('/api/workouts', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        sessionName: name,
+                        notes: '',
+                        exercises: []
+                    })
+                });
+
+                const responseData = await response.json();
+                if (response.ok) {
+                    sessionData.sessionID = responseData.sessionID;
+                    console.log('Session created with ID:', sessionData.sessionID);
+                    updateParticipantsList();
+                } else {
+                    console.error('Failed to create session:', responseData);
+                }
+            } catch (error) {
+                console.error('Error creating session:', error);
+            }
+
             startTimer();
         }
 
@@ -851,7 +1099,7 @@
                                 ${item.sets[0].type === 'WEIGHTED' ? 'Weighted' : 'Timed'}
                             </span>
                         </div>
-                        <button class="remove-exercise-btn" onclick="removeExercise(${item.exerciseKey})">Remove</button>
+                        <button class="cta-button cta-button-sm danger" onclick="removeExercise(${item.exerciseKey})">Remove</button>
                     </div>
                     <div class="sets-container">
                         ${renderSetTable(item)}
@@ -1010,7 +1258,19 @@
             document.getElementById('discardModal').classList.add('hidden');
         });
 
-        document.getElementById('confirmDiscardBtn').addEventListener('click', () => {
+        document.getElementById('confirmDiscardBtn').addEventListener('click', async () => {
+            if (sessionData.sessionID) {
+                try {
+                    const response = await fetch(`/api/workouts/${sessionData.sessionID}`, {
+                        method: 'DELETE'
+                    });
+                    if (!response.ok) {
+                        console.error('Failed to delete workout session');
+                    }
+                } catch (error) {
+                    console.error('Error deleting workout session:', error);
+                }
+            }
             window.location.href = '/profile';
         });
 
@@ -1069,16 +1329,29 @@
 
                 console.log('Sending workout data:', JSON.stringify(workoutData, null, 2));
 
-                // Save workout
-                const response = await fetch('/api/workouts', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(workoutData)
-                });
+                let responseData;
+                let response;
 
-                const responseData = await response.json();
+                // If we have a sessionID, update the existing session; otherwise create a new one
+                if (sessionData.sessionID) {
+                    response = await fetch(`/api/workouts/${sessionData.sessionID}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(workoutData)
+                    });
+                } else {
+                    response = await fetch('/api/workouts', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(workoutData)
+                    });
+                }
+
+                responseData = await response.json();
                 console.log('Response status:', response.status);
                 console.log('Response data:', responseData);
 
@@ -1088,7 +1361,7 @@
 
                 // If save as template is enabled, save the template
                 if (saveAsTemplate) {
-                    const sessionID = responseData.sessionID;
+                    const sessionID = sessionData.sessionID || responseData.sessionID;
                     const templateData = {
                         templateName: templateName || '',
                         notes: notes
@@ -1120,6 +1393,146 @@
                 skipBtn.disabled = false;
             }
         }
+
+        // Invitation functionality
+        let invitedFriends = new Map();
+
+        async function loadFriendsForInvite() {
+            if (!sessionData.sessionID) {
+                console.warn('Session ID not available yet');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/workouts/${sessionData.sessionID}/friends`);
+                if (!response.ok) {
+                    throw new Error('Failed to load friends');
+                }
+
+                const friends = await response.json();
+                renderFriendsList(friends);
+            } catch (error) {
+                console.error('Error loading friends:', error);
+                const friendsList = document.getElementById('friendsList');
+                friendsList.innerHTML = '<div class="friends-empty">Error loading friends</div>';
+            }
+        }
+
+        function renderFriendsList(friends) {
+            const friendsList = document.getElementById('friendsList');
+
+            if (friends.length === 0) {
+                friendsList.innerHTML = '<div class="friends-empty">You have no friends to invite yet.</div>';
+                return;
+            }
+
+            friendsList.innerHTML = friends.map(friend => {
+                const isInvited = invitedFriends.has(friend.accountId);
+                const avatarContent = friend.profilePictureBase64
+                    ? `<img src="data:image/jpeg;base64,${friend.profilePictureBase64}" alt="${friend.username}">`
+                    : friend.username.charAt(0).toUpperCase();
+
+                return `
+                    <div class="friend-item">
+                        <div class="friend-info">
+                            <div class="friend-avatar">
+                                ${avatarContent}
+                            </div>
+                            <div class="friend-name">${friend.username}</div>
+                        </div>
+                        <button class="invite-btn"
+                                onclick="inviteFriendToSession('${friend.accountId}')"
+                                ${isInvited ? 'disabled' : ''}>
+                            ${isInvited ? 'Invited' : 'Invite'}
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function inviteFriendToSession(friendId) {
+            if (!sessionData.sessionID) {
+                alert('Session not started yet');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/workouts/${sessionData.sessionID}/invite-friend`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ friendId: friendId })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    alert('Error: ' + (data.error || 'Failed to send invitation'));
+                    return;
+                }
+
+                invitedFriends.set(friendId, true);
+                loadFriendsForInvite();
+                updateParticipantsList();
+            } catch (error) {
+                console.error('Error inviting friend:', error);
+                alert('Error sending invitation: ' + error.message);
+            }
+        }
+
+        async function updateParticipantsList() {
+            if (!sessionData.sessionID) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/workouts/${sessionData.sessionID}/invitations`);
+                if (!response.ok) {
+                    return;
+                }
+
+                const participants = await response.json();
+                const participantsSection = document.getElementById('participantsSection');
+                const participantsList = document.getElementById('participantsList');
+
+                if (participants.length === 0) {
+                    participantsSection.style.display = 'none';
+                    return;
+                }
+
+                participantsSection.style.display = 'flex';
+                participantsList.innerHTML = participants.map(participant => {
+                    const avatarContent = participant.profilePictureBase64
+                        ? `<img src="data:image/jpeg;base64,${participant.profilePictureBase64}" alt="${participant.username}">`
+                        : participant.username.charAt(0).toUpperCase();
+
+                    const badgeClass = participant.invitationStatus === 'ACCEPTED' ? 'accepted' : '';
+                    const badgeText = participant.invitationStatus === 'ACCEPTED' ? '✓' : '○';
+
+                    return `
+                        <div class="participant-avatar ${!participant.profilePictureBase64 ? 'placeholder' : ''}">
+                            ${avatarContent}
+                            <div class="invitation-badge ${badgeClass}">${badgeText}</div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Error updating participants:', error);
+            }
+        }
+
+        function openInviteModal() {
+            document.getElementById('inviteModal').classList.remove('hidden');
+            loadFriendsForInvite();
+        }
+
+        function closeInviteModal() {
+            document.getElementById('inviteModal').classList.add('hidden');
+        }
+
+        // Update participants list every 5 seconds while in workout
+        setInterval(updateParticipantsList, 5000);
     </script>
 </body>
 </html>

@@ -6,20 +6,61 @@
     <title>GymBuddy - Friends List</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <script src="/js/api.js"></script>
+    <script>
+        function setupProfilePictures() {
+            document.querySelectorAll('.friend-card').forEach(card => {
+                const username = card.querySelector('.friend-card-info h4').textContent.trim();
+                const profilePic = card.querySelector('.profile-pic');
+                loadProfilePicture(username, profilePic);
+            });
+        }
+
+        function loadProfilePicture(username, container) {
+            fetch(`/profile/${encodeURIComponent(username)}/picture`)
+                .then(res => res.ok ? res.text() : null)
+                .then(base64 => {
+                    if (base64 && base64.length > 0) {
+                        setAvatarImage(base64, container);
+                    }
+                })
+                .catch(err => console.error('Error loading profile picture:', err));
+        }
+
+        function setAvatarImage(base64, container) {
+            const existingImg = container.querySelector('img');
+            const initial = container.querySelector('.profile-pic-initial');
+
+            if (existingImg) {
+                existingImg.src = `data:image/jpeg;base64,${base64}`;
+                existingImg.style.display = 'block';
+            } else {
+                const img = document.createElement('img');
+                img.src = `data:image/jpeg;base64,${base64}`;
+                img.alt = 'Profile picture';
+                img.style.width = '100%';
+                img.style.height = '100%';
+                img.style.objectFit = 'cover';
+                img.className = 'profile-pic-img';
+                container.appendChild(img);
+            }
+
+            if (initial) {
+                initial.style.display = 'none';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', setupProfilePictures);
+    </script>
 </head>
-<!-- View all friends in the user's friend list -->
+
 <body>
     <div class="container">
 
-       <div class="top-nav">
+        <div class="top-nav">
             <a th:href="@{/profile}" class="cta-button secondary no-decoration">Back to Profile</a>
             <a th:href="@{/profile-find-friends}" class="cta-button secondary no-decoration">Find Friends</a>
             <a th:href="@{/profile-friend-pending}" class="cta-button secondary no-decoration">Pending Friend Requests</a>
         </div>
-
-  
-
-
 
         <h1>Friends</h1>
         <p>Here are all your friends:</p>
@@ -28,26 +69,36 @@
             <p>You do not have any friends yet.</p>
         </div>
 
-            <ul th:if="${!#lists.isEmpty(friends)}">
-                <li th:each="friend : ${friends}" class="friend-card">
-                    <span th:text="${friend.username}">Friend username</span>
-
-                    <div class="friend-actions">
-
-                        <a th:href="@{/profile-view-friend/{friendId}(friendId=${friend.accountID})}"
-                        class="cta-button no-decoration">
-                            View Profile
-                        </a>
-
-                        <button class="cta-button secondary"
-                                onclick="removeFriend([[${friend.accountID}]], this)">
-                            Remove Friend
-                        </button>
-
+        <div th:if="${!#lists.isEmpty(friends)}" class="friends-list">
+            <div th:each="friend : ${friends}" class="friend-card">
+                <div class="friend-card-content">
+                    <div class="profile-pic">
+                        <img class="profile-pic-img"
+                             th:src="@{/profile/{username}/picture(username=${friend.username})}"
+                             alt="Profile picture" />
+                        <div class="profile-pic-initial" th:text="${friend.username.substring(0, 1).toUpperCase()}">F</div>
                     </div>
-                </li>
-            </ul>
-        
+                    <div class="friend-card-info">
+                        <h4 th:text="${friend.username}">Friend username</h4>
+                        <p th:text="${friend.email}">friend@example.com</p>
+                    </div>
+                </div>
+
+                <div class="friend-actions">
+                    <a th:href="@{/profile-view-friend/{friendId}(friendId=${friend.accountID})}"
+                       class="cta-button no-decoration">
+                        View Profile
+                    </a>
+
+                    <button class="cta-button secondary"
+                            th:data-friend-id="${friend.accountID}"
+                            onclick="removeFriend(this.getAttribute('data-friend-id'), this)">
+                        Remove
+                    </button>
+                </div>
+            </div>
+        </div>
+
     </div>
 </body>
 </html>

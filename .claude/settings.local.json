@@ -5,7 +5,8 @@
       "Bash(mvn test *)",
       "Bash(mvn clean *)",
       "Bash(rm app.log)",
-      "Bash(java -jar target/app-0.0.1-SNAPSHOT.jar)"
+      "Bash(java -jar target/app-0.0.1-SNAPSHOT.jar)",
+      "Bash(./mvnw clean *)"
     ]
   }
 }

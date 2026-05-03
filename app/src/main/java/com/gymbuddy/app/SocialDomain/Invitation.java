@@ -23,12 +23,8 @@ public class Invitation {
     @JoinColumn(name = "receiver_id")
     private Account receiver;
 
-    private Long workoutSessionId; // or WorkoutSession object
-
-    //@ManyToOne
-    //@JoinColumn(name = "workout_session_id")
-    //private WorkoutSession workoutSession;
-    @Transient
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "workout_session_id")
     private WorkoutSession workoutSession;
 
     @Enumerated(EnumType.STRING)
@@ -44,27 +40,19 @@ public class Invitation {
 
     public Invitation() {}
 
-    public Invitation(Account sender, Account receiver, Long workoutSessionId) {
+    public Invitation(Account sender, Account receiver) {
         this.sender = sender;
         this.receiver = receiver;
-        this.workoutSessionId = workoutSessionId;
         this.status = Status.PENDING;
         this.createdAt = LocalDateTime.now();
     }
 
-    public Invitation(Account sender, Account receiver) {
-    this.sender = sender;
-    this.receiver = receiver;
-    this.status = Status.PENDING;
-    this.createdAt = java.time.LocalDateTime.now();
-    }
-
     public Invitation(Account sender, Account receiver, WorkoutSession workoutSession) {
-    this.sender = sender;
-    this.receiver = receiver;
-    this.workoutSession = workoutSession;
-    this.status = Status.PENDING;
-    this.createdAt = java.time.LocalDateTime.now();
+        this.sender = sender;
+        this.receiver = receiver;
+        this.workoutSession = workoutSession;
+        this.status = Status.PENDING;
+        this.createdAt = LocalDateTime.now();
     }
 
     public void accept() {
@@ -74,10 +62,40 @@ public class Invitation {
     public void decline() {
         this.status = Status.DECLINED;
     }
+
+    public Long getId() {
+        return id;
+    }
+
     public Account getSender() {
         return sender;
     }
+
     public Account getReceiver() {
         return receiver;
+    }
+
+    public WorkoutSession getWorkoutSession() {
+        return workoutSession;
+    }
+
+    public void setWorkoutSession(WorkoutSession workoutSession) {
+        this.workoutSession = workoutSession;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }
