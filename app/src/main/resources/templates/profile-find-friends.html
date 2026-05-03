@@ -8,19 +8,47 @@
     <script src="/js/api.js"></script>
     <script>
         function setupProfilePictures() {
-            document.querySelectorAll('.profile-pic-img').forEach(img => {
-                const initial = img.parentElement.querySelector('.profile-pic-initial');
-                if (initial) {
-                    img.onerror = function() {
-                        img.style.display = 'none';
-                        initial.style.display = 'flex';
-                    };
-                    img.onload = function() {
-                        initial.style.display = 'none';
-                    };
-                }
+            document.querySelectorAll('.user-card').forEach(card => {
+                const username = card.querySelector('.user-card-info h3').textContent.trim();
+                const profilePic = card.querySelector('.profile-pic');
+                loadProfilePicture(username, profilePic);
             });
         }
+
+        function loadProfilePicture(username, container) {
+            fetch(`/profile/${encodeURIComponent(username)}/picture`)
+                .then(res => res.ok ? res.text() : null)
+                .then(base64 => {
+                    if (base64 && base64.length > 0) {
+                        setAvatarImage(base64, container);
+                    }
+                })
+                .catch(err => console.error('Error loading profile picture:', err));
+        }
+
+        function setAvatarImage(base64, container) {
+            const existingImg = container.querySelector('img');
+            const initial = container.querySelector('.profile-pic-initial');
+
+            if (existingImg) {
+                existingImg.src = `data:image/jpeg;base64,${base64}`;
+                existingImg.style.display = 'block';
+            } else {
+                const img = document.createElement('img');
+                img.src = `data:image/jpeg;base64,${base64}`;
+                img.alt = 'Profile picture';
+                img.style.width = '100%';
+                img.style.height = '100%';
+                img.style.objectFit = 'cover';
+                img.className = 'profile-pic-img';
+                container.appendChild(img);
+            }
+
+            if (initial) {
+                initial.style.display = 'none';
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', setupProfilePictures);
     </script>
 </head>
