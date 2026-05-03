@@ -165,11 +165,50 @@
     </style>
 
     <script>
+        const username = document.querySelector('.profile-details h3').textContent.trim();
+
         document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('create-workout-btn').addEventListener('click', function () {
                 window.location.href = '/workout-session';
             });
+            loadProfilePicture();
         });
+
+        document.addEventListener('visibilitychange', function () {
+            if (!document.hidden) {
+                loadProfilePicture();
+            }
+        });
+
+        async function loadProfilePicture() {
+            try {
+                const res = await fetch(`/profile/${encodeURIComponent(username)}/picture`);
+                if (res.ok) {
+                    const base64 = await res.text();
+                    if (base64 && base64.length > 0) {
+                        setAvatarImage(base64);
+                    }
+                }
+            } catch (err) {
+                console.error('Error loading profile picture:', err);
+            }
+        }
+
+        function setAvatarImage(base64) {
+            const avatar = document.getElementById('avatar');
+            if (!avatar.querySelector('img')) {
+                const img = document.createElement('img');
+                img.src = `data:image/jpeg;base64,${base64}`;
+                img.alt = 'Profile picture';
+                img.style.width = '100%';
+                img.style.height = '100%';
+                img.style.objectFit = 'cover';
+                avatar.innerHTML = '';
+                avatar.appendChild(img);
+            } else {
+                avatar.querySelector('img').src = `data:image/jpeg;base64,${base64}`;
+            }
+        }
 
         // ── Goal label helpers ───────────────────────────────────────────
         const GOAL_LABELS = {
