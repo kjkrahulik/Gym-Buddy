@@ -179,33 +179,9 @@
             text-transform: uppercase;
         }
 
-        .btn-submit {
-            background-color: var(--rust);
-            color: white;
-            border: none;
-            padding: 14px 28px;
-            font-family: 'Barlow Condensed', sans-serif;
-            font-size: 14px;
-            font-weight: 700;
-            letter-spacing: 2.5px;
-            text-transform: uppercase;
-            cursor: pointer;
+        .goal-form-submit {
             width: 100%;
-            transition: background 0.15s, transform 0.15s, letter-spacing 0.2s, box-shadow 0.15s;
             margin-top: 2rem;
-            clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
-            border-radius: 0;
-        }
-
-        .btn-submit:hover {
-            background-color: var(--rust-hot);
-            letter-spacing: 3px;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(196, 75, 27, 0.35);
-        }
-
-        .btn-submit:active {
-            transform: scale(0.97);
         }
 
         .message {
@@ -303,7 +279,7 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn-submit">Save My Fitness Goal</button>
+            <button type="submit" class="cta-button goal-form-submit">Save My Fitness Goal</button>
 
             <div style="margin-top: 2rem; text-align: center;">
                 <button type="button" onclick="window.location.href='/profile.html'" class="cta-button secondary">Back to Profile</button>

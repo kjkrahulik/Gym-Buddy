@@ -45,35 +45,6 @@
             gap: 8px;
         }
 
-        .invitation-actions button {
-            padding: 8px 16px;
-            border: 1px solid var(--steel);
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .accept-btn {
-            background: var(--chalk);
-            color: var(--smoke);
-            border-color: var(--chalk);
-        }
-
-        .accept-btn:hover {
-            background: var(--chalk-dim);
-            border-color: var(--chalk-dim);
-        }
-
-        .decline-btn {
-            background: transparent;
-            color: var(--chalk);
-            border-color: var(--steel);
-        }
-
-        .decline-btn:hover {
-            background: var(--smoke);
-            border-color: var(--chalk);
-        }
 
         .profile-pic {
             width: 48px;
@@ -103,28 +74,6 @@
             border-bottom: 1px solid var(--steel);
         }
 
-        .tab-btn {
-            padding: 12px 24px;
-            background: transparent;
-            border: none;
-            border-bottom: 3px solid transparent;
-            color: var(--chalk-dim);
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.2s;
-        }
-
-        .tab-btn:hover {
-            color: var(--chalk);
-        }
-
-        .tab-btn.active {
-            color: var(--chalk);
-            border-bottom-color: var(--rust);
-        }
 
         .tab-content {
             display: none;
@@ -146,8 +95,8 @@
         <h1>Workout Invitations</h1>
 
         <div class="tabs-container">
-            <button class="tab-btn active" onclick="switchTab('active')">Active Invites</button>
-            <button class="tab-btn" onclick="switchTab('old')">Old Invites</button>
+            <button class="cta-button tab active" onclick="switchTab('active')">Active Invites</button>
+            <button class="cta-button tab" onclick="switchTab('old')">Old Invites</button>
         </div>
 
         <!-- Active Tab -->
@@ -223,14 +172,14 @@
             if (!isOld) {
                 actionsHtml = `
                     <div class="invitation-actions">
-                        <button class="accept-btn" onclick="acceptInvitation(${invitation.invitationId})">Accept</button>
-                        <button class="decline-btn" onclick="declineInvitation(${invitation.invitationId})">Decline</button>
+                        <button class="cta-button accept" onclick="acceptInvitation(${invitation.invitationId})">Accept</button>
+                        <button class="cta-button decline" onclick="declineInvitation(${invitation.invitationId})">Decline</button>
                     </div>
                 `;
             } else {
                 actionsHtml = `
                     <div class="invitation-actions">
-                        <button class="decline-btn" onclick="declineInvitation(${invitation.invitationId})">Remove</button>
+                        <button class="cta-button decline" onclick="declineInvitation(${invitation.invitationId})">Remove</button>
                     </div>
                 `;
             }
@@ -256,7 +205,7 @@
 
         function switchTab(tabName) {
             // Update tab buttons
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.cta-button.tab').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
 
             // Update tab content

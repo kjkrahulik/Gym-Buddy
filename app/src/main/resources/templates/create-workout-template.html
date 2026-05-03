@@ -250,21 +250,6 @@
             color: var(--chalk-dim);
         }
 
-        .remove-exercise-btn {
-            padding: 8px 12px;
-            background: transparent;
-            color: #ff6b6b;
-            border: 1px solid #ff6b6b;
-            cursor: pointer;
-            font-size: 12px;
-            font-family: 'Barlow', sans-serif;
-            transition: all 0.2s;
-        }
-
-        .remove-exercise-btn:hover {
-            background: #ff6b6b;
-            color: white;
-        }
 
         .empty-state {
             text-align: center;
@@ -525,7 +510,7 @@
                                 <div class="exercise-muscle">${exercise.muscleGroup}</div>
                             </div>
                         </div>
-                        <button type="button" class="remove-exercise-btn" onclick="removeExercise(${exercise.exerciseID})">Remove</button>
+                        <button type="button" class="cta-button cta-button-sm danger" onclick="removeExercise(${exercise.exerciseID})">Remove</button>
                     </div>
                 </div>
             `).join('');

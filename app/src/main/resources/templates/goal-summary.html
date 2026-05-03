@@ -142,62 +142,9 @@
             flex-wrap: wrap;
         }
 
-        .btn {
-            padding: 13px 28px;
-            font-size: 0.95rem;
-            border-radius: 0;
-            cursor: pointer;
-            text-decoration: none;
-            text-align: center;
-            transition: all 0.3s ease;
-            font-family: 'Barlow Condensed', sans-serif;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-transform: uppercase;
+        .action-buttons .cta-button {
             flex: 1;
             min-width: 150px;
-            border: none;
-            clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
-        }
-
-        .btn-primary {
-            background-color: var(--rust);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background-color: var(--rust-hot);
-            text-decoration: none;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(196, 75, 27, 0.35);
-        }
-
-        .btn-secondary {
-            background-color: var(--steel);
-            color: var(--chalk-dim);
-            border: 1px solid var(--steel);
-            clip-path: none;
-        }
-
-        .btn-secondary:hover {
-            background-color: var(--smoke);
-            border-color: var(--chalk-dim);
-            color: var(--chalk);
-            text-decoration: none;
-        }
-
-        .btn-outline {
-            background-color: transparent;
-            color: var(--chalk-dim);
-            border: 1px solid var(--steel);
-            clip-path: none;
-        }
-
-        .btn-outline:hover {
-            background-color: var(--smoke);
-            color: var(--chalk);
-            border-color: var(--chalk-dim);
         }
 
         .workout-plan {
@@ -371,15 +318,15 @@
 
         <!-- Action Buttons -->
         <div class="action-buttons">
-            <a th:href="@{/}" class="btn btn-primary" th:if="${goal}">Go to Dashboard</a>
-            <a th:href="@{/account/goal}" class="btn btn-secondary" th:if="${goal}">Edit Goal</a>
-            <a th:href="@{/account/goal}" class="btn btn-primary" th:unless="${goal}">Create Your Goal</a>
-            <a th:href="@{/}" class="btn btn-secondary" th:unless="${goal}">Exit</a>
+            <a th:href="@{/}" class="cta-button" th:if="${goal}">Go to Dashboard</a>
+            <a th:href="@{/account/goal}" class="cta-button secondary" th:if="${goal}">Edit Goal</a>
+            <a th:href="@{/account/goal}" class="cta-button" th:unless="${goal}">Create Your Goal</a>
+            <a th:href="@{/}" class="cta-button secondary" th:unless="${goal}">Exit</a>
         </div>
 
         <!-- Generate Personal Workout Button -->
         <div class="generate-btn-wrapper" th:if="${goal}">
-            <button id="generateBtn" onclick="generatePersonalWorkout()" class="btn btn-primary">
+            <button id="generateBtn" onclick="generatePersonalWorkout()" class="cta-button">
                 Generate Personal Workout
             </button>
         </div>

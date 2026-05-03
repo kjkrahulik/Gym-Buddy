@@ -114,57 +114,6 @@
             min-height: 80px;
         }
 
-        .btn {
-            background: #c44b1b;
-            color: white;
-            padding: 12px 20px;
-            font-family: 'Barlow Condensed', sans-serif;
-            font-size: 13px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            border: none;
-            border-radius: 0;
-            cursor: pointer;
-            transition: background 0.15s, transform 0.15s, letter-spacing 0.2s, box-shadow 0.15s;
-            clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
-            text-decoration: none;
-            display: inline-block;
-            line-height: 1;
-        }
-
-        .btn:hover {
-            background: #e0581f;
-            letter-spacing: 2.5px;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(196, 75, 27, 0.35);
-        }
-
-        .btn:active { transform: scale(0.97); }
-
-        .btn-secondary {
-            background: transparent;
-            border: 1px solid #3d3d3d;
-            color: #8a867e;
-        }
-
-        .btn-secondary:hover {
-            background: #2a2a2a;
-            border-color: #8a867e;
-            color: #e9e5dc;
-            box-shadow: none;
-        }
-
-        .btn-danger {
-            background: transparent;
-            border: 1px solid #ff6b6b;
-            color: #ff6b6b;
-        }
-
-        .btn-danger:hover {
-            background: rgba(255, 107, 107, 0.1);
-            box-shadow: none;
-        }
 
         .btn-row {
             display: flex;
@@ -253,7 +202,7 @@
                 <input type="email" id="email-input" th:value="${email}">
             </div>
             <div class="btn-row">
-                <button class="btn" onclick="saveProfileInfo()">Save Changes</button>
+                <button class="cta-button" onclick="saveProfileInfo()">Save Changes</button>
                 <span id="profile-msg" class="msg"></span>
             </div>
         </div>
@@ -266,7 +215,7 @@
                 <textarea id="bio-input" placeholder="Tell the gym community about yourself..." th:text="${bio}"></textarea>
             </div>
             <div class="btn-row">
-                <button class="btn" onclick="saveBio()">Save Bio</button>
+                <button class="cta-button" onclick="saveBio()">Save Bio</button>
                 <span id="bio-msg" class="msg"></span>
             </div>
         </div>
@@ -280,8 +229,8 @@
                     <span id="avatar-initials" th:text="${#strings.toUpperCase(#strings.substring(username, 0, 1))}"></span>
                 </div>
                 <div class="picture-actions">
-                    <button class="btn" onclick="document.getElementById('picture-file').click()">Upload New Photo</button>
-                    <button class="btn btn-danger" onclick="deletePicture()">Remove Photo</button>
+                    <button class="cta-button" onclick="document.getElementById('picture-file').click()">Upload New Photo</button>
+                    <button class="cta-button danger" onclick="deletePicture()">Remove Photo</button>
                     <input type="file" id="picture-file" accept="image/*" class="hidden file-input-hidden" onchange="uploadPicture(this)">
                 </div>
             </div>
@@ -295,7 +244,7 @@
                 A verification code will be sent to your registered email address.
             </p>
             <div class="btn-row mb-lg">
-                <button class="btn btn-secondary" onclick="sendCode()">Send Verification Code</button>
+                <button class="cta-button secondary" onclick="sendCode()">Send Verification Code</button>
                 <span id="code-sent-msg" class="msg"></span>
             </div>
             <div class="form-group">
@@ -311,16 +260,16 @@
                 <input type="password" id="confirm-password" autocomplete="new-password">
             </div>
             <div class="btn-row">
-                <button class="btn" onclick="changePassword()">Update Password</button>
+                <button class="cta-button" onclick="changePassword()">Update Password</button>
                 <span id="password-msg" class="msg"></span>
             </div>
         </div>
 
         <!-- ── Navigation ───────────────────────── -->
         <div class="nav-footer">
-            <a th:href="@{/profile}" class="btn btn-secondary">Back to Profile</a>
+            <a th:href="@{/profile}" class="cta-button secondary">Back to Profile</a>
             <form th:action="@{/logout}" method="post" class="inline">
-                <button type="submit" class="btn">Logout</button>
+                <button type="submit" class="cta-button">Logout</button>
             </form>
         </div>
     </div>

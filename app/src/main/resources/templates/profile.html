@@ -104,8 +104,8 @@
                 </label>
             </div>
             <div class="modal-actions">
-                <button onclick="closeSaveGoalModal()" class="modal-btn-cancel">Cancel</button>
-                <button id="saveGoalBtn" onclick="submitSaveGoal()" class="modal-btn-confirm">Save Goals</button>
+                <button onclick="closeSaveGoalModal()" class="cta-button modal-cancel">Cancel</button>
+                <button id="saveGoalBtn" onclick="submitSaveGoal()" class="cta-button modal-confirm">Save Goals</button>
             </div>
         </div>
     </div>
@@ -118,8 +118,8 @@
                 You haven't set any goals yet. Add your goals so we can build a personalised workout, or use a default beginner plan.
             </p>
             <div class="modal-actions">
-                <button onclick="useDefaultWorkout()" class="modal-btn-cancel">Use Default</button>
-                <button onclick="switchToGoalForm()" class="modal-btn-confirm">Add Goals</button>
+                <button onclick="useDefaultWorkout()" class="cta-button modal-cancel">Use Default</button>
+                <button onclick="switchToGoalForm()" class="cta-button modal-confirm">Add Goals</button>
             </div>
         </div>
     </div>
@@ -131,8 +131,8 @@
             <p style="color:var(--chalk-dim); margin-bottom:0.5rem;">Generating based on your saved goals:</p>
             <div id="confirmGoalSummary" style="background:var(--iron); border-radius:6px; padding:1rem; margin-bottom:1.5rem; color:var(--chalk); font-size:0.9rem; line-height:1.6;"></div>
             <div class="modal-actions">
-                <button onclick="closeConfirmGenerateModal()" class="modal-btn-cancel">Cancel</button>
-                <button id="confirmGenerateBtn" onclick="submitGenerate()" class="modal-btn-confirm">Generate</button>
+                <button onclick="closeConfirmGenerateModal()" class="cta-button modal-cancel">Cancel</button>
+                <button id="confirmGenerateBtn" onclick="submitGenerate()" class="cta-button modal-confirm">Generate</button>
             </div>
         </div>
     </div>
@@ -154,14 +154,6 @@
             border: 1px solid var(--steel); color: var(--chalk); border-radius: 6px;
         }
         .modal-actions { display: flex; gap: 1rem; }
-        .modal-btn-cancel {
-            flex: 1; padding: 0.75rem; background: var(--steel); color: var(--chalk);
-            border: none; border-radius: 6px; cursor: pointer;
-        }
-        .modal-btn-confirm {
-            flex: 1; padding: 0.75rem; background: var(--rust); color: white;
-            border: none; border-radius: 6px; cursor: pointer; font-weight: 600;
-        }
     </style>
 
     <script>

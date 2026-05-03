@@ -238,21 +238,6 @@
             color: var(--amber);
         }
 
-        .remove-exercise-btn {
-            padding: 8px 12px;
-            background: transparent;
-            color: #ff6b6b;
-            border: 1px solid #ff6b6b;
-            cursor: pointer;
-            font-size: 12px;
-            font-family: 'Barlow', sans-serif;
-            transition: all 0.2s;
-        }
-
-        .remove-exercise-btn:hover {
-            background: #ff6b6b;
-            color: white;
-        }
 
         .sets-container {
             padding: 16px;
@@ -397,38 +382,6 @@
             gap: 12px;
         }
 
-        .modal-btn {
-            flex: 1;
-            padding: 12px 20px;
-            border: none;
-            cursor: pointer;
-            font-family: 'Barlow Condensed', sans-serif;
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-        }
-
-        .modal-btn-primary {
-            background: var(--rust);
-            color: white;
-        }
-
-        .modal-btn-primary:hover {
-            background: var(--rust-hot);
-        }
-
-        .modal-btn-secondary {
-            background: transparent;
-            color: var(--chalk-dim);
-            border: 1px solid var(--steel);
-        }
-
-        .modal-btn-secondary:hover {
-            background: var(--iron);
-            border-color: var(--chalk-dim);
-            color: var(--chalk);
-        }
 
         .discard-modal {
             position: fixed;
@@ -730,29 +683,6 @@
             margin-top: auto;
         }
 
-        .modal-btn {
-            flex: 1;
-            padding: 12px 20px;
-            border: none;
-            cursor: pointer;
-            font-family: 'Barlow Condensed', sans-serif;
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-        }
-
-        .modal-btn-secondary {
-            background: transparent;
-            color: var(--chalk-dim);
-            border: 1px solid var(--steel);
-        }
-
-        .modal-btn-secondary:hover {
-            background: var(--iron);
-            border-color: var(--chalk-dim);
-            color: var(--chalk);
-        }
     </style>
 </head>
 <body>
@@ -814,8 +744,8 @@
             <p>Give your workout a name (optional)</p>
             <input type="text" class="session-name-input" id="sessionNameInput" placeholder="e.g., Chest Day">
             <div class="session-name-modal-actions">
-                <button class="modal-btn modal-btn-secondary" id="skipSessionBtn">Skip</button>
-                <button class="modal-btn modal-btn-primary" id="startSessionBtn">Start</button>
+                <button class="cta-button modal-cancel" id="skipSessionBtn">Skip</button>
+                <button class="cta-button modal-confirm" id="startSessionBtn">Start</button>
             </div>
         </div>
     </div>
@@ -841,7 +771,7 @@
                 <div class="friends-empty">Loading friends...</div>
             </div>
             <div class="invite-modal-actions">
-                <button class="modal-btn modal-btn-secondary" id="closeInviteBtn">Close</button>
+                <button class="cta-button modal-cancel" id="closeInviteBtn">Close</button>
             </div>
         </div>
     </div>
@@ -862,8 +792,8 @@
             </div>
 
             <div class="session-name-modal-actions">
-                <button class="modal-btn modal-btn-secondary" id="skipNotesBtn">Skip</button>
-                <button class="modal-btn modal-btn-primary" id="finishWithNotesBtn">Save & Finish</button>
+                <button class="cta-button modal-cancel" id="skipNotesBtn">Skip</button>
+                <button class="cta-button modal-confirm" id="finishWithNotesBtn">Save & Finish</button>
             </div>
         </div>
     </div>
@@ -1169,7 +1099,7 @@
                                 ${item.sets[0].type === 'WEIGHTED' ? 'Weighted' : 'Timed'}
                             </span>
                         </div>
-                        <button class="remove-exercise-btn" onclick="removeExercise(${item.exerciseKey})">Remove</button>
+                        <button class="cta-button cta-button-sm danger" onclick="removeExercise(${item.exerciseKey})">Remove</button>
                     </div>
                     <div class="sets-container">
                         ${renderSetTable(item)}
