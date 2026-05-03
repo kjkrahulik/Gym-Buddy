@@ -1,6 +1,7 @@
 package com.gymbuddy.app.Controller;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +17,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.gymbuddy.app.AccountDomain.Account;
 import com.gymbuddy.app.AccountDomain.Profile;
 import com.gymbuddy.app.Repositories.AccountRepository;
+import com.gymbuddy.app.Repositories.InvitationRepository;
 import com.gymbuddy.app.Repositories.WorkoutSessionRepository;
 import com.gymbuddy.app.Service.AccountService;
 import com.gymbuddy.app.Service.FriendService;
 import com.gymbuddy.app.Service.InvitationService;
 import com.gymbuddy.app.Service.ProfileService;
+import com.gymbuddy.app.SocialDomain.Invitation;
 import com.gymbuddy.app.WorkoutDomain.Workout.WorkoutSession;
 
 @Controller
@@ -40,6 +43,9 @@ public class PageController {
 
     @Autowired
     private InvitationService invitationService;
+
+    @Autowired
+    private InvitationRepository invitationRepository;
 
     @Autowired
     private WorkoutSessionRepository workoutSessionRepository;
@@ -103,8 +109,16 @@ public class PageController {
     }
 
     @GetMapping("/profile-invitations")
-    public String profileInvitationsPage(Model model) {
-        model.addAttribute("invitations", java.util.Collections.emptyList());
+    public String profileInvitationsPage(Principal principal, Model model) {
+        String username = principal.getName();
+        Account account = accountService.searchAccount(username);
+
+        List<com.gymbuddy.app.SocialDomain.Invitation> invitations = invitationService.getPendingInvitationsFor(account)
+            .stream()
+            .filter(inv -> inv.getWorkoutSession() != null)
+            .toList();
+
+        model.addAttribute("invitations", invitations);
         return "profile-invitations";
     }
 
@@ -114,7 +128,7 @@ public class PageController {
 
         Account currentAccount = accountService.searchAccount(currentUsername);
 
-        model.addAttribute("accounts", accountService.getAllAccountsExcept(currentAccount));
+        model.addAttribute("accounts", accountService.getAccountsWithFriendStatus(currentAccount));
 
         return "profile-find-friends";
     }
@@ -138,7 +152,10 @@ public class PageController {
         String username = principal.getName();
         Account account = accountService.searchAccount(username);
 
-        model.addAttribute("requests", account.getIncomingRequests());
+        var pendingRequests = account.getIncomingRequests().stream()
+            .filter(req -> req.getStatus() == com.gymbuddy.app.SocialDomain.FriendRequest.Status.PENDING)
+            .toList();
+        model.addAttribute("requests", pendingRequests);
 
         return "profile-friend-pending";
     }
@@ -249,6 +266,17 @@ public class PageController {
 
             friendService.removeFriend(account, friend);
             return ResponseEntity.ok(new ApiResponse(true, "Friend removed successfully"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage()));
+        }
+    }
+
+    @PostMapping("/api/invitations/{invitationId}/decline")
+    @ResponseBody
+    public ResponseEntity<?> declineWorkoutInvitation(@PathVariable Long invitationId) {
+        try {
+            invitationService.declineInvitation(invitationId);
+            return ResponseEntity.ok(new ApiResponse(true, "Invitation declined"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage()));
         }

@@ -5,6 +5,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GymBuddy - Friend Profile</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const friendNameEl = document.querySelector('.profile-details h3');
+            if (friendNameEl) {
+                const friendName = friendNameEl.textContent.trim();
+                loadProfilePicture(friendName);
+            }
+        });
+
+        function loadProfilePicture(username) {
+            fetch(`/profile/${encodeURIComponent(username)}/picture`)
+                .then(res => {
+                    if (res.ok) {
+                        return res.text();
+                    }
+                    return null;
+                })
+                .then(base64 => {
+                    if (base64 && base64.length > 0) {
+                        setAvatarImage(base64);
+                    }
+                })
+                .catch(err => console.error('Error loading profile picture:', err));
+        }
+
+        function setAvatarImage(base64) {
+            const avatar = document.getElementById('avatar');
+            if (!avatar) {
+                console.error('Avatar element not found');
+                return;
+            }
+
+            const img = document.createElement('img');
+            img.src = `data:image/jpeg;base64,${base64}`;
+            img.alt = 'Profile picture';
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.objectFit = 'cover';
+
+            // Clear the avatar and replace with image
+            avatar.innerHTML = '';
+            avatar.appendChild(img);
+        }
+    </script>
 </head>
 
 <body>
@@ -16,24 +60,18 @@
             </a>
         </div>
 
-        <h1 th:text="${friend.username}">Friend Username</h1>
-
-        <div class="profile-card">
-            <div class="profile-avatar">
-                <span th:text="${initial}">A</span>
+        <div class="profile-header">
+            <div class="profile-info">
+                <div id="avatar" class="avatar">
+                    <span id="avatar-initial" th:text="${initial}"></span>
+                </div>
+                <div class="profile-details">
+                    <h3 th:text="${friend.username}"></h3>
+                    <p th:text="${friend.email}"></p>
+                    <p th:if="${friendProfile.bio != null and friendProfile.bio != ''}" th:text="${friendProfile.bio}"></p>
+                    <p th:if="${friendProfile.bio == null or friendProfile.bio == ''}" style="color: var(--chalk-dim); font-style: italic;">No bio yet</p>
+                </div>
             </div>
-
-            <p>
-                <strong>Email:</strong>
-                <span th:text="${friend.email}">friend@example.com</span>
-            </p>
-
-            <p>
-                <strong>Bio:</strong>
-                <span th:text="${friendProfile.bio != null ? friendProfile.bio : 'No bio yet.'}">
-                    No bio yet.
-                </span>
-            </p>
         </div>
 
     </div>

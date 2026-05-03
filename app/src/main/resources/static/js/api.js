@@ -78,23 +78,40 @@ function sendFriendRequest(receiverId, button) {
 }
 
 function acceptFriendRequest(requestId, element) {
+    console.log('acceptFriendRequest called with requestId:', requestId);
+
     const container = element.closest('.friend-request-item');
+    if (!container) {
+        console.error('Could not find friend-request-item container');
+        showToast('Error: Could not find request element', 'error');
+        return;
+    }
+
     container.style.opacity = '0.6';
     element.disabled = true;
+
+    const params = new URLSearchParams();
+    params.append('requestId', requestId);
 
     fetch('/api/friend-request/accept', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: `requestId=${requestId}`
+        body: params.toString()
     })
-    .then(response => response.json())
+    .then(response => {
+        console.log('Response status:', response.status);
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
+        console.log('Response data:', data);
         if (data.success) {
             showToast('Friend request accepted!', 'success');
             container.remove();
-            // Optionally refresh the pending list
             refreshPendingRequests();
         } else {
             showToast(data.message || 'Failed to accept request', 'error');
@@ -103,27 +120,45 @@ function acceptFriendRequest(requestId, element) {
         }
     })
     .catch(error => {
-        console.error('Error:', error);
-        showToast('An error occurred', 'error');
+        console.error('Error accepting request:', error);
+        showToast('Error: ' + error.message, 'error');
         container.style.opacity = '1';
         element.disabled = false;
     });
 }
 
 function declineFriendRequest(requestId, element) {
+    console.log('declineFriendRequest called with requestId:', requestId);
+
     const container = element.closest('.friend-request-item');
+    if (!container) {
+        console.error('Could not find friend-request-item container');
+        showToast('Error: Could not find request element', 'error');
+        return;
+    }
+
     container.style.opacity = '0.6';
     element.disabled = true;
+
+    const params = new URLSearchParams();
+    params.append('requestId', requestId);
 
     fetch('/api/friend-request/decline', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: `requestId=${requestId}`
+        body: params.toString()
     })
-    .then(response => response.json())
+    .then(response => {
+        console.log('Response status:', response.status);
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
+        console.log('Response data:', data);
         if (data.success) {
             showToast('Friend request declined', 'success');
             container.remove();
@@ -135,31 +170,52 @@ function declineFriendRequest(requestId, element) {
         }
     })
     .catch(error => {
-        console.error('Error:', error);
-        showToast('An error occurred', 'error');
+        console.error('Error declining request:', error);
+        showToast('Error: ' + error.message, 'error');
         container.style.opacity = '1';
         element.disabled = false;
     });
 }
 
 function removeFriend(friendId, element) {
+    console.log('removeFriend called with friendId:', friendId, 'element:', element);
+
     if (!confirm('Are you sure you want to remove this friend?')) {
+        console.log('User cancelled removal');
         return;
     }
 
     const container = element.closest('.friend-card');
+    if (!container) {
+        console.error('Could not find friend-card container');
+        showToast('Error: Could not find friend element', 'error');
+        return;
+    }
+
     container.style.opacity = '0.6';
     element.disabled = true;
+
+    const params = new URLSearchParams();
+    params.append('friendId', friendId);
+
+    console.log('Sending request to /api/friend/remove with params:', params.toString());
 
     fetch('/api/friend/remove', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: `friendId=${friendId}`
+        body: params.toString()
     })
-    .then(response => response.json())
+    .then(response => {
+        console.log('Response status:', response.status);
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
+        console.log('Response data:', data);
         if (data.success) {
             showToast('Friend removed', 'success');
             container.remove();
@@ -171,8 +227,8 @@ function removeFriend(friendId, element) {
         }
     })
     .catch(error => {
-        console.error('Error:', error);
-        showToast('An error occurred', 'error');
+        console.error('Error removing friend:', error);
+        showToast('Error: ' + error.message, 'error');
         container.style.opacity = '1';
         element.disabled = false;
     });

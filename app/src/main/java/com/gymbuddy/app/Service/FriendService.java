@@ -27,6 +27,23 @@ public class FriendService {
     private AccountRepository accountRepo;
 
     public void sendFriendRequest(Account originator, Account targetAccount) {
+        // Check if they're already friends
+        if (originator.getFriends().contains(targetAccount)) {
+            throw new RuntimeException("Already friends with this user");
+        }
+
+        // Check if there's already a pending request from originator to target
+        var existingRequest = requestRepo.findBySenderAndReceiverAndStatus(originator, targetAccount, FriendRequest.Status.PENDING);
+        if (existingRequest.isPresent()) {
+            throw new RuntimeException("Friend request already sent to this user");
+        }
+
+        // Check if there's a pending request from target to originator (reverse)
+        var reverseRequest = requestRepo.findBySenderAndReceiverAndStatus(targetAccount, originator, FriendRequest.Status.PENDING);
+        if (reverseRequest.isPresent()) {
+            throw new RuntimeException("This user has already sent you a friend request");
+        }
+
         FriendRequest request = new FriendRequest(originator, targetAccount);
         requestRepo.save(request);
 
@@ -50,6 +67,7 @@ public class FriendService {
         Account receiver = request.getReceiver();
 
         sender.addFriend(receiver);
+        receiver.addFriend(sender);
         accountRepo.save(sender);
         accountRepo.save(receiver);
 
