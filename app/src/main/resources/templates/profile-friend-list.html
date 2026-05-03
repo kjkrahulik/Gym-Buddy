@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GymBuddy - Profile</title>
+    <title>GymBuddy - Friends List</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <!-- View all friends in the user's friend list -->
@@ -12,7 +12,13 @@
 
        <div class="top-nav">
             <a th:href="@{/profile}" class="btn btn-secondary">Back to Profile</a>
+            <a th:href="@{/profile-find-friends}" class="btn btn-secondary">Find Friends</a>
+            <a th:href="@{/profile-friend-pending}" class="btn btn-secondary">Pending Friend Requests</a>
         </div>
+
+  
+
+
 
         <h1>Friends</h1>
         <p>Here are all your friends:</p>
@@ -21,11 +27,27 @@
             <p>You do not have any friends yet.</p>
         </div>
 
-        <ul th:if="${!#lists.isEmpty(friends)}">
-            <li th:each="friend : ${friends}">
-                <span th:text="${friend.username}">Friend username</span>
-            </li>
-        </ul>
+            <ul th:if="${!#lists.isEmpty(friends)}">
+                <li th:each="friend : ${friends}" class="friend-card">
+                    <span th:text="${friend.username}">Friend username</span>
+
+                    <div class="friend-actions">
+
+                        <a th:href="@{/profile-view-friend/{friendId}(friendId=${friend.accountID})}"
+                        class="btn btn-primary">
+                            View Profile
+                        </a>
+
+                        <form th:action="@{/profile-friend-list/remove-friend}" method="post">
+                            <input type="hidden" name="friendId" th:value="${friend.accountID}">
+                            <button type="submit" class="btn btn-secondary">
+                                Remove Friend
+                            </button>
+                        </form>
+
+                    </div>
+                </li>
+            </ul>
         
     </div>
 </body>

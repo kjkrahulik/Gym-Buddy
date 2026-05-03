@@ -59,6 +59,10 @@ public class FriendRequest {
     public Status getStatus() {
         return status;
     }
+
+    public Long getId() {
+        return id;
+    }
     public void createPendingRequest(Account sender, Account receiver) {
         this.sender = sender;
         this.receiver = receiver;

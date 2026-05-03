@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymBuddy - Pending Friend Requests</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="top-nav">
+            <a th:href="@{/profile-friend-list}" class="btn btn-secondary">Back to Friends</a>
+        </div>
+
+        <h1>Pending Friend Requests</h1>
+        <p>Accept or decline incoming friend requests.</p>
+
+        <div th:if="${#lists.isEmpty(requests)}">
+            <p>You do not have any pending friend requests.</p>
+        </div>
+
+        <div th:if="${!#lists.isEmpty(requests)}">
+            <div th:each="request : ${requests}" class="friend-card">
+
+                <div>
+                    <strong th:text="${request.sender.username}">Sender username</strong>
+                    <p th:text="${request.sender.email}">sender@example.com</p>
+                    <p>
+                        Status:
+                        <span th:text="${request.status}">PENDING</span>
+                    </p>
+                </div>
+
+                <div class="friend-actions">
+                    <form th:action="@{/friend-request/accept}" method="post">
+                        <input type="hidden" name="requestId" th:value="${request.id}">
+                        <button type="submit" class="btn btn-primary">
+                            Accept
+                        </button>
+                    </form>
+
+                    <form th:action="@{/friend-request/decline}" method="post">
+                        <input type="hidden" name="requestId" th:value="${request.id}">
+                        <button type="submit" class="btn btn-secondary">
+                            Decline
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

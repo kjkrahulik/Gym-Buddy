@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Invite Friends</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="top-nav">
+            <a th:href="@{/workout-session}" class="btn btn-secondary">
+                Back to Workout Session
+            </a>
+        </div>
+
+        <h1>Invite Friends</h1>
+        <p>
+            Invite friends to:
+            <strong th:text="${workoutSession.sessionName}">Workout Session</strong>
+        </p>
+
+        <div th:if="${#lists.isEmpty(friends)}">
+            <p>You do not have any friends to invite yet.</p>
+        </div>
+
+        <div th:if="${!#lists.isEmpty(friends)}">
+            <div th:each="friend : ${friends}" class="friend-card">
+
+                <span th:text="${friend.username}">Friend username</span>
+
+                <form th:action="@{/workout-session/{sessionId}/invite-friend(sessionId=${workoutSession.workoutSessionID})}"
+                      method="post">
+                    <input type="hidden" name="friendId" th:value="${friend.accountID}">
+
+                    <button type="submit" class="btn btn-primary">
+                        Invite
+                    </button>
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
