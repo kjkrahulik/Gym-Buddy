@@ -11,4 +11,5 @@ import java.util.List;
 public interface WorkoutSessionRepository extends JpaRepository<WorkoutSession, Long> {
     List<WorkoutSession> findByAccountOrderBySessionDateDesc(Account account);
     List<WorkoutSession> findByAccount(Account account);
+    long countByAccount(Account account);
 }
