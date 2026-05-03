@@ -1,5 +1,6 @@
 package com.gymbuddy.app.WorkoutDomain.Workout;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.gymbuddy.app.AccountDomain.Account;
 
 import jakarta.persistence.Entity;
@@ -18,6 +19,7 @@ public class WorkoutTemplate extends WorkoutList {
     
     @ManyToOne
     @JoinColumn(name = "account_id", nullable = false)
+    @JsonIgnore
     private Account account;
 
     public WorkoutTemplate(String listName, String notes) {
