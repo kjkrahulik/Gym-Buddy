@@ -1,6 +1,7 @@
 package com.gymbuddy.app.Controller;
 
 import java.security.Principal;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -8,11 +9,16 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import com.gymbuddy.app.AccountDomain.Account;
 import com.gymbuddy.app.AccountDomain.Profile;
+import com.gymbuddy.app.Repositories.AccountRepository;
 import com.gymbuddy.app.Service.AccountService;
+import com.gymbuddy.app.Service.FriendService;
+import com.gymbuddy.app.Service.InvitationService;
 import com.gymbuddy.app.Service.ProfileService;
+import com.gymbuddy.app.WorkoutDomain.Workout.WorkoutSession;
 
 @Controller
 public class PageController {
@@ -22,6 +28,15 @@ public class PageController {
 
     @Autowired
     private ProfileService profileService;
+
+    @Autowired
+    private FriendService friendService;
+
+    @Autowired
+    private AccountRepository accountRepository;
+
+    @Autowired
+    private InvitationService invitationService;
 
     // ── Auth pages ───────────────────────────────────────────────────
 
@@ -87,6 +102,97 @@ public class PageController {
         return "profile-invitations";
     }
 
+    @GetMapping("/profile-find-friends")
+    public String profileFindFriendsPage(Principal principal, Model model) {
+        String currentUsername = principal.getName();
+
+        Account currentAccount = accountService.searchAccount(currentUsername);
+
+        model.addAttribute("accounts", accountService.getAllAccountsExcept(currentAccount));
+
+        return "profile-find-friends";
+    }
+
+    @PostMapping("/profile-find-friends/send-request")
+    public String sendFriendRequest(@RequestParam UUID receiverId, Principal principal) {
+        String username = principal.getName();
+
+        Account originator = accountService.searchAccount(username);
+
+        Account targetAccount = accountRepository.findById(receiverId)
+                .orElseThrow(() -> new RuntimeException("Target account not found"));
+
+        friendService.sendFriendRequest(originator, targetAccount);
+
+        return "redirect:/profile-find-friends";
+    }
+
+    @GetMapping("/profile-friend-pending")
+    public String pendingFriendRequestsPage(Principal principal, Model model) {
+        String username = principal.getName();
+        Account account = accountService.searchAccount(username);
+
+        model.addAttribute("requests", account.getIncomingRequests());
+
+        return "profile-friend-pending";
+    }
+
+    @PostMapping("/friend-request/accept")
+    public String acceptFriendRequest(@RequestParam Long requestId) {
+        friendService.acceptRequest(requestId);
+
+        return "redirect:/profile-friend-pending";
+    }
+
+    @PostMapping("/friend-request/decline")
+    public String declineFriendRequest(@RequestParam Long requestId) {
+        friendService.removeFriendRequest(requestId);
+
+        return "redirect:/profile-friend-pending";
+    }
+
+    @PostMapping("/profile-friend-list/remove-friend")
+    public String removeFriend(@RequestParam UUID friendId, Principal principal) {
+        String username = principal.getName();
+
+        Account account = accountService.searchAccount(username);
+        Account friend = accountService.getAccountById(friendId);
+
+        friendService.removeFriend(account, friend);
+
+        return "redirect:/profile-friend-list";
+    }
+
+    @PostMapping("/profile-friend-list/invite-friend")
+    public String inviteFriendToWorkout(@RequestParam UUID friendId, Principal principal) {
+        Account sender = accountService.searchAccount(principal.getName());
+        Account receiver = accountService.getAccountById(friendId);
+
+        invitationService.sendWorkoutInvitation(sender, receiver);
+
+        return "redirect:/profile-friend-list";
+    }
+
+    @GetMapping("/profile-view-friend/{friendId}")
+    public String viewFriendProfile(@PathVariable UUID friendId,
+                                    Principal principal,
+                                    Model model) {
+        Account currentAccount = accountService.searchAccount(principal.getName());
+        Account friend = accountService.getAccountById(friendId);
+
+        if (!currentAccount.getFriends().contains(friend)) {
+            throw new RuntimeException("You can only view profiles of your friends.");
+        }
+
+        Profile friendProfile = profileService.getProfile(friend.getUsername());
+
+        model.addAttribute("friend", friend);
+        model.addAttribute("friendProfile", friendProfile);
+        model.addAttribute("initial", String.valueOf(friend.getUsername().charAt(0)).toUpperCase());
+
+        return "profile-view-friend";
+    }
+
 
 
     
@@ -125,4 +231,34 @@ public class PageController {
     public String leaderboardPage() {
         return "leaderboard";
     }
+
+    // Invite Friends to a Workout Session
+    /*
+    @GetMapping("/workout-session/{sessionId}/invite-friends")
+    public String inviteFriendsPage(@PathVariable Long sessionId,
+                                    Principal principal,
+                                    Model model) {
+        Account account = accountService.searchAccount(principal.getName());
+        WorkoutSession workoutSession = workoutSessionService.getWorkoutSessionById(sessionId);
+
+        model.addAttribute("friends", account.getFriends());
+        model.addAttribute("workoutSession", workoutSession);
+
+        return "workout-invite-friends";
+    }
+    @PostMapping("/workout-session/{sessionId}/invite-friend")
+    public String inviteFriendToWorkout(@PathVariable Long sessionId,
+                                        @RequestParam UUID friendId,
+                                        Principal principal) {
+        Account sender = accountService.searchAccount(principal.getName());
+        Account receiver = accountService.getAccountById(friendId);
+        WorkoutSession workoutSession = workoutSessionService.getWorkoutSessionById(sessionId);
+
+        invitationService.sendWorkoutInvitation(sender, receiver, workoutSession);
+
+        return "redirect:/workout-session/" + sessionId + "/invite-friends";
+    }
+     */
+
+
 }

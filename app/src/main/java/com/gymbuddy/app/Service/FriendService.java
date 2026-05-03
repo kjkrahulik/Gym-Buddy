@@ -61,18 +61,10 @@ public class FriendService {
         FriendRequest request = requestRepo.findById(requestId)
             .orElseThrow(() -> new RuntimeException("Friend Request not found"));
 
-        if (request.getStatus() != FriendRequest.Status.PENDING) {
-            throw new RuntimeException("Request already handled");
-        }
 
-        // Decline request
-        request.declineFriendRequest();
-        requestRepo.save(request);
 
-        // Notify sender
-        //NotificationFactory.createFriendDeclinedNotification(request.getSender(), request.getReceiver());
-    
-}
+        requestRepo.delete(request);
+    }
 
     public void removeFriend(Account account, Account friend) {
         if (account.getFriends().contains(friend)) {
@@ -85,6 +77,8 @@ public class FriendService {
             throw new RuntimeException("Not friends");
         }
     }
+
+
 }
 
 

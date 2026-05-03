@@ -91,4 +91,15 @@ public class AccountService {
 
         return accountRepo.save(account);
     }
+
+    public Iterable<Account> getAllAccountsExcept(Account account) {
+        return accountRepo.findAll().stream()
+                .filter(a -> !a.equals(account))
+                .toList();
+    }
+
+    public Account getAccountById(UUID accountID) {
+        return accountRepo.findById(accountID)
+            .orElseThrow(() -> new RuntimeException("Account not found"));
+    }
 }

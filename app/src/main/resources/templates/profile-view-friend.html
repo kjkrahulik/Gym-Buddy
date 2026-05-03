@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymBuddy - Friend Profile</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="top-nav">
+            <a th:href="@{/profile-friend-list}" class="btn btn-secondary">
+                ← Back to Friends
+            </a>
+        </div>
+
+        <h1 th:text="${friend.username}">Friend Username</h1>
+
+        <div class="profile-card">
+            <div class="profile-avatar">
+                <span th:text="${initial}">A</span>
+            </div>
+
+            <p>
+                <strong>Email:</strong>
+                <span th:text="${friend.email}">friend@example.com</span>
+            </p>
+
+            <p>
+                <strong>Bio:</strong>
+                <span th:text="${friendProfile.bio != null ? friendProfile.bio : 'No bio yet.'}">
+                    No bio yet.
+                </span>
+            </p>
+        </div>
+
+    </div>
+</body>
+</html>

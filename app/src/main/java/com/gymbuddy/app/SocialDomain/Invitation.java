@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 
 import com.gymbuddy.app.AccountDomain.Account;
 
+import com.gymbuddy.app.WorkoutDomain.Workout.WorkoutSession;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -22,6 +24,12 @@ public class Invitation {
     private Account receiver;
 
     private Long workoutSessionId; // or WorkoutSession object
+
+    //@ManyToOne
+    //@JoinColumn(name = "workout_session_id")
+    //private WorkoutSession workoutSession;
+    @Transient
+    private WorkoutSession workoutSession;
 
     @Enumerated(EnumType.STRING)
     private Status status;
@@ -42,6 +50,21 @@ public class Invitation {
         this.workoutSessionId = workoutSessionId;
         this.status = Status.PENDING;
         this.createdAt = LocalDateTime.now();
+    }
+
+    public Invitation(Account sender, Account receiver) {
+    this.sender = sender;
+    this.receiver = receiver;
+    this.status = Status.PENDING;
+    this.createdAt = java.time.LocalDateTime.now();
+    }
+
+    public Invitation(Account sender, Account receiver, WorkoutSession workoutSession) {
+    this.sender = sender;
+    this.receiver = receiver;
+    this.workoutSession = workoutSession;
+    this.status = Status.PENDING;
+    this.createdAt = java.time.LocalDateTime.now();
     }
 
     public void accept() {

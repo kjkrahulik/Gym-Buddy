@@ -13,6 +13,9 @@ public class InvitationService {
 
     @Autowired
     private InvitationRepository invitationRepo;
+
+    @Autowired
+    private InvitationRepository invitationRepository;
     
     private NotificationService notificationService;
 
@@ -33,6 +36,11 @@ public class InvitationService {
         invite.accept();
         invitationRepo.save(invite);
         notificationService.notify(invite.getSender(),invite.getReceiver().getUsername() + " accepted your invite",Notification.Type.INVITE_ACCEPTED);
+    }
+
+        public void sendWorkoutInvitation(Account sender, Account receiver) {
+        Invitation invitation = new Invitation(sender, receiver);
+        invitationRepository.save(invitation);
     }
 
 }
