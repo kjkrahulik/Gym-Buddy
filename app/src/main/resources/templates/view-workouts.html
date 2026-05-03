@@ -331,6 +331,27 @@
             color: var(--chalk-dim);
             font-style: italic;
         }
+
+        .participants-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .participant-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: var(--smoke);
+            border: 1px solid var(--steel);
+            border-radius: 4px;
+        }
+
+        .participant-name {
+            color: var(--chalk);
+            font-size: 14px;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
@@ -383,6 +404,12 @@
                         <div class="notes-label">Notes</div>
                         <div class="notes-content" id="workoutNotesDisplay"></div>
                     </div>
+                </div>
+
+                <!-- Participants Section -->
+                <div class="details-section" id="participantsSection" style="display: none;">
+                    <div class="details-section-title">Friends Who Joined</div>
+                    <div id="participantsDetailsContainer"></div>
                 </div>
 
                 <!-- Exercises Section -->
@@ -439,6 +466,9 @@
                         <div><strong>${workout.exerciseCount || 0}</strong> exercises</div>
                         <div><strong>${workout.totalSets || 0}</strong> sets</div>
                         <div><strong>${workout.totalVolume || 0}</strong> lbs</div>
+                        ${workout.invitedParticipants && workout.invitedParticipants.length > 0
+                            ? `<div><strong>${workout.invitedParticipants.length}</strong> friend${workout.invitedParticipants.length !== 1 ? 's' : ''}</div>`
+                            : ''}
                     </div>
                 </div>
             `).join('');
@@ -461,6 +491,24 @@
             } else {
                 notesDisplay.textContent = 'No notes added';
                 notesDisplay.classList.add('no-notes');
+            }
+
+            // Display participants
+            const participantsSection = document.getElementById('participantsSection');
+            if (workout.invitedParticipants && workout.invitedParticipants.length > 0) {
+                const participantsContainer = document.getElementById('participantsDetailsContainer');
+                participantsContainer.innerHTML = `
+                    <div class="participants-list">
+                        ${workout.invitedParticipants.map(participant => `
+                            <div class="participant-item">
+                                <div class="participant-name">${participant}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                participantsSection.style.display = 'block';
+            } else {
+                participantsSection.style.display = 'none';
             }
 
             // Display exercises

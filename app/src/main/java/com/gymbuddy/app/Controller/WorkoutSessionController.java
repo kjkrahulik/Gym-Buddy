@@ -1,10 +1,14 @@
 package com.gymbuddy.app.Controller;
 
 import com.gymbuddy.app.AccountDomain.Account;
+import com.gymbuddy.app.AccountDomain.Profile;
 import com.gymbuddy.app.Repositories.ExerciseRepository;
 import com.gymbuddy.app.Repositories.WorkoutSessionRepository;
 import com.gymbuddy.app.Repositories.WorkoutTemplateRepository;
 import com.gymbuddy.app.Service.AccountService;
+import com.gymbuddy.app.Service.InvitationService;
+import com.gymbuddy.app.Service.ProfileService;
+import com.gymbuddy.app.SocialDomain.Invitation;
 import com.gymbuddy.app.WorkoutDomain.Exercise.Exercise;
 import com.gymbuddy.app.WorkoutDomain.Exercise.TimedSet;
 import com.gymbuddy.app.WorkoutDomain.Exercise.WeightedSet;
@@ -21,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -38,6 +43,12 @@ public class WorkoutSessionController {
 
     @Autowired
     private ExerciseRepository exerciseRepository;
+
+    @Autowired
+    private InvitationService invitationService;
+
+    @Autowired
+    private ProfileService profileService;
 
     @GetMapping
     public ResponseEntity<List<WorkoutSessionDTO>> getUserWorkouts(Principal principal) {
@@ -58,6 +69,77 @@ public class WorkoutSessionController {
             return ResponseEntity.ok(dtos);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PutMapping("/{sessionId}")
+    public ResponseEntity<Map<String, Object>> updateWorkout(
+            @PathVariable Long sessionId,
+            @RequestBody SaveWorkoutRequest request,
+            Principal principal) {
+        try {
+            String username = principal.getName();
+            Account account = accountService.searchAccount(username);
+
+            if (account == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+
+            WorkoutSession session = workoutSessionRepository.findById(sessionId)
+                    .orElseThrow(() -> new IllegalArgumentException("Workout session not found"));
+
+            if (!session.getAccount().equals(account)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
+            session.setSessionName(request.getSessionName() != null ? request.getSessionName() : session.getSessionName());
+            session.setNotes(request.getNotes());
+            session.getSets().clear();
+
+            int exerciseOrder = 0;
+            if (request.getExercises() != null) {
+                for (SaveWorkoutRequest.ExerciseRequest exReq : request.getExercises()) {
+                    Exercise exercise = exerciseRepository.findById(exReq.getExerciseID()).orElse(null);
+                    if (exercise != null) {
+                        session.addExercise(exercise);
+
+                        if (exReq.getSets() != null) {
+                            for (int setIdx = 0; setIdx < exReq.getSets().size(); setIdx++) {
+                                SaveWorkoutRequest.SetRequest setReq = exReq.getSets().get(setIdx);
+
+                                if ("WEIGHTED".equals(setReq.getType())) {
+                                    WeightedSet ws = new WeightedSet();
+                                    ws.setWeight(setReq.getWeight() != null ? setReq.getWeight() : 0);
+                                    ws.setReps(setReq.getReps() != null ? setReq.getReps() : 0);
+                                    ws.setExerciseOrder(exerciseOrder);
+                                    ws.setOrderIndex(setIdx);
+                                    session.getSets().add(ws);
+                                } else if ("TIMED".equals(setReq.getType())) {
+                                    TimedSet ts = new TimedSet();
+                                    ts.setDurationInSeconds(setReq.getDuration() != null ? setReq.getDuration() : 0);
+                                    ts.setExerciseOrder(exerciseOrder);
+                                    ts.setOrderIndex(setIdx);
+                                    session.getSets().add(ts);
+                                }
+                            }
+                        }
+                        exerciseOrder++;
+                    }
+                }
+            }
+
+            WorkoutSession updated = workoutSessionRepository.save(session);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("sessionID", updated.getListID());
+            response.put("message", "Workout updated successfully");
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Failed to update workout: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }
     }
 
@@ -276,6 +358,12 @@ public class WorkoutSessionController {
         dto.setTotalSets(totalSets);
         dto.setTotalVolume(totalVolume);
 
+        // Get invited participants usernames
+        List<String> participantUsernames = session.getInvitedParticipants().stream()
+                .map(Account::getUsername)
+                .collect(Collectors.toList());
+        dto.setInvitedParticipants(participantUsernames);
+
         // Build exercises list
         List<WorkoutSessionDTO.ExerciseDTO> exercises = session.getExercises().entrySet()
                 .stream()
@@ -292,7 +380,365 @@ public class WorkoutSessionController {
         return dto;
     }
 
+    @GetMapping("/{sessionId}/friends")
+    public ResponseEntity<?> getFriendsForInvite(
+            @PathVariable Long sessionId,
+            Principal principal) {
+        try {
+            String username = principal.getName();
+            Account account = accountService.searchAccount(username);
+
+            if (account == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+
+            List<FriendDTO> friends = account.getFriends().stream()
+                .map(friend -> {
+                    Profile friendProfile = profileService.getProfile(friend.getUsername());
+                    String profilePictureBase64 = friendProfile != null ? friendProfile.getProfilePictureBase64() : "";
+                    return new FriendDTO(friend.getAccountID(), friend.getUsername(), profilePictureBase64);
+                })
+                .collect(Collectors.toList());
+
+            return ResponseEntity.ok(friends);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PostMapping("/{sessionId}/invite-friend")
+    public ResponseEntity<Map<String, Object>> inviteFriendToSession(
+            @PathVariable Long sessionId,
+            @RequestBody InviteFriendRequest request,
+            Principal principal) {
+        try {
+            String username = principal.getName();
+            Account sender = accountService.searchAccount(username);
+
+            if (sender == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+
+            WorkoutSession workoutSession = workoutSessionRepository.findById(sessionId)
+                .orElseThrow(() -> new IllegalArgumentException("Workout session not found"));
+
+            if (!workoutSession.getAccount().equals(sender)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
+            Account receiver = accountService.getAccountById(request.getFriendId());
+            if (receiver == null) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Friend not found");
+                return ResponseEntity.badRequest().body(error);
+            }
+
+            invitationService.sendInvitation(sender, receiver, workoutSession);
+            workoutSession.addParticipant(receiver);
+            workoutSessionRepository.save(workoutSession);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Invitation sent successfully");
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        } catch (Exception e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Failed to send invitation: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+
+    @GetMapping("/{sessionId}/invitations")
+    public ResponseEntity<List<ParticipantDTO>> getSessionInvitations(
+            @PathVariable Long sessionId,
+            Principal principal) {
+        try {
+            String username = principal.getName();
+            Account account = accountService.searchAccount(username);
+
+            if (account == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+
+            WorkoutSession workoutSession = workoutSessionRepository.findById(sessionId)
+                .orElseThrow(() -> new IllegalArgumentException("Workout session not found"));
+
+            List<Invitation> invitations = invitationService.getInvitationsForWorkout(workoutSession, null);
+
+            List<ParticipantDTO> participants = invitations.stream()
+                .map(invitation -> {
+                    Account participant = invitation.getReceiver();
+                    Profile participantProfile = profileService.getProfile(participant.getUsername());
+                    String profilePictureBase64 = participantProfile != null ? participantProfile.getProfilePictureBase64() : "";
+                    return new ParticipantDTO(
+                        invitation.getId(),
+                        participant.getAccountID(),
+                        participant.getUsername(),
+                        profilePictureBase64,
+                        invitation.getStatus().toString()
+                    );
+                })
+                .collect(Collectors.toList());
+
+            return ResponseEntity.ok(participants);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @DeleteMapping("/{sessionId}")
+    public ResponseEntity<Map<String, Object>> deleteWorkout(
+            @PathVariable Long sessionId,
+            Principal principal) {
+        try {
+            String username = principal.getName();
+            Account account = accountService.searchAccount(username);
+
+            if (account == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+
+            WorkoutSession session = workoutSessionRepository.findById(sessionId)
+                .orElseThrow(() -> new IllegalArgumentException("Workout session not found"));
+
+            if (!session.getAccount().equals(account)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
+            workoutSessionRepository.delete(session);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Workout session deleted successfully");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Failed to delete workout: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+
+    @GetMapping("/pending-invitations")
+    public ResponseEntity<List<WorkoutInvitationDTO>> getPendingWorkoutInvitations(Principal principal) {
+        try {
+            String username = principal.getName();
+            Account account = accountService.searchAccount(username);
+
+            if (account == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+
+            List<Invitation> pendingInvitations = invitationService.getPendingInvitationsFor(account)
+                .stream()
+                .filter(inv -> inv.getWorkoutSession() != null)
+                .toList();
+
+            List<WorkoutInvitationDTO> dtos = pendingInvitations.stream()
+                .map(invitation -> {
+                    Account sender = invitation.getSender();
+                    WorkoutSession session = invitation.getWorkoutSession();
+                    Profile senderProfile = profileService.getProfile(sender.getUsername());
+                    String senderProfilePictureBase64 = senderProfile != null ? senderProfile.getProfilePictureBase64() : "";
+
+                    return new WorkoutInvitationDTO(
+                        invitation.getId(),
+                        session.getListID(),
+                        sender.getAccountID(),
+                        sender.getUsername(),
+                        senderProfilePictureBase64,
+                        session.getSessionName(),
+                        session.getSessionDate(),
+                        invitation.getStatus().toString(),
+                        session.getStatus().toString()
+                    );
+                })
+                .collect(Collectors.toList());
+
+            return ResponseEntity.ok(dtos);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PostMapping("/{sessionId}/accept-invitation")
+    public ResponseEntity<Map<String, Object>> acceptInvitation(
+            @PathVariable Long sessionId,
+            @RequestBody AcceptInvitationRequest request) {
+        try {
+            Invitation invitation = invitationService.getInvitationById(request.getInvitationId());
+            if (invitation == null) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Invitation not found");
+                return ResponseEntity.badRequest().body(error);
+            }
+
+            WorkoutSession session = invitation.getWorkoutSession();
+            if (session == null || session.getStatus() != WorkoutSession.Status.LIVE) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "This workout session is no longer active");
+                return ResponseEntity.badRequest().body(error);
+            }
+
+            invitationService.acceptInvitation(request.getInvitationId());
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Invitation accepted");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
+    }
+
     // Request DTOs
+    public static class InviteFriendRequest {
+        private UUID friendId;
+
+        public UUID getFriendId() {
+            return friendId;
+        }
+
+        public void setFriendId(UUID friendId) {
+            this.friendId = friendId;
+        }
+    }
+
+    public static class AcceptInvitationRequest {
+        private Long invitationId;
+
+        public Long getInvitationId() {
+            return invitationId;
+        }
+
+        public void setInvitationId(Long invitationId) {
+            this.invitationId = invitationId;
+        }
+    }
+
+    public static class FriendDTO {
+        private UUID accountId;
+        private String username;
+        private String profilePictureBase64;
+
+        public FriendDTO(UUID accountId, String username, String profilePictureBase64) {
+            this.accountId = accountId;
+            this.username = username;
+            this.profilePictureBase64 = profilePictureBase64;
+        }
+
+        public UUID getAccountId() {
+            return accountId;
+        }
+
+        public String getUsername() {
+            return username;
+        }
+
+        public String getProfilePictureBase64() {
+            return profilePictureBase64;
+        }
+    }
+
+    public static class ParticipantDTO {
+        private Long invitationId;
+        private UUID accountId;
+        private String username;
+        private String profilePictureBase64;
+        private String invitationStatus;
+
+        public ParticipantDTO(Long invitationId, UUID accountId, String username, String profilePictureBase64, String invitationStatus) {
+            this.invitationId = invitationId;
+            this.accountId = accountId;
+            this.username = username;
+            this.profilePictureBase64 = profilePictureBase64;
+            this.invitationStatus = invitationStatus;
+        }
+
+        public Long getInvitationId() {
+            return invitationId;
+        }
+
+        public UUID getAccountId() {
+            return accountId;
+        }
+
+        public String getUsername() {
+            return username;
+        }
+
+        public String getProfilePictureBase64() {
+            return profilePictureBase64;
+        }
+
+        public String getInvitationStatus() {
+            return invitationStatus;
+        }
+    }
+
+    public static class WorkoutInvitationDTO {
+        private Long invitationId;
+        private Long sessionId;
+        private UUID senderId;
+        private String senderUsername;
+        private String senderProfilePictureBase64;
+        private String sessionName;
+        private LocalDateTime sessionDate;
+        private String invitationStatus;
+        private String sessionStatus;
+
+        public WorkoutInvitationDTO(Long invitationId, Long sessionId, UUID senderId, String senderUsername,
+                                   String senderProfilePictureBase64, String sessionName, LocalDateTime sessionDate, String invitationStatus, String sessionStatus) {
+            this.invitationId = invitationId;
+            this.sessionId = sessionId;
+            this.senderId = senderId;
+            this.senderUsername = senderUsername;
+            this.senderProfilePictureBase64 = senderProfilePictureBase64;
+            this.sessionName = sessionName;
+            this.sessionDate = sessionDate;
+            this.invitationStatus = invitationStatus;
+            this.sessionStatus = sessionStatus;
+        }
+
+        public Long getInvitationId() {
+            return invitationId;
+        }
+
+        public Long getSessionId() {
+            return sessionId;
+        }
+
+        public UUID getSenderId() {
+            return senderId;
+        }
+
+        public String getSenderUsername() {
+            return senderUsername;
+        }
+
+        public String getSenderProfilePictureBase64() {
+            return senderProfilePictureBase64;
+        }
+
+        public String getSessionName() {
+            return sessionName;
+        }
+
+        public LocalDateTime getSessionDate() {
+            return sessionDate;
+        }
+
+        public String getInvitationStatus() {
+            return invitationStatus;
+        }
+
+        public String getSessionStatus() {
+            return sessionStatus;
+        }
+    }
+
     public static class SaveWorkoutRequest {
         private String sessionName;
         private String notes;

@@ -67,6 +67,7 @@ public class FriendService {
         Account receiver = request.getReceiver();
 
         sender.addFriend(receiver);
+        receiver.addFriend(sender);
         accountRepo.save(sender);
         accountRepo.save(receiver);
 

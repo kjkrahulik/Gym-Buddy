@@ -25,6 +25,7 @@ public class WorkoutSessionDTO {
     private Integer exerciseCount;
     private Integer totalSets;
     private Float totalVolume;
+    private List<String> invitedParticipants;
 
     @Data
     @NoArgsConstructor

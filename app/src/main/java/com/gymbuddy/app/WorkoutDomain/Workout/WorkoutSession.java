@@ -41,6 +41,25 @@ public class WorkoutSession extends WorkoutList implements WorkoutSessionSet {
     @JsonIgnore
     private Account account;
 
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private Status status = Status.LIVE;
+
+    public enum Status {
+        LIVE,
+        FINISHED,
+        DISCARDED
+    }
+
+    @ManyToMany
+    @JoinTable(
+        name = "workout_session_participants",
+        joinColumns = @JoinColumn(name = "workout_session_id"),
+        inverseJoinColumns = @JoinColumn(name = "account_id")
+    )
+    @JsonIgnore
+    private List<Account> invitedParticipants = new ArrayList<>();
+
     /**
      * Flat list of all sets in this session.
      * Each Set carries its own exerciseOrder so you always know
@@ -100,7 +119,7 @@ public class WorkoutSession extends WorkoutList implements WorkoutSessionSet {
     public boolean updateSet(int exerciseKey, int order, float weight, int reps, LocalTime time) {
         List<Set> exerciseSets = getSetsByExercise(exerciseKey);
         if (order < 0 || order >= exerciseSets.size()) return false;
- 
+
         Set target = exerciseSets.get(order);
         if (target instanceof WeightedSet ws) {
             ws.setWeight(weight);
@@ -109,5 +128,29 @@ public class WorkoutSession extends WorkoutList implements WorkoutSessionSet {
             return true;
         }
         return false;
+    }
+
+    public List<Account> getInvitedParticipants() {
+        return invitedParticipants;
+    }
+
+    public void addParticipant(Account account) {
+        if (account != null && !invitedParticipants.contains(account)) {
+            invitedParticipants.add(account);
+        }
+    }
+
+    public void removeParticipant(Account account) {
+        if (account != null) {
+            invitedParticipants.remove(account);
+        }
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 }

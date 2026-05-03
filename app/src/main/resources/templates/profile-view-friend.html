@@ -6,19 +6,22 @@
     <title>GymBuddy - Friend Profile</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <script>
-        const friendUsername = document.currentScript.parentElement.querySelector('[th\\:text*="friend.username"]')?.textContent ||
-                               document.body.textContent.match(/(?:Friend Profile|View Profile)/)?.[0];
-
         document.addEventListener('DOMContentLoaded', function() {
-            const friendName = document.querySelector('.profile-details h3')?.textContent?.trim();
-            if (friendName) {
+            const friendNameEl = document.querySelector('.profile-details h3');
+            if (friendNameEl) {
+                const friendName = friendNameEl.textContent.trim();
                 loadProfilePicture(friendName);
             }
         });
 
         function loadProfilePicture(username) {
             fetch(`/profile/${encodeURIComponent(username)}/picture`)
-                .then(res => res.ok ? res.text() : null)
+                .then(res => {
+                    if (res.ok) {
+                        return res.text();
+                    }
+                    return null;
+                })
                 .then(base64 => {
                     if (base64 && base64.length > 0) {
                         setAvatarImage(base64);
@@ -29,7 +32,10 @@
 
         function setAvatarImage(base64) {
             const avatar = document.getElementById('avatar');
-            const initial = document.getElementById('avatar-initial');
+            if (!avatar) {
+                console.error('Avatar element not found');
+                return;
+            }
 
             const img = document.createElement('img');
             img.src = `data:image/jpeg;base64,${base64}`;
@@ -38,11 +44,8 @@
             img.style.height = '100%';
             img.style.objectFit = 'cover';
 
-            // Remove existing image and initial
-            const existingImg = avatar.querySelector('img');
-            if (existingImg) existingImg.remove();
-            if (initial) initial.remove();
-
+            // Clear the avatar and replace with image
+            avatar.innerHTML = '';
             avatar.appendChild(img);
         }
     </script>
