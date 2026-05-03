@@ -11,7 +11,7 @@
     <div class="container">
 
         <div class="top-nav">
-            <a th:href="@{/profile-friend-list}" class="btn btn-secondary">Back to Friends</a>
+            <a th:href="@{/profile-friend-list}" class="cta-button secondary no-decoration">Back to Friends</a>
         </div>
 
         <h1>Find Friends</h1>
@@ -30,10 +30,10 @@
                 </div>
 
                 <form th:action="@{/profile-find-friends/send-request}" method="post">
-      
+
                     <input type="hidden" name="receiverId" th:value="${account.accountID}">
 
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="cta-button">
                         Send Friend Request
                     </button>
                 </form>

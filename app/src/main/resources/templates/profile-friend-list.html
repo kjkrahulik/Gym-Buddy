@@ -11,9 +11,9 @@
     <div class="container">
 
        <div class="top-nav">
-            <a th:href="@{/profile}" class="btn btn-secondary">Back to Profile</a>
-            <a th:href="@{/profile-find-friends}" class="btn btn-secondary">Find Friends</a>
-            <a th:href="@{/profile-friend-pending}" class="btn btn-secondary">Pending Friend Requests</a>
+            <a th:href="@{/profile}" class="cta-button secondary no-decoration">Back to Profile</a>
+            <a th:href="@{/profile-find-friends}" class="cta-button secondary no-decoration">Find Friends</a>
+            <a th:href="@{/profile-friend-pending}" class="cta-button secondary no-decoration">Pending Friend Requests</a>
         </div>
 
   
@@ -34,13 +34,13 @@
                     <div class="friend-actions">
 
                         <a th:href="@{/profile-view-friend/{friendId}(friendId=${friend.accountID})}"
-                        class="btn btn-primary">
+                        class="cta-button no-decoration">
                             View Profile
                         </a>
 
                         <form th:action="@{/profile-friend-list/remove-friend}" method="post">
                             <input type="hidden" name="friendId" th:value="${friend.accountID}">
-                            <button type="submit" class="btn btn-secondary">
+                            <button type="submit" class="cta-button secondary">
                                 Remove Friend
                             </button>
                         </form>
