@@ -16,4 +16,6 @@ public interface InvitationRepository extends JpaRepository<Invitation, Long> {
     List<Invitation> findBySender(Account sender);
 
     List<Invitation> findByReceiverAndStatus(Account receiver, Invitation.Status status);
+
+    
 }
