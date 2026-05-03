@@ -53,18 +53,61 @@
 }
 
 /* ─── Friend List Page ──────────────────────────────────── */
+.friends-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 24px;
+}
+
 .friend-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px;
+  padding: 16px 20px;
   background: var(--smoke);
   border-bottom: 1px solid var(--steel);
   gap: 16px;
+  transition: background 0.2s;
+  flex-wrap: wrap;
+}
+
+.friend-card:hover {
+  background: #313131;
 }
 
 .friend-card:last-child {
   border-bottom: none;
+}
+
+.friend-card-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+  min-width: 0;
+}
+
+.friend-card-info {
+  min-width: 0;
+}
+
+.friend-card-info h4 {
+  margin: 0 0 4px 0;
+  color: var(--chalk);
+  font-size: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.friend-card-info p {
+  margin: 0;
+  color: var(--chalk-dim);
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .friend-card span {
@@ -74,16 +117,140 @@
   text-align: left;
 }
 
+.request-status {
+  margin-top: 6px;
+}
+
+.status-badge {
+  display: inline-block;
+  background: rgba(196, 75, 27, 0.2);
+  color: var(--rust);
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
 .friend-actions {
   display: flex;
   gap: 8px;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .friend-actions .cta-button {
   margin: 0;
   font-size: 12px;
   padding: 10px 16px;
+  white-space: nowrap;
+}
+
+/* ─── Find Friends Page ──────────────────────────────────── */
+.find-friends-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 24px;
+}
+
+.user-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  background: var(--smoke);
+  border-bottom: 1px solid var(--steel);
+  gap: 16px;
+  transition: background 0.2s;
+}
+
+.user-card:hover {
+  background: #313131;
+}
+
+.user-card:last-child {
+  border-bottom: none;
+}
+
+.user-card-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+  min-width: 0;
+}
+
+.profile-pic {
+  position: relative;
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-pic-img {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  background: var(--rust);
+}
+
+.profile-pic-initial {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--rust);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 24px;
+  font-family: 'Barlow Condensed', sans-serif;
+}
+
+.user-card-info {
+  min-width: 0;
+}
+
+.user-card-info h3 {
+  margin: 0 0 4px 0;
+  color: var(--chalk);
+  font-size: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-card-info p {
+  margin: 0;
+  color: var(--chalk-dim);
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-card .cta-button {
+  margin: 0;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.requests-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 24px;
 }
 
 .top-nav {
@@ -97,4 +264,28 @@
   margin: 0;
   font-size: 12px;
   padding: 10px 16px;
+}
+
+/* ─── Responsive Friend Pages ────────────────────────────── */
+@media (max-width: 480px) {
+  .friend-card,
+  .user-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .friend-card-content,
+  .user-card-header {
+    width: 100%;
+  }
+
+  .friend-actions,
+  .user-card .cta-button {
+    width: 100%;
+  }
+
+  .friend-actions .cta-button {
+    flex: 1;
+  }
 }

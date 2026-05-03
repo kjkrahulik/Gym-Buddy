@@ -114,7 +114,7 @@ public class PageController {
 
         Account currentAccount = accountService.searchAccount(currentUsername);
 
-        model.addAttribute("accounts", accountService.getAllAccountsExcept(currentAccount));
+        model.addAttribute("accounts", accountService.getAccountsWithFriendStatus(currentAccount));
 
         return "profile-find-friends";
     }

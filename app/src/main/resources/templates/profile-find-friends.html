@@ -6,6 +6,23 @@
     <title>GymBuddy - Find Friends</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <script src="/js/api.js"></script>
+    <script>
+        function setupProfilePictures() {
+            document.querySelectorAll('.profile-pic-img').forEach(img => {
+                const initial = img.parentElement.querySelector('.profile-pic-initial');
+                if (initial) {
+                    img.onerror = function() {
+                        img.style.display = 'none';
+                        initial.style.display = 'flex';
+                    };
+                    img.onload = function() {
+                        initial.style.display = 'none';
+                    };
+                }
+            });
+        }
+        document.addEventListener('DOMContentLoaded', setupProfilePictures);
+    </script>
 </head>
 
 <body>
@@ -22,18 +39,42 @@
             <p>No other users found.</p>
         </div>
 
-        <div th:if="${!#lists.isEmpty(accounts)}">
-            <div th:each="account : ${accounts}" class="friend-card">
+        <div th:if="${!#lists.isEmpty(accounts)}" class="find-friends-list">
+            <div th:each="result : ${accounts}" class="user-card">
 
-                <div>
-                    <strong th:text="${account.username}">Username</strong>
-                    <p th:text="${account.email}">email@example.com</p>
+                <div class="user-card-header">
+                    <div class="profile-pic">
+                        <img class="profile-pic-img"
+                             th:src="@{/profile/{username}/picture(username=${result.account.username})}"
+                             alt="Profile picture" />
+                        <div class="profile-pic-initial" th:text="${result.account.username.substring(0, 1).toUpperCase()}">U</div>
+                    </div>
+                    <div class="user-card-info">
+                        <h3 th:text="${result.account.username}">Username</h3>
+                    </div>
                 </div>
 
-                <button class="cta-button"
-                        onclick="sendFriendRequest([[${account.accountID}]], this)">
-                    Send Friend Request
+                <!-- Button for sending new request -->
+                <button th:if="${result.requestStatus == null}"
+                        class="cta-button cta-button-sm"
+                        th:data-account-id="${result.account.accountID}"
+                        onclick="sendFriendRequest(this.getAttribute('data-account-id'), this)">
+                    Add
                 </button>
+
+                <!-- Button when request was sent by current user -->
+                <button th:if="${result.requestStatus == 'sent'}"
+                        class="cta-button cta-button-sm disabled"
+                        disabled>
+                    Request Sent
+                </button>
+
+                <!-- Button when request was received from this user -->
+                <a th:if="${result.requestStatus == 'received'}"
+                   th:href="@{/profile-friend-pending}"
+                   class="cta-button cta-button-sm no-decoration">
+                    Respond
+                </a>
 
             </div>
         </div>

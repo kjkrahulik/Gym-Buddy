@@ -10,6 +10,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.gymbuddy.app.AccountDomain.Account;
 import com.gymbuddy.app.AccountDomain.Profile;
 import com.gymbuddy.app.Repositories.AccountRepository;
+import com.gymbuddy.app.Repositories.FriendRequestRepository;
+import com.gymbuddy.app.SocialDomain.FriendRequest;
+import com.gymbuddy.app.Controller.AccountSearchResult;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Optional;
 
 @Service
 public class AccountService {
@@ -19,6 +25,9 @@ public class AccountService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private FriendRequestRepository friendRequestRepo;
 
     public Account searchAccount(String username) {
         return accountRepo.findByUsername(username)
@@ -95,11 +104,67 @@ public class AccountService {
     public Iterable<Account> getAllAccountsExcept(Account account) {
         return accountRepo.findAll().stream()
                 .filter(a -> !a.equals(account))
+                .filter(a -> !account.getFriends().contains(a))
+                .filter(a -> !hasPendingFriendRequest(account, a))
                 .toList();
+    }
+
+    private boolean hasPendingFriendRequest(Account user, Account potentialFriend) {
+        // Check if user sent a request to potentialFriend
+        var sentRequest = friendRequestRepo.findBySenderAndReceiverAndStatus(user, potentialFriend, FriendRequest.Status.PENDING);
+        if (sentRequest.isPresent()) {
+            return true;
+        }
+
+        // Check if potentialFriend sent a request to user
+        var receivedRequest = friendRequestRepo.findBySenderAndReceiverAndStatus(potentialFriend, user, FriendRequest.Status.PENDING);
+        if (receivedRequest.isPresent()) {
+            return true;
+        }
+
+        return false;
     }
 
     public Account getAccountById(UUID accountID) {
         return accountRepo.findById(accountID)
             .orElseThrow(() -> new RuntimeException("Account not found"));
+    }
+
+    public List<AccountSearchResult> getAccountsWithFriendStatus(Account currentUser) {
+        List<AccountSearchResult> results = new ArrayList<>();
+
+        for (Account account : accountRepo.findAll()) {
+            // Skip the current user
+            if (account.equals(currentUser)) {
+                continue;
+            }
+
+            // Skip if already friends
+            if (currentUser.getFriends().contains(account)) {
+                continue;
+            }
+
+            // Check for pending requests
+            Optional<FriendRequest> sentRequest = friendRequestRepo.findBySenderAndReceiverAndStatus(
+                currentUser, account, FriendRequest.Status.PENDING
+            );
+            if (sentRequest.isPresent()) {
+                results.add(new AccountSearchResult(account, "sent"));
+                continue;
+            }
+
+            Optional<FriendRequest> receivedRequest = friendRequestRepo.findBySenderAndReceiverAndStatus(
+                account, currentUser, FriendRequest.Status.PENDING
+            );
+            if (receivedRequest.isPresent()) {
+                results.add(new AccountSearchResult(account, "received"));
+                continue;
+            }
+
+            // No relationship - can send friend request
+            results.add(new AccountSearchResult(account, null));
+        }
+
+        return results;
     }
 }
